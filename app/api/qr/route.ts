@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!  // anon بدل service role
     )
 
     const id = Math.random().toString(36).slice(2, 12)
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contactme.cc'
     const url = `${baseUrl}/qr/${id}`
     return NextResponse.json({ id, url })
 
