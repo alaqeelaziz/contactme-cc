@@ -11,9 +11,9 @@ export async function POST(req: Request) {
     }
 
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!  // anon بدل service role
-    )
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHl5anJ1anVoa2hwZGVrb3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTc0MDYsImV4cCI6MjA5Mzc5MzQwNn0.KQ9ilob4dm9tfRvPpjDBLh3EvQBkX9oOPhqf4zW0BH8'
+)
 
     const id = Math.random().toString(36).slice(2, 12)
     const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
