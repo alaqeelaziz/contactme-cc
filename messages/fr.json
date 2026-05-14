@@ -1,0 +1,190 @@
+{
+  "navbar": {
+    "dashboard": "Tableau de bord",
+    "login": "Connexion",
+    "signup": "Commencer",
+    "logout": "Déconnexion",
+    "profile": "Profil",
+    "language": "Langue"
+  },
+  "languageSwitcher": {
+    "languages": {
+      "ar": "العربية",
+      "en": "English",
+      "zh": "中文",
+      "fr": "Français",
+      "es": "Español"
+    }
+  },
+  "home": {
+    "hero": {
+      "badge": "Plateforme digitale contactme",
+      "title1": "Connectez facilement",
+      "title2": "Travaillez plus intelligemment",
+      "description": "Créez votre profil digital professionnel en quelques minutes. Liens, coordonnées et QR code personnalisé — tout au même endroit.",
+      "ctaPrimary": "Créez votre profil",
+      "ctaSecondary": "Voir la démo"
+    },
+    "benefit1": "Gratuit pour toujours",
+    "benefit2": "Sans carte bancaire",
+    "benefit3": "Support complet en arabe",
+    "features": {
+      "unlimitedLinks": {
+        "title": "Liens illimités",
+        "description": "Regroupez tous vos liens importants sur une seule page partageable."
+      },
+      "smartQR": {
+        "title": "QR intelligent",
+        "description": "Générez un code qui ouvre votre profil ou du texte instantanément."
+      },
+      "aiScanner": {
+        "title": "Scanner de cartes AI",
+        "description": "Extraction rapide et précise des informations à partir d'une photo."
+      },
+      "analytics": {
+        "title": "Analyses réelles",
+        "description": "Suivez visites et interactions depuis un tableau clair."
+      },
+      "businessReady": {
+        "title": "Prêt pour les affaires",
+        "description": "Outil adapté aux freelances et entreprises avec un rendu pro."
+      },
+      "darkMode": {
+        "title": "Mode sombre",
+        "description": "Une interface confortable à toute heure."
+      }
+    },
+    "qrSection": {
+      "title": "Essayez le générateur de QR maintenant",
+      "description": "Saisissez un lien ou un e-mail et obtenez un QR instantané."
+    },
+    "printSection": {
+      "badge": "🖨️ Nouveau",
+      "titleArabic": "اطبع بزنس كارتك المجاني",
+      "titleEnglish": "Print Your Business Card Free",
+      "subtitle": "Concevez dans la plateforme, téléchargez un PDF prêt à imprimer.",
+      "step1": {
+        "title": "Concevez",
+        "description": "Choisissez les couleurs et la police depuis le tableau de bord."
+      },
+      "step2": {
+        "title": "Téléchargez le PDF",
+        "description": "Prêt à imprimer en haute résolution."
+      },
+      "step3": {
+        "title": "Imprimez",
+        "description": "Dans n'importe quelle imprimerie ou à la maison."
+      },
+      "cta": "Commencez votre carte ←"
+    },
+    "whySection": {
+      "title": "Pourquoi contactme ?"
+    },
+    "ctaSection": {
+      "title": "Lancez votre parcours digital aujourd'hui",
+      "description": "Rejoignez des milliers de professionnels qui utilisent contactme pour renforcer leur présence en ligne.",
+      "button": "Créez votre profil"
+    },
+    "footer": {
+      "adPlaceholder": "Annonce",
+      "copy": "Connectez facilement, travaillez plus intelligemment © {year}"
+    }
+  },
+  "qrGenerator": {
+    "tabs": {
+      "link": "Lien",
+      "text": "Texte"
+    },
+    "urlPlaceholder": "https://contactme.cc/username",
+    "textPlaceholder": "Écrivez votre texte ici...",
+    "hintText": "Idéal pour : coordonnées, adresse, description de service",
+    "generate": "Générer",
+    "download": "Télécharger PNG",
+    "invalidLink": "Veuillez entrer une URL ou un e-mail valide",
+    "charCounter": "{count} / 500"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "greeting": "Bonjour, {name}",
+    "viewProfile": "Voir le profil",
+    "upgradePro": "Passer à Pro",
+    "plan": {
+      "free": "Plan gratuit",
+      "proIndividual": "Pro individuel",
+      "proCompany": "Pro entreprise"
+    },
+    "planDescription": {
+      "free": "Passez à Pro pour des fonctionnalités illimitées",
+      "pro": "Vous profitez des avantages Pro complets"
+    },
+    "accountType": {
+      "personal": "Personnel",
+      "company": "Entreprise"
+    },
+    "tabs": {
+      "profile": "Profil",
+      "links": "Liens",
+      "services": "Services",
+      "qr": "QR",
+      "scanner": "Scanner",
+      "analytics": "Analytique"
+    },
+    "profile": "Modifier le profil",
+    "links": "Gérer les liens",
+    "services": "Gérer les services",
+    "qrContent": "Votre QR code",
+    "scanner": "Scanner de cartes",
+    "analytics": "Analyses du profil",
+    "profileUrl": "Copier l'URL du profil"
+  },
+  "login": {
+    "titleLogin": "Content de vous revoir",
+    "titleRegister": "Créez votre compte",
+    "subtitleLogin": "Heureux de vous revoir",
+    "subtitleRegister": "Connectez-vous facilement, travaillez plus intelligemment",
+    "login": "Connexion",
+    "register": "Inscription",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "fullName": "Nom complet",
+    "companyName": "Nom de l'entreprise",
+    "username": "Nom d'utilisateur",
+    "accountType": "Type de compte",
+    "personal": "Personnel",
+    "company": "Entreprise",
+    "submitLogin": "Connexion",
+    "submitRegister": "Créer un compte",
+    "emailPlaceholder": "example@email.com",
+    "passwordPlaceholder": "••••••••",
+    "usernamePlaceholder": "username",
+    "errors": {
+      "missingFields": "Veuillez remplir tous les champs",
+      "invalidCredentials": "E-mail ou mot de passe incorrect",
+      "usernameRequired": "Le nom d'utilisateur est requis",
+      "usernameLength": "Le nom d'utilisateur doit comporter au moins 3 caractères",
+      "usernameChars": "Seuls les minuscules, chiffres et underscores sont autorisés",
+      "passwordLength": "Le mot de passe doit comporter au moins 8 caractères",
+      "emailTaken": "Cet e-mail est déjà utilisé"
+    }
+  },
+  "print": {
+    "title": "Imprimez votre carte de visite gratuitement",
+    "subtitle": "Concevez dans la plateforme, téléchargez un PDF prêt à imprimer.",
+    "step1": {
+      "title": "Concevez",
+      "description": "Choisissez couleurs et police depuis le tableau de bord."
+    },
+    "step2": {
+      "title": "Téléchargez le PDF",
+      "description": "Prêt à imprimer en haute résolution."
+    },
+    "step3": {
+      "title": "Imprimez",
+      "description": "Dans une imprimerie ou à la maison."
+    },
+    "downloadPdf": "Télécharger PDF",
+    "downloadPng": "Télécharger PNG",
+    "print": "Imprimer",
+    "note": "Concevez dans la plateforme et téléchargez un fichier prêt à imprimer"
+  }
+}

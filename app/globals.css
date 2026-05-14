@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f5ff;
+    --text: #1a1a3e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+  }
+
+  .dark {
+    --bg: #0d0d1a;
+    --surface: #1a1a2e;
+    --text: #f0f0ff;
+    --text-muted: #9ca3af;
+    --border: #2d2d4e;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    direction: rtl;
+    font-family: var(--font-primary), sans-serif;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  input, textarea, select {
+    font-family: var(--font-primary), sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95;
+    background: linear-gradient(135deg, #4B9EFF, #8B5CF6);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold border-2 transition-all duration-200 hover:bg-light-surface active:scale-95;
+    border-color: #4B9EFF;
+    color: #4B9EFF;
+  }
+
+  .card {
+    @apply rounded-2xl p-6 shadow-sm border;
+    background-color: var(--surface);
+    border-color: var(--border);
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border outline-none transition-all duration-200;
+    background-color: var(--bg);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .input-field:focus {
+    border-color: #4B9EFF;
+    box-shadow: 0 0 0 3px rgba(75, 158, 255, 0.15);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #4B9EFF, #8B5CF6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass-card {
+    @apply rounded-2xl border backdrop-blur-sm;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(75, 158, 255, 0.2);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4B9EFF;
+  border-radius: 3px;
+}
+
+/* QR Code */
+.qr-container canvas,
+.qr-container svg {
+  border-radius: 12px;
+}

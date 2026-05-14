@@ -1,0 +1,190 @@
+{
+  "navbar": {
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "signup": "Get Started",
+    "logout": "Logout",
+    "profile": "Profile",
+    "language": "Language"
+  },
+  "languageSwitcher": {
+    "languages": {
+      "ar": "العربية",
+      "en": "English",
+      "zh": "中文",
+      "fr": "Français",
+      "es": "Español"
+    }
+  },
+  "home": {
+    "hero": {
+      "badge": "contactme digital platform",
+      "title1": "Connect effortlessly",
+      "title2": "Work smarter",
+      "description": "Build your professional digital profile in minutes. Links, contact details, and a custom QR code — all in one place.",
+      "ctaPrimary": "Create your profile",
+      "ctaSecondary": "See the demo"
+    },
+    "benefit1": "Free forever",
+    "benefit2": "No credit card",
+    "benefit3": "Fully Arabic support",
+    "features": {
+      "unlimitedLinks": {
+        "title": "Unlimited links",
+        "description": "Put all your important URLs in a single shareable page."
+      },
+      "smartQR": {
+        "title": "Smart QR code",
+        "description": "Create a code that opens your profile or text instantly."
+      },
+      "aiScanner": {
+        "title": "AI business card scanner",
+        "description": "Extract contact details from a photo with speed and accuracy."
+      },
+      "analytics": {
+        "title": "Real analytics",
+        "description": "Track visits and engagement in a simple dashboard."
+      },
+      "businessReady": {
+        "title": "Business ready",
+        "description": "A tool for freelancers and companies with a polished presentation."
+      },
+      "darkMode": {
+        "title": "Dark mode",
+        "description": "Enjoy a comfortable interface any time of day."
+      }
+    },
+    "qrSection": {
+      "title": "Try the QR code generator now",
+      "description": "Enter any link or email and get an instant QR code."
+    },
+    "printSection": {
+      "badge": "🖨️ New",
+      "titleArabic": "اطبع بزنس كارتك المجاني",
+      "titleEnglish": "Print Your Business Card Free",
+      "subtitle": "Design inside the platform, download a print-ready PDF.",
+      "step1": {
+        "title": "Design",
+        "description": "Choose colors and fonts from the dashboard."
+      },
+      "step2": {
+        "title": "Download PDF",
+        "description": "Ready to print in high resolution."
+      },
+      "step3": {
+        "title": "Print",
+        "description": "At a print shop or from home."
+      },
+      "cta": "Start designing your card ←"
+    },
+    "whySection": {
+      "title": "Why contactme?"
+    },
+    "ctaSection": {
+      "title": "Start your digital journey today",
+      "description": "Join thousands of professionals using contactme to improve their digital presence.",
+      "button": "Create your profile"
+    },
+    "footer": {
+      "adPlaceholder": "Ad",
+      "copy": "Connect effortlessly, work smarter © {year}"
+    }
+  },
+  "qrGenerator": {
+    "tabs": {
+      "link": "Link",
+      "text": "Text"
+    },
+    "urlPlaceholder": "https://contactme.cc/username",
+    "textPlaceholder": "Write your text here...",
+    "hintText": "Good for: contact details, address, service description",
+    "generate": "Generate",
+    "download": "Download PNG",
+    "invalidLink": "Please enter a valid URL or email address",
+    "charCounter": "{count} / 500"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Hello, {name}",
+    "viewProfile": "View profile",
+    "upgradePro": "Upgrade to Pro",
+    "plan": {
+      "free": "Free plan",
+      "proIndividual": "Pro individual",
+      "proCompany": "Pro company"
+    },
+    "planDescription": {
+      "free": "Upgrade to Pro for unlimited features",
+      "pro": "You are enjoying full Pro benefits"
+    },
+    "accountType": {
+      "personal": "Personal",
+      "company": "Company"
+    },
+    "tabs": {
+      "profile": "Profile",
+      "links": "Links",
+      "services": "Services",
+      "qr": "QR code",
+      "scanner": "Card scanner",
+      "analytics": "Analytics"
+    },
+    "profile": "Edit profile",
+    "links": "Manage links",
+    "services": "Manage services",
+    "qrContent": "Your QR code",
+    "scanner": "Business card scanner",
+    "analytics": "Profile analytics",
+    "profileUrl": "Copy profile URL"
+  },
+  "login": {
+    "titleLogin": "Welcome back",
+    "titleRegister": "Create your account",
+    "subtitleLogin": "Glad to see you again",
+    "subtitleRegister": "Connect effortlessly, work smarter",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "companyName": "Company name",
+    "username": "Username",
+    "accountType": "Account type",
+    "personal": "Personal",
+    "company": "Company",
+    "submitLogin": "Login",
+    "submitRegister": "Create account",
+    "emailPlaceholder": "example@email.com",
+    "passwordPlaceholder": "••••••••",
+    "usernamePlaceholder": "username",
+    "errors": {
+      "missingFields": "Please fill in all fields",
+      "invalidCredentials": "Email or password is incorrect",
+      "usernameRequired": "Username is required",
+      "usernameLength": "Username must be at least 3 characters",
+      "usernameChars": "Only lowercase letters, numbers, and underscores are allowed",
+      "passwordLength": "Password must be at least 8 characters",
+      "emailTaken": "This email is already registered"
+    }
+  },
+  "print": {
+    "title": "Print Your Business Card Free",
+    "subtitle": "Design inside the platform, download a print-ready PDF.",
+    "step1": {
+      "title": "Design",
+      "description": "Choose colors and fonts from the dashboard."
+    },
+    "step2": {
+      "title": "Download PDF",
+      "description": "Ready to print in high resolution."
+    },
+    "step3": {
+      "title": "Print",
+      "description": "At a print shop or from home."
+    },
+    "downloadPdf": "Download PDF",
+    "downloadPng": "Download PNG",
+    "print": "Print",
+    "note": "Design inside the platform and download a print-ready file"
+  }
+}

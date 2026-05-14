@@ -1,0 +1,112 @@
+{
+  "home": {
+    "hero": {
+      "badge": "منصة contactme الرقمية",
+      "title1": "تواصل بسهولة",
+      "title2": "اعمل بذكاء",
+      "description": "أنشئ بروفايلك الرقمي الاحترافي في دقائق. بياناتك، روابطك، ورمز QR مخصص — كل شيء في مكان واحد.",
+      "ctaPrimary": "أنشئ بروفايلك مجاناً",
+      "ctaSecondary": "شاهد المثال",
+      "benefit1": "مجاني للأبد",
+      "benefit2": "بدون بطاقة ائتمان",
+      "benefit3": "عربي بالكامل"
+    },
+    "features": {
+      "unlimitedLinks": {
+        "title": "روابط غير محدودة",
+        "description": "أضف كل روابطك في مكان واحد"
+      },
+      "smartQR": {
+        "title": "رمز QR ذكي",
+        "description": "رمز QR مخصص لبروفايلك"
+      },
+      "aiScanner": {
+        "title": "ماسح البطاقات بالذكاء الاصطناعي",
+        "description": "امسح بطاقات العمل وحفظها تلقائياً"
+      },
+      "analytics": {
+        "title": "إحصائيات متقدمة",
+        "description": "تابع زيارات بروفايلك"
+      },
+      "businessReady": {
+        "title": "جاهز للأعمال",
+        "description": "احترافي ومناسب لجميع القطاعات"
+      },
+      "darkMode": {
+        "title": "الوضع المظلم",
+        "description": "تصميم أنيق في كل الأوضاع"
+      }
+    },
+    "qrSection": {
+      "title": "جرّب مولّد رمز QR الآن",
+      "description": "ادخل أي رابط وشاهد رمز QR يُنشأ فورياً"
+    },
+    "printSection": {
+      "badge": "جديد",
+      "titleArabic": "اطبع بزنس كارتك المجاني",
+      "titleEnglish": "Print Your Business Card Free",
+      "subtitle": "صمّم داخل المنصة وحمّل ملف جاهز للطباعة",
+      "step1": {
+        "title": "صمّم",
+        "description": "اختر الألوان والخط من لوحة التحكم"
+      },
+      "step2": {
+        "title": "حمّل PDF",
+        "description": "جاهز للطباعة بدقة عالية"
+      },
+      "step3": {
+        "title": "اطبع",
+        "description": "في أي مطبعة أو من البيت"
+      },
+      "cta": "ابدأ تصميم كارتك ←"
+    },
+    "whySection": {
+      "title": "لماذا contactme.cc؟"
+    },
+    "ctaSection": {
+      "title": "ابدأ مجاناً اليوم",
+      "description": "انضم لآلاف المحترفين الذين يستخدمون contactme.cc",
+      "button": "أنشئ بروفايلك الآن"
+    },
+    "footer": {
+      "adPlaceholder": "مساحة إعلانية",
+      "copy": "© {year} contactme.cc — جميع الحقوق محفوظة"
+    }
+  },
+  "navbar": {
+    "dashboard": "لوحة التحكم",
+    "login": "دخول",
+    "signup": "ابدأ مجاناً",
+    "logout": "خروج"
+  },
+  "qr": {
+    "title": "مولّد رمز QR",
+    "tab_link": "رابط / إيميل",
+    "tab_text": "نص",
+    "placeholder_link": "https://contactme.cc/username",
+    "placeholder_text": "اكتب نصك هنا (بيانات تواصل، عنوان، وصف)",
+    "chars_left": "حرف متبقي",
+    "generate": "إنشاء رمز QR",
+    "download": "تحميل PNG"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً",
+    "profile_views": "مشاهدات البروفايل",
+    "qr_scans": "مسح QR",
+    "contacts": "جهات الاتصال",
+    "completion": "اكتمال البروفايل"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "username": "اسم المستخدم",
+    "full_name": "الاسم الكامل",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "or": "أو",
+    "already_have_account": "لديك حساب؟",
+    "no_account": "ليس لديك حساب؟"
+  }
+}
