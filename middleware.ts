@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const SUPPORTED_LOCALES = ['ar', 'en', 'zh', 'fr', 'es']
+const ADMIN_EMAIL = 'aalaqeel03@gmail.com'
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -61,11 +62,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // ✅ الإصلاح: /dashboard أو /login بدون locale → أضف الـ locale
-  if (!isLocaleInPath && (pathname.startsWith('/dashboard') || pathname.startsWith('/login'))) {
+  // /dashboard أو /login أو /admin بدون locale → أضف الـ locale
+  if (!isLocaleInPath && (
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/admin')
+  )) {
     const url = request.nextUrl.clone()
     url.pathname = `/${currentLocale}${pathname}`
     return NextResponse.redirect(url)
+  }
+
+  // حماية الأدمن
+  if (pathname.includes('/admin')) {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      const url = request.nextUrl.clone()
+      url.pathname = `/${currentLocale}/login`
+      return NextResponse.redirect(url)
+    }
   }
 
   // Not authenticated → redirect to login
