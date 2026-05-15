@@ -21,16 +21,16 @@ const content = {
     ctaSecondary: 'شاهد المثال',
     badges: ['بدون بطاقة ائتمان', 'متعدد اللغات'],
     qrTitle: 'جرّب مولّد رمز QR الآن',
-    qrDesc: 'ادخل أي رابط وشاهد رمز QR يُنشأ فورياً',
+    qrDesc: '',
     printBadge: 'جديد',
-    printTitle: 'اطبع بزنس كارتك المجاني',
+    printTitle: 'قم بتصميم بطاقة الأعمال مجاناً',
     printSubtitle: 'صمّم داخل المنصة وحمّل ملف جاهز للطباعة',
     steps: [
       { icon: '🎨', title: 'صمّم', desc: 'اختر الألوان والخط من لوحة التحكم' },
       { icon: '⬇️', title: 'حمّل PDF', desc: 'جاهز للطباعة بدقة عالية' },
       { icon: '🖨️', title: 'اطبع', desc: 'في أي مطبعة أو من البيت' },
     ],
-    printCta: 'ابدأ تصميم كارتك ←',
+    printCta: 'صمّم بطاقتك الآن ←',
     footer: `© ${new Date().getFullYear()} contactme.cc — جميع الحقوق محفوظة`,
   },
   en: {
@@ -42,16 +42,16 @@ const content = {
     ctaSecondary: 'See the demo',
     badges: ['No credit card', 'Multilingual'],
     qrTitle: 'Try the QR Generator Now',
-    qrDesc: 'Enter any link and see your QR code generated instantly',
+    qrDesc: '',
     printBadge: 'New',
-    printTitle: 'Print Your Business Card Free',
+    printTitle: 'Design Your Business Card for Free',
     printSubtitle: 'Design inside the platform and download a print-ready file',
     steps: [
       { icon: '🎨', title: 'Design', desc: 'Choose colors and fonts from the dashboard' },
       { icon: '⬇️', title: 'Download PDF', desc: 'High quality, print-ready' },
       { icon: '🖨️', title: 'Print', desc: 'At any print shop or at home' },
     ],
-    printCta: 'Start designing your card →',
+    printCta: 'Design your card now →',
     footer: `© ${new Date().getFullYear()} contactme.cc — All rights reserved`,
   },
   zh: {
@@ -63,16 +63,16 @@ const content = {
     ctaSecondary: '查看示例',
     badges: ['无需信用卡', '多语言支持'],
     qrTitle: '立即试用二维码生成器',
-    qrDesc: '输入任意链接，即时生成二维码',
+    qrDesc: '',
     printBadge: '新功能',
-    printTitle: '免费打印您的名片',
+    printTitle: '免费设计您的名片',
     printSubtitle: '在平台内设计并下载可打印文件',
     steps: [
       { icon: '🎨', title: '设计', desc: '从控制面板选择颜色和字体' },
       { icon: '⬇️', title: '下载PDF', desc: '高质量，可直接打印' },
       { icon: '🖨️', title: '打印', desc: '在任何打印店或在家打印' },
     ],
-    printCta: '开始设计您的名片 →',
+    printCta: '立即设计您的名片 →',
     footer: `© ${new Date().getFullYear()} contactme.cc — 保留所有权利`,
   },
   fr: {
@@ -84,16 +84,16 @@ const content = {
     ctaSecondary: 'Voir la démo',
     badges: ['Sans carte de crédit', 'Multilingue'],
     qrTitle: 'Essayez le générateur QR maintenant',
-    qrDesc: 'Entrez un lien et générez votre code QR instantanément',
+    qrDesc: '',
     printBadge: 'Nouveau',
-    printTitle: 'Imprimez votre carte de visite gratuitement',
+    printTitle: 'Concevez votre carte de visite gratuitement',
     printSubtitle: 'Concevez sur la plateforme et téléchargez un fichier prêt à imprimer',
     steps: [
       { icon: '🎨', title: 'Concevoir', desc: 'Choisissez couleurs et polices' },
       { icon: '⬇️', title: 'Télécharger PDF', desc: 'Haute qualité, prêt à imprimer' },
       { icon: '🖨️', title: 'Imprimer', desc: 'Dans toute imprimerie ou à la maison' },
     ],
-    printCta: 'Commencer à concevoir →',
+    printCta: 'Concevez votre carte maintenant →',
     footer: `© ${new Date().getFullYear()} contactme.cc — Tous droits réservés`,
   },
   es: {
@@ -105,16 +105,16 @@ const content = {
     ctaSecondary: 'Ver el demo',
     badges: ['Sin tarjeta de crédito', 'Multiidioma'],
     qrTitle: 'Prueba el generador de QR ahora',
-    qrDesc: 'Ingresa cualquier enlace y genera tu código QR al instante',
+    qrDesc: '',
     printBadge: 'Nuevo',
-    printTitle: 'Imprime tu tarjeta de visita gratis',
+    printTitle: 'Diseña tu tarjeta de visita gratis',
     printSubtitle: 'Diseña en la plataforma y descarga un archivo listo para imprimir',
     steps: [
       { icon: '🎨', title: 'Diseñar', desc: 'Elige colores y fuentes' },
       { icon: '⬇️', title: 'Descargar PDF', desc: 'Alta calidad, listo para imprimir' },
       { icon: '🖨️', title: 'Imprimir', desc: 'En cualquier imprenta o en casa' },
     ],
-    printCta: 'Empieza a diseñar tu tarjeta →',
+    printCta: 'Diseña tu tarjeta ahora →',
     footer: `© ${new Date().getFullYear()} contactme.cc — Todos los derechos reservados`,
   },
 }
@@ -178,8 +178,7 @@ export default function HomePageClient({ messages, locale }: Props) {
 
       <section id="demo" className="py-20 px-4" style={{ background: 'var(--surface)' }}>
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">{c.qrTitle}</h2>
-          <p className="text-[var(--text-muted)] mb-10">{c.qrDesc}</p>
+          <h2 className="text-3xl font-bold mb-10">{c.qrTitle}</h2>
           <div className="max-w-sm mx-auto">
             <QRGenerator showDownload />
           </div>

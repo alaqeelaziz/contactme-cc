@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import DeleteQRButton from './DeleteQRButton'
 
 export default async function QRTextPage({ params }: { params: { id: string } }) {
   const supabase = await createClient()
@@ -33,8 +34,13 @@ export default async function QRTextPage({ params }: { params: { id: string } })
           </div>
           {expiresDate && (
             <p className="text-xs text-[var(--text-muted)] mt-6">
-              ينتهي في: {expiresDate}
+              contactme.cc · ينتهي في: {expiresDate}
             </p>
+          )}
+          {isOwned && (
+            <div className="mt-6">
+              <DeleteQRButton id={params.id} />
+            </div>
           )}
         </div>
 
