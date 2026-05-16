@@ -16,10 +16,36 @@ export default async function DashboardPage({ params }: Props) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('id', user.id)
     .single()
 
-  if (!profile) redirect(`/${locale}/login`)
+  if (!profile) {
+    // أنشئ profile تلقائياً إذا ما موجود
+    const { data: newProfile } = await supabase
+      .from('profiles')
+      .insert({
+        id: user.id,
+        username: user.email?.split('@')[0] + '_' + Math.floor(Math.random() * 9000 + 1000),
+        full_name: user.email?.split('@')[0],
+        plan: 'free',
+        is_pro: false,
+        account_type: 'personal',
+      })
+      .select()
+      .single()
+
+    if (!newProfile) redirect(`/${locale}/login`)
+
+    return (
+      <DashboardClient
+        initialProfile={newProfile}
+        initialLinks={[]}
+        initialServices={[]}
+        viewCount={0}
+        profileUrl={`https://contactme.cc/${newProfile.username}`}
+      />
+    )
+  }
 
   const [{ data: links }, { data: services }, { count: viewCount }] = await Promise.all([
     supabase.from('links').select('*').eq('user_id', user.id).order('display_order'),
