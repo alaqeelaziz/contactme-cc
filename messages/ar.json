@@ -10,67 +10,6 @@
       "benefit1": "مجاني للأبد",
       "benefit2": "بدون بطاقة ائتمان",
       "benefit3": "عربي بالكامل"
-    },
-    "features": {
-      "unlimitedLinks": {
-        "title": "روابط غير محدودة",
-        "description": "أضف كل روابطك في مكان واحد"
-      },
-      "smartQR": {
-        "title": "رمز QR ذكي",
-        "description": "رمز QR مخصص لبروفايلك"
-      },
-      "aiScanner": {
-        "title": "ماسح البطاقات بالذكاء الاصطناعي",
-        "description": "امسح بطاقات العمل وحفظها تلقائياً"
-      },
-      "analytics": {
-        "title": "إحصائيات متقدمة",
-        "description": "تابع زيارات بروفايلك"
-      },
-      "businessReady": {
-        "title": "جاهز للأعمال",
-        "description": "احترافي ومناسب لجميع القطاعات"
-      },
-      "darkMode": {
-        "title": "الوضع المظلم",
-        "description": "تصميم أنيق في كل الأوضاع"
-      }
-    },
-    "qrSection": {
-      "title": "جرّب مولّد رمز QR الآن",
-      "description": "ادخل أي رابط وشاهد رمز QR يُنشأ فورياً"
-    },
-    "printSection": {
-      "badge": "جديد",
-      "titleArabic": "اطبع بزنس كارتك المجاني",
-      "titleEnglish": "Print Your Business Card Free",
-      "subtitle": "صمّم داخل المنصة وحمّل ملف جاهز للطباعة",
-      "step1": {
-        "title": "صمّم",
-        "description": "اختر الألوان والخط من لوحة التحكم"
-      },
-      "step2": {
-        "title": "حمّل PDF",
-        "description": "جاهز للطباعة بدقة عالية"
-      },
-      "step3": {
-        "title": "اطبع",
-        "description": "في أي مطبعة أو من البيت"
-      },
-      "cta": "ابدأ تصميم كارتك ←"
-    },
-    "whySection": {
-      "title": "لماذا contactme.cc؟"
-    },
-    "ctaSection": {
-      "title": "ابدأ مجاناً اليوم",
-      "description": "انضم لآلاف المحترفين الذين يستخدمون contactme.cc",
-      "button": "أنشئ بروفايلك الآن"
-    },
-    "footer": {
-      "adPlaceholder": "مساحة إعلانية",
-      "copy": "© {year} contactme.cc — جميع الحقوق محفوظة"
     }
   },
   "navbar": {
@@ -84,18 +23,55 @@
     "tab_link": "رابط / إيميل",
     "tab_text": "نص",
     "placeholder_link": "https://contactme.cc/username",
-    "placeholder_text": "اكتب نصك هنا (بيانات تواصل، عنوان، وصف)",
+    "placeholder_text": "اكتب نصك هنا",
     "chars_left": "حرف متبقي",
     "generate": "إنشاء رمز QR",
     "download": "تحميل PNG"
   },
+  "print": {
+    "title": "قم بتصميم بطاقة الأعمال مجاناً",
+    "subtitle": "صمّم داخل المنصة وحمّل ملف جاهز للطباعة",
+    "step1": { "title": "صمّم", "description": "اختر الألوان والخط من لوحة التحكم" },
+    "step2": { "title": "حمّل PDF", "description": "جاهز للطباعة بدقة عالية" },
+    "step3": { "title": "اطبع", "description": "في أي مطبعة أو من البيت" },
+    "downloadPdf": "تحميل PDF",
+    "downloadPng": "تحميل PNG",
+    "print": "طباعة",
+    "note": "ملاحظة"
+  },
   "dashboard": {
     "title": "لوحة التحكم",
-    "welcome": "مرحباً",
-    "profile_views": "مشاهدات البروفايل",
-    "qr_scans": "مسح QR",
-    "contacts": "جهات الاتصال",
-    "completion": "اكتمال البروفايل"
+    "greeting": "أهلاً، {name}",
+    "viewProfile": "عرض البروفايل",
+    "upgradePro": "ترقية لـ Pro",
+    "profileUrl": "نسخ الرابط",
+    "profile": "الملف الشخصي",
+    "links": "الروابط",
+    "services": "الخدمات",
+    "qrContent": "رمز QR",
+    "scanner": "ماسح البطاقات",
+    "analytics": "الإحصائيات",
+    "plan": {
+      "free": "الخطة المجانية",
+      "proIndividual": "برو فردي",
+      "proCompany": "برو شركة"
+    },
+    "planDescription": {
+      "free": "ترقّ للحصول على مميزات متقدمة",
+      "pro": "أنت تستمتع بجميع المميزات"
+    },
+    "accountType": {
+      "personal": "شخصي",
+      "company": "شركة"
+    },
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "links": "الروابط",
+      "services": "الخدمات",
+      "qr": "رمز QR",
+      "scanner": "ماسح البطاقات",
+      "analytics": "الإحصائيات"
+    }
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -105,8 +81,4 @@
     "username": "اسم المستخدم",
     "full_name": "الاسم الكامل",
     "forgot_password": "نسيت كلمة المرور؟",
-    "or": "أو",
-    "already_have_account": "لديك حساب؟",
-    "no_account": "ليس لديك حساب؟"
-  }
-}
+    "or": "أو"
