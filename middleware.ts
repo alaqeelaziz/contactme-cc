@@ -4,6 +4,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 const SUPPORTED_LOCALES = ['ar', 'en', 'zh', 'fr', 'es']
 const ADMIN_EMAIL = 'aalaqeel03@gmail.com'
 
+// مسارات محجوزة — لا تُعامَل كـ username
+const RESERVED_PATHS = ['dashboard', 'login', 'admin', 'api', 'qr', '_next', 'favicon.ico']
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
 
@@ -59,6 +62,18 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = `/${currentLocale}`
+    return NextResponse.redirect(url)
+  }
+
+  // /username (بدون locale) → redirect to /{locale}/username
+  // مثال: /alaqeelaziz → /ar/alaqeelaziz
+  if (
+    !isLocaleInPath &&
+    pathSegments.length === 1 &&
+    !RESERVED_PATHS.includes(firstSegment)
+  ) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${currentLocale}/${firstSegment.trim()}`
     return NextResponse.redirect(url)
   }
 
