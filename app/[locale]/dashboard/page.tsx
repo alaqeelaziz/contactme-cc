@@ -21,12 +21,17 @@ export default async function DashboardPage({ params }: Props) {
 
   if (!profile) {
     // أنشئ profile تلقائياً إذا ما موجود
+    const cleanUsername = (user.email?.split('@')[0] ?? 'user')
+      .replace(/[^a-zA-Z0-9_]/g, '')
+      .trim()
+      + '_' + Math.floor(Math.random() * 9000 + 1000)
+
     const { data: newProfile } = await supabase
       .from('profiles')
       .insert({
         id: user.id,
-        username: user.email?.split('@')[0] + '_' + Math.floor(Math.random() * 9000 + 1000),
-        full_name: user.email?.split('@')[0],
+        username: cleanUsername,
+        full_name: user.email?.split('@')[0]?.trim(),
         plan: 'free',
         is_pro: false,
         account_type: 'personal',
@@ -36,13 +41,15 @@ export default async function DashboardPage({ params }: Props) {
 
     if (!newProfile) redirect(`/${locale}/login`)
 
+    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://contactme.cc'}/${locale}/${newProfile.username}`
+
     return (
       <DashboardClient
         initialProfile={newProfile}
         initialLinks={[]}
         initialServices={[]}
         viewCount={0}
-        profileUrl={`https://contactme.cc/${newProfile.username}`}
+        profileUrl={profileUrl}
       />
     )
   }
@@ -53,7 +60,7 @@ export default async function DashboardPage({ params }: Props) {
     supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('profile_id', profile.id),
   ])
 
-  const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://contactme.cc'}/${profile.username}`
+  const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://contactme.cc'}/${locale}/${profile.username.trim()}`
 
   return (
     <DashboardClient
