@@ -1,4 +1,3 @@
-$content = @'
 import Navbar from '@/components/Navbar'
 import PricingSection from '@/components/PricingSection'
 import QRGenerator from '@/components/QRGenerator'
@@ -47,9 +46,3 @@ export default async function HomePage({ params }: Props) {
     </div>
   )
 }
-'@
-Set-Content -Path "app\[locale]\page.tsx" -Value $content -Encoding UTF8
-
-git add .
-git commit -m "fix: remove PrintDesigner from home page (missing required props)"
-git push
