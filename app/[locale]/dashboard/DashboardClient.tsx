@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar'
 import ProfileEditor from '@/components/dashboard/ProfileEditor'
 import LinksManager from '@/components/dashboard/LinksManager'
 import BusinessCardScanner from '@/components/dashboard/BusinessCardScanner'
+import BusinessCardTab from '@/components/dashboard/BusinessCardTab'
 import QRDownloader from '@/components/dashboard/QRDownloader'
 import AnalyticsCard from '@/components/dashboard/AnalyticsCard'
 import ServicesManager from '@/components/dashboard/ServicesManager'
@@ -20,15 +21,16 @@ interface Props {
   profileUrl: string
 }
 
-type Tab = 'profile' | 'links' | 'services' | 'qr' | 'scanner' | 'analytics'
+type Tab = 'profile' | 'links' | 'services' | 'card' | 'qr' | 'scanner' | 'analytics'
 
 const ALL_TABS: { id: Tab; labelKey: string; icon: string; proOnly?: boolean; companyOnly?: boolean }[] = [
-  { id: 'profile', labelKey: 'tabs.profile', icon: '👤' },
-  { id: 'links', labelKey: 'tabs.links', icon: '🔗' },
-  { id: 'services', labelKey: 'tabs.services', icon: '💼', companyOnly: true },
-  { id: 'qr', labelKey: 'tabs.qr', icon: '📱' },
-  { id: 'scanner', labelKey: 'tabs.scanner', icon: '📷', proOnly: true },
-  { id: 'analytics', labelKey: 'tabs.analytics', icon: '📊', proOnly: true },
+  { id: 'profile',   labelKey: 'tabs.profile',   icon: '👤' },
+  { id: 'links',     labelKey: 'tabs.links',      icon: '🔗' },
+  { id: 'services',  labelKey: 'tabs.services',   icon: '💼', companyOnly: true },
+  { id: 'card',      labelKey: 'tabs.card',       icon: '🎴' },
+  { id: 'qr',        labelKey: 'tabs.qr',         icon: '📱' },
+  { id: 'scanner',   labelKey: 'tabs.scanner',    icon: '📷', proOnly: true },
+  { id: 'analytics', labelKey: 'tabs.analytics',  icon: '📊', proOnly: true },
 ]
 
 export default function DashboardClient({
@@ -144,6 +146,12 @@ export default function DashboardClient({
             <div>
               <h2 className="text-lg font-bold mb-5">{t('services')}</h2>
               <ServicesManager userId={profile.user_id} initialServices={initialServices} />
+            </div>
+          )}
+          {activeTab === 'card' && (
+            <div>
+              <h2 className="text-lg font-bold mb-5">🎴 {t('tabs.card') ?? 'بطاقة الأعمال'}</h2>
+              <BusinessCardTab profile={profile} profileUrl={profileUrl} />
             </div>
           )}
           {activeTab === 'qr' && (
