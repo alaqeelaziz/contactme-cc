@@ -1,9 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@supabase/supabase-js'
 import BusinessCardPreview from '@/components/BusinessCardPreview'
 import type { Profile } from '@/lib/types'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 interface Props {
   profile: Profile
@@ -13,10 +18,10 @@ interface Props {
 type Theme = 'dark' | 'light' | 'gradient' | 'minimal'
 
 const THEMES: { id: Theme; label: string; emoji: string }[] = [
-  { id: 'dark',     label: 'داكن',     emoji: '🌙' },
-  { id: 'light',    label: 'فاتح',     emoji: '☀️' },
-  { id: 'gradient', label: 'متدرج',    emoji: '🌈' },
-  { id: 'minimal',  label: 'بسيط',     emoji: '⬜' },
+  { id: 'dark',     label: 'داكن',  emoji: '🌙' },
+  { id: 'light',    label: 'فاتح',  emoji: '☀️' },
+  { id: 'gradient', label: 'متدرج', emoji: '🌈' },
+  { id: 'minimal',  label: 'بسيط',  emoji: '⬜' },
 ]
 
 const COLOR_PAIRS: { primary: string; secondary: string; name: string }[] = [
@@ -31,8 +36,6 @@ const COLOR_PAIRS: { primary: string; secondary: string; name: string }[] = [
 ]
 
 export default function BusinessCardTab({ profile, profileUrl }: Props) {
-  const supabase = createClientComponentClient()
-
   const [theme, setTheme] = useState<Theme>(
     (profile as any).card_theme ?? 'dark'
   )
@@ -131,7 +134,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
         {saving ? 'جاري الحفظ...' : saved ? '✓ تم الحفظ' : 'حفظ التصميم'}
       </button>
 
-      {/* Download hint */}
       <p className="text-center text-[11px] text-[var(--text-muted)]">
         💡 للتحميل كصورة، اذهب إلى تبويب QR أو اضغط على البطاقة لرؤية الخلف
       </p>
