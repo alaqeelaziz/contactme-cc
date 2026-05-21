@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import BusinessCardPreview from '@/components/BusinessCardPreview'
+import BusinessCardDesigner from '@/components/BusinessCardDesigner'
 import QRGenerator from '@/components/QRGenerator'
-import PricingSection from '@/components/PricingSection'
 
 interface Props {
   messages: any
@@ -21,16 +21,8 @@ const content = {
     ctaSecondary: 'شاهد المثال',
     badges: ['بدون بطاقة ائتمان', 'متعدد اللغات'],
     qrTitle: 'جرّب مولّد رمز QR الآن',
-    qrDesc: '',
-    printBadge: 'جديد',
-    printTitle: 'قم بتصميم بطاقة الأعمال مجاناً',
-    printSubtitle: 'صمّم داخل المنصة وحمّل ملف جاهز للطباعة',
-    steps: [
-      { icon: '🎨', title: 'صمّم', desc: 'اختر الألوان والخط من لوحة التحكم' },
-      { icon: '⬇️', title: 'حمّل PDF', desc: 'جاهز للطباعة بدقة عالية' },
-      { icon: '🖨️', title: 'اطبع', desc: 'في أي مطبعة أو من البيت' },
-    ],
-    printCta: 'صمّم بطاقتك الآن ←',
+    cardTitle: 'صمّم بطاقة أعمالك مجاناً',
+    cardSubtitle: 'بدون تسجيل — عبّي بياناتك وحمّل البطاقة فوراً',
     footer: `© ${new Date().getFullYear()} contactme.cc — جميع الحقوق محفوظة`,
   },
   en: {
@@ -42,16 +34,8 @@ const content = {
     ctaSecondary: 'See the demo',
     badges: ['No credit card', 'Multilingual'],
     qrTitle: 'Try the QR Generator Now',
-    qrDesc: '',
-    printBadge: 'New',
-    printTitle: 'Design Your Business Card for Free',
-    printSubtitle: 'Design inside the platform and download a print-ready file',
-    steps: [
-      { icon: '🎨', title: 'Design', desc: 'Choose colors and fonts from the dashboard' },
-      { icon: '⬇️', title: 'Download PDF', desc: 'High quality, print-ready' },
-      { icon: '🖨️', title: 'Print', desc: 'At any print shop or at home' },
-    ],
-    printCta: 'Design your card now →',
+    cardTitle: 'Design Your Business Card for Free',
+    cardSubtitle: 'No sign-up needed — fill in your details and download instantly',
     footer: `© ${new Date().getFullYear()} contactme.cc — All rights reserved`,
   },
   zh: {
@@ -63,16 +47,8 @@ const content = {
     ctaSecondary: '查看示例',
     badges: ['无需信用卡', '多语言支持'],
     qrTitle: '立即试用二维码生成器',
-    qrDesc: '',
-    printBadge: '新功能',
-    printTitle: '免费设计您的名片',
-    printSubtitle: '在平台内设计并下载可打印文件',
-    steps: [
-      { icon: '🎨', title: '设计', desc: '从控制面板选择颜色和字体' },
-      { icon: '⬇️', title: '下载PDF', desc: '高质量，可直接打印' },
-      { icon: '🖨️', title: '打印', desc: '在任何打印店或在家打印' },
-    ],
-    printCta: '立即设计您的名片 →',
+    cardTitle: '免费设计您的名片',
+    cardSubtitle: '无需注册 — 填写信息后立即下载',
     footer: `© ${new Date().getFullYear()} contactme.cc — 保留所有权利`,
   },
   fr: {
@@ -84,16 +60,8 @@ const content = {
     ctaSecondary: 'Voir la démo',
     badges: ['Sans carte de crédit', 'Multilingue'],
     qrTitle: 'Essayez le générateur QR maintenant',
-    qrDesc: '',
-    printBadge: 'Nouveau',
-    printTitle: 'Concevez votre carte de visite gratuitement',
-    printSubtitle: 'Concevez sur la plateforme et téléchargez un fichier prêt à imprimer',
-    steps: [
-      { icon: '🎨', title: 'Concevoir', desc: 'Choisissez couleurs et polices' },
-      { icon: '⬇️', title: 'Télécharger PDF', desc: 'Haute qualité, prêt à imprimer' },
-      { icon: '🖨️', title: 'Imprimer', desc: 'Dans toute imprimerie ou à la maison' },
-    ],
-    printCta: 'Concevez votre carte maintenant →',
+    cardTitle: 'Concevez votre carte de visite gratuitement',
+    cardSubtitle: 'Sans inscription — remplissez vos infos et téléchargez instantanément',
     footer: `© ${new Date().getFullYear()} contactme.cc — Tous droits réservés`,
   },
   es: {
@@ -105,16 +73,8 @@ const content = {
     ctaSecondary: 'Ver el demo',
     badges: ['Sin tarjeta de crédito', 'Multiidioma'],
     qrTitle: 'Prueba el generador de QR ahora',
-    qrDesc: '',
-    printBadge: 'Nuevo',
-    printTitle: 'Diseña tu tarjeta de visita gratis',
-    printSubtitle: 'Diseña en la plataforma y descarga un archivo listo para imprimir',
-    steps: [
-      { icon: '🎨', title: 'Diseñar', desc: 'Elige colores y fuentes' },
-      { icon: '⬇️', title: 'Descargar PDF', desc: 'Alta calidad, listo para imprimir' },
-      { icon: '🖨️', title: 'Imprimir', desc: 'En cualquier imprenta o en casa' },
-    ],
-    printCta: 'Diseña tu tarjeta ahora →',
+    cardTitle: 'Diseña tu tarjeta de visita gratis',
+    cardSubtitle: 'Sin registro — rellena tus datos y descarga al instante',
     footer: `© ${new Date().getFullYear()} contactme.cc — Todos los derechos reservados`,
   },
 }
@@ -128,6 +88,7 @@ export default function HomePageClient({ messages, locale }: Props) {
     <div className="min-h-screen">
       <Navbar />
 
+      {/* Hero */}
       <section className="relative overflow-hidden py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -176,6 +137,7 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
+      {/* QR Generator */}
       <section id="demo" className="py-20 px-4" style={{ background: 'var(--surface)' }}>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-10">{c.qrTitle}</h2>
@@ -185,35 +147,22 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      <section className="py-20 px-4" style={{ background: 'linear-gradient(135deg, #6B7EFF10, #A855F710)' }}>
-        <div className="max-w-5xl mx-auto text-center">
-          <span className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-6"
-            style={{ background: 'white', border: '1px solid var(--border)' }}>
-            🖨️ {c.printBadge}
-          </span>
-          <h2 className="text-4xl font-bold mb-4">{c.printTitle}</h2>
-          <p className="text-[var(--text-muted)] mb-10">{c.printSubtitle}</p>
-
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
-            {c.steps.map(s => (
-              <div key={s.title} className="rounded-2xl p-6 bg-white/80" style={{ border: '1px solid var(--border)' }}>
-                <div className="text-3xl mb-3">{s.icon}</div>
-                <h3 className="font-bold mb-2">{s.title}</h3>
-                <p className="text-sm text-[var(--text-muted)]">{s.desc}</p>
-              </div>
-            ))}
+      {/* Business Card Designer */}
+      <section className="py-20 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
+              style={{ background: 'linear-gradient(135deg, #6366F120, #A855F720)', border: '1px solid #6366F140', color: '#6366F1' }}>
+              🎴 مجاني بالكامل
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-3">{c.cardTitle}</h2>
+            <p className="text-[var(--text-muted)]">{c.cardSubtitle}</p>
           </div>
-
-          <Link href="/login?tab=register" className="btn-primary px-10 py-4 inline-block">
-            {c.printCta}
-          </Link>
+          <BusinessCardDesigner />
         </div>
       </section>
 
-      <div style={{ background: 'var(--surface)' }}>
-        <PricingSection locale={locale} />
-      </div>
-
+      {/* Footer */}
       <footer className="border-t py-8 px-4 text-center text-sm text-[var(--text-muted)]"
         style={{ borderColor: 'var(--border)' }}>
         {c.footer}
