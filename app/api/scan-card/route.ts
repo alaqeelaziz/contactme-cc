@@ -6,22 +6,10 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(req: NextRequest) {
   try {
-    // Auth check
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
-    }
-
-    // Pro check
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_pro')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!profile?.is_pro) {
-      return NextResponse.json({ error: 'هذه الميزة متاحة لمشتركي خطة برو فقط' }, { status: 403 })
     }
 
     const { image } = await req.json()
@@ -29,7 +17,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'الصورة مطلوبة' }, { status: 400 })
     }
 
-    // Extract base64 data and media type
     const matches = image.match(/^data:([^;]+);base64,(.+)$/)
     if (!matches) {
       return NextResponse.json({ error: 'صيغة الصورة غير صالحة' }, { status: 400 })
@@ -42,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
       messages: [
         {
@@ -87,6 +74,12 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'فشل تحليل نتيجة الذكاء الاصطناعي' }, { status: 500 })
     }
+
+    // احفظ في جدول الكروت الممسوحة
+    await supabase.from('contacts').insert({
+      user_id: user.id,
+      ...extracted,
+    }).select()
 
     return NextResponse.json(extracted)
   } catch (err: any) {
