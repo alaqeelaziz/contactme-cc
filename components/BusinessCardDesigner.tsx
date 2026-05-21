@@ -57,7 +57,7 @@ export default function BusinessCardDesigner() {
     setFlipped(false)
     setTimeout(async () => {
       try {
-        const dataUrl = await domtoimage.toPng(node, { scale: 3 })
+        const dataUrl = await domtoimage.toPng(node as HTMLElement)
         const a = document.createElement('a')
         a.download = 'business-card.png'
         a.href = dataUrl
