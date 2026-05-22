@@ -75,12 +75,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'فشل تحليل نتيجة الذكاء الاصطناعي' }, { status: 500 })
     }
 
-    // احفظ في جدول الكروت الممسوحة
-    await supabase.from('contacts').insert({
-      user_id: user.id,
-      ...extracted,
-    }).select()
-
+    
     return NextResponse.json(extracted)
   } catch (err: any) {
     console.error('scan-card error:', err)
