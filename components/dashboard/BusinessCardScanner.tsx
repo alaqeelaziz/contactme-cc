@@ -25,7 +25,16 @@ export default function BusinessCardScanner({ isPro }: Props) {
   const [showExportMenu, setShowExportMenu] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { loadContacts() }, [])
+  useEffect(() => {
+    // تحميل أولي
+    loadContacts()
+    // إعادة التحميل عند تغيير حالة الـ auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) loadContacts()
+      else setContacts([])
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   async function loadContacts() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -141,7 +150,6 @@ export default function BusinessCardScanner({ isPro }: Props) {
       const ws = XLSX.utils.json_to_sheet(getRows())
       const wb = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(wb, ws, 'Contacts')
-      // تعديل عرض الأعمدة
       ws['!cols'] = [20, 25, 25, 18, 30, 25, 15].map(w => ({ wch: w }))
       XLSX.writeFile(wb, 'contacts.xlsx')
       toast.success('تم تصدير Excel')
@@ -290,10 +298,8 @@ export default function BusinessCardScanner({ isPro }: Props) {
               الكروت المحفوظة ({contacts.length})
             </button>
 
-            {/* Export Menu */}
             <div className="relative">
-              <button
-                onClick={() => setShowExportMenu(v => !v)}
+              <button onClick={() => setShowExportMenu(v => !v)}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-all"
                 style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
