@@ -24,11 +24,10 @@ export default function BusinessCardScanner({ isPro }: Props) {
   const [showContacts, setShowContacts] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    // تحميل أولي
     loadContacts()
-    // إعادة التحميل عند تغيير حالة الـ auth
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) loadContacts()
       else setContacts([])
@@ -100,6 +99,7 @@ export default function BusinessCardScanner({ isPro }: Props) {
       setResult(null)
       setImage(null)
       if (fileRef.current) fileRef.current.value = ''
+      if (cameraRef.current) cameraRef.current.value = ''
     } catch (err: any) {
       toast.error(err.message || 'فشل الحفظ')
     } finally {
@@ -116,6 +116,7 @@ export default function BusinessCardScanner({ isPro }: Props) {
     setImage(null)
     setResult(null)
     if (fileRef.current) fileRef.current.value = ''
+    if (cameraRef.current) cameraRef.current.value = ''
   }
 
   function getRows() {
@@ -190,23 +191,59 @@ export default function BusinessCardScanner({ isPro }: Props) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-[var(--text-muted)]">
-        ارفع صورة بطاقة أعمال وسيقوم الذكاء الاصطناعي باستخراج بياناتها تلقائياً
+        ارفع صورة بطاقة أعمال أو صوّرها مباشرة وسيقوم الذكاء الاصطناعي باستخراج بياناتها تلقائياً
       </p>
 
-      {/* Upload */}
+      {/* Upload / Camera */}
       {!image ? (
-        <div onClick={() => fileRef.current?.click()}
-          className="border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors hover:border-[#6366F1]"
-          style={{ borderColor: 'var(--border)' }}>
-          <div className="text-5xl mb-3">📇</div>
-          <p className="font-medium mb-1">اضغط لرفع صورة البطاقة</p>
-          <p className="text-xs text-[var(--text-muted)]">PNG, JPG — حد أقصى 5MB</p>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        <div className="space-y-3">
+          {/* Camera Button */}
+          <button
+            onClick={() => cameraRef.current?.click()}
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-xl font-semibold text-sm transition-all text-white hover:opacity-90 active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            📸 التقط صورة بالكاميرا
+          </button>
+
+          {/* File Upload */}
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors hover:border-[#6366F1]"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            <div className="text-4xl mb-2">📁</div>
+            <p className="font-medium text-sm mb-1">أو ارفع صورة من الجهاز</p>
+            <p className="text-xs text-[var(--text-muted)]">PNG, JPG — حد أقصى 5MB</p>
+          </div>
+
+          {/* Hidden Inputs */}
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
         </div>
       ) : (
         <div className="space-y-4">
           <div className="relative rounded-xl overflow-hidden border" style={{ borderColor: 'var(--border)' }}>
-            <img src={image} alt="بطاقة الأعمال" className="w-full object-contain max-h-48" />
+            <img src={image} alt="بطاقة الأعمال" className="w-full object-contain max-h-56" />
             <button onClick={reset}
               className="absolute top-2 left-2 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70">
               ✕
@@ -297,7 +334,6 @@ export default function BusinessCardScanner({ isPro }: Props) {
               <span>{showContacts ? '▲' : '▼'}</span>
               الكروت المحفوظة ({contacts.length})
             </button>
-
             <div className="relative">
               <button onClick={() => setShowExportMenu(v => !v)}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-all"
@@ -308,7 +344,6 @@ export default function BusinessCardScanner({ isPro }: Props) {
                 </svg>
                 تصدير ▾
               </button>
-
               {showExportMenu && (
                 <div className="absolute left-0 top-full mt-1 rounded-xl shadow-xl overflow-hidden z-10 min-w-[150px]"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
@@ -326,7 +361,6 @@ export default function BusinessCardScanner({ isPro }: Props) {
               )}
             </div>
           </div>
-
           {showContacts && (
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {contacts.map(c => (
