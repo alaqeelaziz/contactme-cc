@@ -18,6 +18,7 @@ export default function BusinessCardScanner({ isPro }: Props) {
   const supabase = createClient()
   const [image, setImage] = useState<string | null>(null)
   const [scanning, setScanning] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [result, setResult] = useState<ScannedCard | null>(null)
   const [contacts, setContacts] = useState<SavedContact[]>([])
   const [showContacts, setShowContacts] = useState(false)
@@ -61,11 +62,37 @@ export default function BusinessCardScanner({ isPro }: Props) {
       if (data.error) throw new Error(data.error)
       setResult(data)
       toast.success('تم استخراج البيانات بنجاح')
-      loadContacts()
     } catch (err: any) {
       toast.error(err.message || 'حدث خطأ أثناء المسح')
     } finally {
       setScanning(false)
+    }
+  }
+
+  async function handleSave() {
+    if (!result) return
+    setSaving(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('غير مصرح')
+      const { error } = await supabase.from('contacts').insert({
+        user_id: user.id,
+        name: result.name || null,
+        title: result.title || null,
+        company: result.company || null,
+        phone: result.phone || null,
+        email: result.email || null,
+        website: result.website || null,
+      })
+      if (error) throw error
+      toast.success('تم حفظ جهة الاتصال ✓')
+      loadContacts()
+      setResult(null)
+      reset()
+    } catch (err: any) {
+      toast.error(err.message || 'فشل الحفظ')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -148,43 +175,65 @@ export default function BusinessCardScanner({ isPro }: Props) {
 
       {/* Result */}
       {result && (
-        <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#6366F140' }}>
-          <div className="px-4 py-3 flex items-center gap-2"
-            style={{ background: 'linear-gradient(135deg, #6366F115, #A855F715)' }}>
-            <span>✨</span>
-            <p className="font-semibold text-sm">البيانات المستخرجة</p>
-          </div>
-          <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
-            {[
-              { key: 'name',    label: 'الاسم',            icon: '👤' },
-              { key: 'title',   label: 'المسمى الوظيفي',   icon: '💼' },
-              { key: 'company', label: 'الشركة',            icon: '🏢' },
-              { key: 'phone',   label: 'الهاتف',            icon: '📞' },
-              { key: 'email',   label: 'البريد',            icon: '✉️' },
-              { key: 'website', label: 'الموقع',            icon: '🌐' },
-            ].map(({ key, label, icon }) => {
-              const val = result[key as keyof ScannedCard]
-              if (!val) return null
-              return (
-                <div key={key} className="px-4 py-3 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span>{icon}</span>
-                    <div className="min-w-0">
-                      <p className="text-xs text-[var(--text-muted)]">{label}</p>
-                      <p className="font-medium text-sm truncate">{val}</p>
+        <div className="space-y-3">
+          <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#6366F140' }}>
+            <div className="px-4 py-3 flex items-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #6366F115, #A855F715)' }}>
+              <span>✨</span>
+              <p className="font-semibold text-sm">البيانات المستخرجة</p>
+            </div>
+            <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
+              {[
+                { key: 'name',    label: 'الاسم',          icon: '👤' },
+                { key: 'title',   label: 'المسمى الوظيفي', icon: '💼' },
+                { key: 'company', label: 'الشركة',          icon: '🏢' },
+                { key: 'phone',   label: 'الهاتف',          icon: '📞' },
+                { key: 'email',   label: 'البريد',          icon: '✉️' },
+                { key: 'website', label: 'الموقع',          icon: '🌐' },
+              ].map(({ key, label, icon }) => {
+                const val = result[key as keyof ScannedCard]
+                if (!val) return null
+                return (
+                  <div key={key} className="px-4 py-3 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span>{icon}</span>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-muted)]">{label}</p>
+                        <p className="font-medium text-sm truncate">{val}</p>
+                      </div>
                     </div>
+                    <button onClick={() => copyField(val, label)}
+                      className="p-1.5 rounded-lg hover:bg-[var(--surface)] text-[var(--text-muted)] hover:text-[#6366F1] transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
                   </div>
-                  <button onClick={() => copyField(val, label)}
-                    className="p-1.5 rounded-lg hover:bg-[var(--surface)] text-[var(--text-muted)] hover:text-[#6366F1] transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </button>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
+
+          {/* Save Button */}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}
+          >
+            {saving ? (
+              <>
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                جاري الحفظ...
+              </>
+            ) : (
+              <>💾 حفظ جهة الاتصال</>
+            )}
+          </button>
         </div>
       )}
 
@@ -195,10 +244,10 @@ export default function BusinessCardScanner({ isPro }: Props) {
             <button onClick={() => setShowContacts(v => !v)}
               className="text-sm font-semibold flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text)]">
               <span>{showContacts ? '▲' : '▼'}</span>
-              الكروت الممسوحة ({contacts.length})
+              الكروت المحفوظة ({contacts.length})
             </button>
             <button onClick={exportCSV}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white transition-all hover:opacity-90"
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-all"
               style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
