@@ -22,6 +22,7 @@ export default function BusinessCardScanner({ isPro }: Props) {
   const [result, setResult] = useState<ScannedCard | null>(null)
   const [contacts, setContacts] = useState<SavedContact[]>([])
   const [showContacts, setShowContacts] = useState(false)
+  const [showExportMenu, setShowExportMenu] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { loadContacts() }, [])
@@ -88,7 +89,8 @@ export default function BusinessCardScanner({ isPro }: Props) {
       toast.success('تم حفظ جهة الاتصال ✓')
       loadContacts()
       setResult(null)
-      reset()
+      setImage(null)
+      if (fileRef.current) fileRef.current.value = ''
     } catch (err: any) {
       toast.error(err.message || 'فشل الحفظ')
     } finally {
@@ -107,23 +109,74 @@ export default function BusinessCardScanner({ isPro }: Props) {
     if (fileRef.current) fileRef.current.value = ''
   }
 
+  function getRows() {
+    return contacts.map(c => ({
+      'الاسم': c.name || '',
+      'المسمى الوظيفي': c.title || '',
+      'الشركة': c.company || '',
+      'الهاتف': c.phone || '',
+      'البريد الإلكتروني': c.email || '',
+      'الموقع': c.website || '',
+      'التاريخ': new Date(c.created_at).toLocaleDateString('ar-SA'),
+    }))
+  }
+
   function exportCSV() {
     if (!contacts.length) return
-    const headers = ['الاسم', 'المسمى الوظيفي', 'الشركة', 'الهاتف', 'الإيميل', 'الموقع', 'التاريخ']
-    const rows = contacts.map(c => [
-      c.name || '', c.title || '', c.company || '',
-      c.phone || '', c.email || '', c.website || '',
-      new Date(c.created_at).toLocaleDateString('ar-SA')
-    ])
-    const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n')
+    const rows = getRows()
+    const headers = Object.keys(rows[0])
+    const csv = [headers, ...rows.map(r => Object.values(r))]
+      .map(r => r.map(v => `"${v}"`).join(','))
+      .join('\n')
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
+    downloadBlob(blob, 'contacts.csv')
+    toast.success('تم تصدير CSV')
+    setShowExportMenu(false)
+  }
+
+  async function exportExcel() {
+    if (!contacts.length) return
+    try {
+      const XLSX = await import('xlsx')
+      const ws = XLSX.utils.json_to_sheet(getRows())
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Contacts')
+      // تعديل عرض الأعمدة
+      ws['!cols'] = [20, 25, 25, 18, 30, 25, 15].map(w => ({ wch: w }))
+      XLSX.writeFile(wb, 'contacts.xlsx')
+      toast.success('تم تصدير Excel')
+    } catch {
+      toast.error('فشل تصدير Excel')
+    }
+    setShowExportMenu(false)
+  }
+
+  function exportVCF() {
+    if (!contacts.length) return
+    const vcf = contacts.map(c => {
+      const lines = ['BEGIN:VCARD', 'VERSION:3.0']
+      if (c.name) lines.push(`FN:${c.name}`)
+      if (c.title) lines.push(`TITLE:${c.title}`)
+      if (c.company) lines.push(`ORG:${c.company}`)
+      if (c.phone) lines.push(`TEL:${c.phone}`)
+      if (c.email) lines.push(`EMAIL:${c.email}`)
+      if (c.website) lines.push(`URL:${c.website}`)
+      lines.push('END:VCARD')
+      return lines.join('\n')
+    }).join('\n\n')
+    const blob = new Blob([vcf], { type: 'text/vcard;charset=utf-8' })
+    downloadBlob(blob, 'contacts.vcf')
+    toast.success('تم تصدير vCard')
+    setShowExportMenu(false)
+  }
+
+  function downloadBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'contacts.csv'
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
-    toast.success('تم تصدير القائمة')
   }
 
   return (
@@ -214,25 +267,15 @@ export default function BusinessCardScanner({ isPro }: Props) {
               })}
             </div>
           </div>
-
-          {/* Save Button */}
-          <button
-            onClick={handleSave}
-            disabled={saving}
+          <button onClick={handleSave} disabled={saving}
             className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2"
-            style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}
-          >
+            style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
             {saving ? (
-              <>
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                جاري الحفظ...
-              </>
-            ) : (
-              <>💾 حفظ جهة الاتصال</>
-            )}
+              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>جاري الحفظ...</>
+            ) : <>💾 حفظ جهة الاتصال</>}
           </button>
         </div>
       )}
@@ -246,15 +289,36 @@ export default function BusinessCardScanner({ isPro }: Props) {
               <span>{showContacts ? '▲' : '▼'}</span>
               الكروت المحفوظة ({contacts.length})
             </button>
-            <button onClick={exportCSV}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-all"
-              style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              تصدير CSV
-            </button>
+
+            {/* Export Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(v => !v)}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-all"
+                style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                تصدير ▾
+              </button>
+
+              {showExportMenu && (
+                <div className="absolute left-0 top-full mt-1 rounded-xl shadow-xl overflow-hidden z-10 min-w-[150px]"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                  {[
+                    { label: '📊 Excel (.xlsx)', action: exportExcel },
+                    { label: '📄 CSV (.csv)',    action: exportCSV },
+                    { label: '📱 vCard (.vcf)',  action: exportVCF },
+                  ].map(item => (
+                    <button key={item.label} onClick={item.action}
+                      className="w-full text-right px-4 py-2.5 text-sm hover:bg-[var(--bg)] transition-colors">
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {showContacts && (
