@@ -46,17 +46,35 @@ export default function BusinessCardScanner({ isPro }: Props) {
     if (data) setContacts(data)
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (!file.type.startsWith('image/')) { toast.error('يرجى اختيار صورة'); return }
-    if (file.size > 5 * 1024 * 1024) { toast.error('حجم الصورة يجب أن يكون أقل من 5MB'); return }
-    const reader = new FileReader()
-    reader.onload = (ev) => setImage(ev.target?.result as string)
-    reader.readAsDataURL(file)
-    setResult(null)
-  }
+  // ✅ بعد — مع ضغط الصورة
+function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0]
+  if (!file) return
+  if (!file.type.startsWith('image/')) { toast.error('يرجى اختيار صورة'); return }
 
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  const img = new Image()
+  const url = URL.createObjectURL(file)
+
+  img.onload = () => {
+    // أقصى حجم 1200px
+    const MAX = 1200
+    let w = img.width, h = img.height
+    if (w > MAX || h > MAX) {
+      if (w > h) { h = Math.round(h * MAX / w); w = MAX }
+      else { w = Math.round(w * MAX / h); h = MAX }
+    }
+    canvas.width = w
+    canvas.height = h
+    ctx.drawImage(img, 0, 0, w, h)
+    const compressed = canvas.toDataURL('image/jpeg', 0.8)
+    setImage(compressed)
+    setResult(null)
+    URL.revokeObjectURL(url)
+  }
+  img.src = url
+}
   async function handleScan() {
     if (!image) return
     setScanning(true)
