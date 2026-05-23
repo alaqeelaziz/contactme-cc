@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: 'contactme.cc — تواصل بسهولة، اعمل بذكاء',
   description: 'أنشئ بروفايلك الرقمي الاحترافي في دقائق',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://contactme.cc'),
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
