@@ -13,7 +13,7 @@ import ServicesManager from '@/components/dashboard/ServicesManager'
 import AdminPricing from '@/components/dashboard/AdminPricing'
 import type { Profile, Link as LinkType, Service } from '@/lib/types'
 
-const ADMIN_ID = '4c33904a-2041-48de-a53d-907f5b532a18'
+const ADMIN_ID = 'a6fb80bd-3407-4cc5-9ba0-6c80a9e46818'
 
 interface Props {
   initialProfile: Profile
