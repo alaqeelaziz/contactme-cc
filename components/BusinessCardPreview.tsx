@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 
 interface BusinessCardPreviewProps {
@@ -17,20 +17,28 @@ interface BusinessCardPreviewProps {
   flippable?: boolean
 }
 
-export default function BusinessCardPreview({
-  name = 'اسمك هنا',
-  jobTitle = 'المسمى الوظيفي',
-  bio = '',
-  phone = '+966 5X XXX XXXX',
-  email = 'email@example.com',
-  logoUrl = null,
-  qrValue = 'https://contactme.cc',
-  theme = 'dark',
-  primaryColor = '#4B9EFF',
-  secondaryColor = '#8B5CF6',
-  flippable = true,
-}: BusinessCardPreviewProps) {
+export interface BusinessCardPreviewHandle {
+  downloadPng: () => Promise<void>
+  downloadPdf: () => Promise<void>
+  print: () => void
+}
+
+const BusinessCardPreview = forwardRef<BusinessCardPreviewHandle, BusinessCardPreviewProps>(
+  function BusinessCardPreview({
+    name = 'اسمك هنا',
+    jobTitle = 'المسمى الوظيفي',
+    bio = '',
+    phone = '+966 5X XXX XXXX',
+    email = 'email@example.com',
+    logoUrl = null,
+    qrValue = 'https://contactme.cc',
+    theme = 'dark',
+    primaryColor = '#4B9EFF',
+    secondaryColor = '#8B5CF6',
+    flippable = true,
+  }, ref) {
   const [flipped, setFlipped] = useState(false)
+  const frontRef = useRef<HTMLDivElement>(null)
 
   const themes = {
     dark:     { bg: 'linear-gradient(135deg, #1A1A3E, #2d2d5e)', text: '#FFF', subtext: '#93C5FD', iconBg: 'rgba(255,255,255,0.12)', metaText: 'rgba(255,255,255,0.65)', border: 'none' },
@@ -41,15 +49,12 @@ export default function BusinessCardPreview({
 
   const t = themes[theme]
   const initial = name ? name.charAt(0) : 'أ'
-  const qrFg = (theme === 'light' || theme === 'minimal') ? primaryColor : '#FFFFFF'
 
-  const Front = (
+  const FrontContent = (
     <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl p-5 flex flex-col justify-between"
       style={{ background: t.bg, border: t.border }}>
-      {/* Top */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          {/* Logo or initial */}
           {logoUrl ? (
             <img src={logoUrl} alt="logo" className="w-11 h-11 rounded-xl object-contain"
               style={{ background: t.iconBg }} />
@@ -65,7 +70,6 @@ export default function BusinessCardPreview({
             {bio && <p className="text-[10px] mt-0.5 leading-tight max-w-[140px]" style={{ color: t.metaText }}>{bio}</p>}
           </div>
         </div>
-        {/* Logo mark */}
         <div className="rounded-xl p-2.5 flex-shrink-0" style={{ background: t.iconBg }}>
           <div className="w-8 h-8 grid grid-cols-3 gap-0.5">
             {Array.from({ length: 9 }).map((_, i) => (
@@ -78,7 +82,6 @@ export default function BusinessCardPreview({
 
       <div className="w-full h-px opacity-20" style={{ background: t.text }} />
 
-      {/* Bottom */}
       <div className="flex items-center gap-4 flex-wrap">
         {phone && (
           <div className="flex items-center gap-1.5">
@@ -101,7 +104,7 @@ export default function BusinessCardPreview({
     </div>
   )
 
-  const Back = (
+  const BackContent = (
     <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl flex flex-col items-center justify-center gap-4"
       style={{ background: t.bg, border: t.border }}>
       <div className="p-3 rounded-xl bg-white shadow">
@@ -111,27 +114,117 @@ export default function BusinessCardPreview({
     </div>
   )
 
-  if (!flippable) return (
-    <div className="relative w-full max-w-sm mx-auto select-none" style={{ aspectRatio: '1.75/1' }}>
-      {Front}
+  // expose methods to parent via ref
+  useImperativeHandle(ref, () => ({
+    async downloadPng() {
+      const node = frontRef.current
+      if (!node) return
+      const { default: domtoimage } = await import('dom-to-image')
+      const scale = 3
+      const dataUrl = await domtoimage.toPng(node, {
+        width: node.offsetWidth * scale,
+        height: node.offsetHeight * scale,
+        style: { transform: `scale(${scale})`, transformOrigin: 'top left' },
+      })
+      const a = document.createElement('a')
+      a.download = 'business-card.png'
+      a.href = dataUrl
+      a.click()
+    },
+
+    async downloadPdf() {
+      const node = frontRef.current
+      if (!node) return
+      const { default: domtoimage } = await import('dom-to-image')
+      const { jsPDF } = await import('jspdf')
+      const scale = 3
+      const dataUrl = await domtoimage.toPng(node, {
+        width: node.offsetWidth * scale,
+        height: node.offsetHeight * scale,
+        style: { transform: `scale(${scale})`, transformOrigin: 'top left' },
+      })
+      // بطاقة أعمال قياسية 85.6 x 54 mm
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] })
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 85.6, 54)
+      pdf.save('business-card.pdf')
+    },
+
+    print() {
+      const node = frontRef.current
+      if (!node) return
+      const html = node.outerHTML
+      const win = window.open('', '_blank', 'width=600,height=400')
+      if (!win) return
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #fff; }
+              @page { size: 85.6mm 54mm landscape; margin: 0; }
+              @media print {
+                body { width: 85.6mm; height: 54mm; }
+                .card-wrap { width: 85.6mm; height: 54mm; }
+              }
+              .card-wrap { width: 480px; aspect-ratio: 1.75/1; }
+              .card-wrap > div { width: 100%; height: 100%; border-radius: 16px; overflow: hidden; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+            </style>
+          </head>
+          <body>
+            <div class="card-wrap">${html}</div>
+            <script>window.onload = () => { window.print(); window.close(); }</script>
+          </body>
+        </html>
+      `)
+      win.document.close()
+    },
+  }))
+
+  const hiddenCard = (
+    <div
+      ref={frontRef}
+      style={{
+        position: 'fixed',
+        left: '-9999px',
+        top: '-9999px',
+        width: '480px',
+        height: `${480 / 1.75}px`,
+        pointerEvents: 'none',
+        zIndex: -1,
+      }}
+    >
+      {FrontContent}
     </div>
   )
 
-  return (
-    <div className="relative w-full max-w-sm mx-auto select-none" style={{ perspective: '1000px' }}>
-      <div
-        onClick={() => setFlipped(f => !f)}
-        className="w-full cursor-pointer transition-transform duration-500"
-        style={{ aspectRatio: '1.75/1', transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
-      >
-        {/* Front */}
-        <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>{Front}</div>
-        {/* Back */}
-        <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>{Back}</div>
+  if (!flippable) return (
+    <>
+      <div className="relative w-full max-w-sm mx-auto select-none" style={{ aspectRatio: '1.75/1' }}>
+        {FrontContent}
       </div>
-      <p className="text-center text-[10px] mt-2" style={{ color: 'var(--text-muted)' }}>
-        {flipped ? '← اضغط للعودة' : 'اضغط لرؤية الخلف →'}
-      </p>
-    </div>
+      {hiddenCard}
+    </>
   )
-}
+
+  return (
+    <>
+      <div className="relative w-full max-w-sm mx-auto select-none" style={{ perspective: '1000px' }}>
+        <div
+          onClick={() => setFlipped(f => !f)}
+          className="w-full cursor-pointer transition-transform duration-500"
+          style={{ aspectRatio: '1.75/1', transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+        >
+          <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>{FrontContent}</div>
+          <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>{BackContent}</div>
+        </div>
+        <p className="text-center text-[10px] mt-2" style={{ color: 'var(--text-muted)' }}>
+          {flipped ? '← اضغط للعودة' : 'اضغط لرؤية الخلف →'}
+        </p>
+      </div>
+      {hiddenCard}
+    </>
+  )
+})
+
+export default BusinessCardPreview
