@@ -1,19 +1,19 @@
-{
+﻿{
   "navbar": {
     "dashboard": "Tableau de bord",
     "login": "Connexion",
     "signup": "Commencer",
-    "logout": "Déconnexion",
+    "logout": "Dأ©connexion",
     "profile": "Profil",
     "language": "Langue"
   },
   "languageSwitcher": {
     "languages": {
-      "ar": "العربية",
+      "ar": "ط§ظ„ط¹ط±ط¨ظٹط©",
       "en": "English",
-      "zh": "中文",
-      "fr": "Français",
-      "es": "Español"
+      "zh": "ن¸­و–‡",
+      "fr": "Franأ§ais",
+      "es": "Espaأ±ol"
     }
   },
   "home": {
@@ -21,73 +21,73 @@
       "badge": "Plateforme digitale contactme",
       "title1": "Connectez facilement",
       "title2": "Travaillez plus intelligemment",
-      "description": "Créez votre profil digital professionnel en quelques minutes. Liens, coordonnées et QR code personnalisé — tout au même endroit.",
-      "ctaPrimary": "Créez votre profil",
-      "ctaSecondary": "Voir la démo"
+      "description": "Crأ©ez votre profil digital professionnel en quelques minutes. Liens, coordonnأ©es et QR code personnalisأ© â€” tout au mأھme endroit.",
+      "ctaPrimary": "Crأ©ez votre profil",
+      "ctaSecondary": "Voir la dأ©mo"
     },
     "benefit1": "Gratuit pour toujours",
     "benefit2": "Sans carte bancaire",
     "benefit3": "Support complet en arabe",
     "features": {
       "unlimitedLinks": {
-        "title": "Liens illimités",
+        "title": "Liens illimitأ©s",
         "description": "Regroupez tous vos liens importants sur une seule page partageable."
       },
       "smartQR": {
         "title": "QR intelligent",
-        "description": "Générez un code qui ouvre votre profil ou du texte instantanément."
+        "description": "Gأ©nأ©rez un code qui ouvre votre profil ou du texte instantanأ©ment."
       },
       "aiScanner": {
         "title": "Scanner de cartes AI",
-        "description": "Extraction rapide et précise des informations à partir d'une photo."
+        "description": "Extraction rapide et prأ©cise des informations أ  partir d'une photo."
       },
       "analytics": {
-        "title": "Analyses réelles",
+        "title": "Analyses rأ©elles",
         "description": "Suivez visites et interactions depuis un tableau clair."
       },
       "businessReady": {
-        "title": "Prêt pour les affaires",
-        "description": "Outil adapté aux freelances et entreprises avec un rendu pro."
+        "title": "Prأھt pour les affaires",
+        "description": "Outil adaptأ© aux freelances et entreprises avec un rendu pro."
       },
       "darkMode": {
         "title": "Mode sombre",
-        "description": "Une interface confortable à toute heure."
+        "description": "Une interface confortable أ  toute heure."
       }
     },
     "qrSection": {
-      "title": "Essayez le générateur de QR maintenant",
-      "description": "Saisissez un lien ou un e-mail et obtenez un QR instantané."
+      "title": "Essayez le gأ©nأ©rateur de QR maintenant",
+      "description": "Saisissez un lien ou un e-mail et obtenez un QR instantanأ©."
     },
     "printSection": {
-      "badge": "🖨️ Nouveau",
-      "titleArabic": "اطبع بزنس كارتك المجاني",
+      "badge": "ًں–¨ï¸ڈ Nouveau",
+      "titleArabic": "ط§ط·ط¨ط¹ ط¨ط²ظ†ط³ ظƒط§ط±طھظƒ ط§ظ„ظ…ط¬ط§ظ†ظٹ",
       "titleEnglish": "Print Your Business Card Free",
-      "subtitle": "Concevez dans la plateforme, téléchargez un PDF prêt à imprimer.",
+      "subtitle": "Concevez dans la plateforme, tأ©lأ©chargez un PDF prأھt أ  imprimer.",
       "step1": {
         "title": "Concevez",
         "description": "Choisissez les couleurs et la police depuis le tableau de bord."
       },
       "step2": {
-        "title": "Téléchargez le PDF",
-        "description": "Prêt à imprimer en haute résolution."
+        "title": "Tأ©lأ©chargez le PDF",
+        "description": "Prأھt أ  imprimer en haute rأ©solution."
       },
       "step3": {
         "title": "Imprimez",
-        "description": "Dans n'importe quelle imprimerie ou à la maison."
+        "description": "Dans n'importe quelle imprimerie ou أ  la maison."
       },
-      "cta": "Commencez votre carte ←"
+      "cta": "Commencez votre carte â†گ"
     },
     "whySection": {
       "title": "Pourquoi contactme ?"
     },
     "ctaSection": {
       "title": "Lancez votre parcours digital aujourd'hui",
-      "description": "Rejoignez des milliers de professionnels qui utilisent contactme pour renforcer leur présence en ligne.",
-      "button": "Créez votre profil"
+      "description": "Rejoignez des milliers de professionnels qui utilisent contactme pour renforcer leur prأ©sence en ligne.",
+      "button": "Crأ©ez votre profil"
     },
     "footer": {
       "adPlaceholder": "Annonce",
-      "copy": "Connectez facilement, travaillez plus intelligemment © {year}"
+      "copy": "Connectez facilement, travaillez plus intelligemment آ© {year}"
     }
   },
   "qrGenerator": {
@@ -96,10 +96,10 @@
       "text": "Texte"
     },
     "urlPlaceholder": "https://contactme.cc/username",
-    "textPlaceholder": "Écrivez votre texte ici...",
-    "hintText": "Idéal pour : coordonnées, adresse, description de service",
-    "generate": "Générer",
-    "download": "Télécharger PNG",
+    "textPlaceholder": "أ‰crivez votre texte ici...",
+    "hintText": "Idأ©al pour : coordonnأ©es, adresse, description de service",
+    "generate": "Gأ©nأ©rer",
+    "download": "Tأ©lأ©charger PNG",
     "invalidLink": "Veuillez entrer une URL ou un e-mail valide",
     "charCounter": "{count} / 500"
   },
@@ -107,14 +107,14 @@
     "title": "Tableau de bord",
     "greeting": "Bonjour, {name}",
     "viewProfile": "Voir le profil",
-    "upgradePro": "Passer à Pro",
+    "upgradePro": "Passer أ  Pro",
     "plan": {
       "free": "Plan gratuit",
       "proIndividual": "Pro individuel",
       "proCompany": "Pro entreprise"
     },
     "planDescription": {
-      "free": "Passez à Pro pour des fonctionnalités illimitées",
+      "free": "Passez أ  Pro pour des fonctionnalitأ©s illimitأ©es",
       "pro": "Vous profitez des avantages Pro complets"
     },
     "accountType": {
@@ -131,8 +131,8 @@
       "analytics": "Analytique"
     },
     "profile": "Modifier le profil",
-    "links": "Gérer les liens",
-    "services": "Gérer les services",
+    "links": "Gأ©rer les liens",
+    "services": "Gأ©rer les services",
     "qrContent": "Votre QR code",
     "scanner": "Scanner de cartes",
     "analytics": "Analyses du profil",
@@ -140,7 +140,7 @@
   },
   "login": {
     "titleLogin": "Content de vous revoir",
-    "titleRegister": "Créez votre compte",
+    "titleRegister": "Crأ©ez votre compte",
     "subtitleLogin": "Heureux de vous revoir",
     "subtitleRegister": "Connectez-vous facilement, travaillez plus intelligemment",
     "login": "Connexion",
@@ -154,58 +154,79 @@
     "personal": "Personnel",
     "company": "Entreprise",
     "submitLogin": "Connexion",
-    "submitRegister": "Créer un compte",
+    "submitRegister": "Crأ©er un compte",
     "emailPlaceholder": "example@email.com",
-    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
     "usernamePlaceholder": "username",
     "errors": {
       "missingFields": "Veuillez remplir tous les champs",
       "invalidCredentials": "E-mail ou mot de passe incorrect",
       "usernameRequired": "Le nom d'utilisateur est requis",
-      "usernameLength": "Le nom d'utilisateur doit comporter au moins 3 caractères",
-      "usernameChars": "Seuls les minuscules, chiffres et underscores sont autorisés",
-      "passwordLength": "Le mot de passe doit comporter au moins 8 caractères",
-      "emailTaken": "Cet e-mail est déjà utilisé"
+      "usernameLength": "Le nom d'utilisateur doit comporter au moins 3 caractأ¨res",
+      "usernameChars": "Seuls les minuscules, chiffres et underscores sont autorisأ©s",
+      "passwordLength": "Le mot de passe doit comporter au moins 8 caractأ¨res",
+      "emailTaken": "Cet e-mail est dأ©jأ  utilisأ©"
     }
   },
   "print": {
     "title": "Imprimez votre carte de visite gratuitement",
-    "subtitle": "Concevez dans la plateforme, téléchargez un PDF prêt à imprimer.",
+    "subtitle": "Concevez dans la plateforme, tأ©lأ©chargez un PDF prأھt أ  imprimer.",
     "step1": {
       "title": "Concevez",
       "description": "Choisissez couleurs et police depuis le tableau de bord."
     },
     "step2": {
-      "title": "Téléchargez le PDF",
-      "description": "Prêt à imprimer en haute résolution."
+      "title": "Tأ©lأ©chargez le PDF",
+      "description": "Prأھt أ  imprimer en haute rأ©solution."
     },
     "step3": {
       "title": "Imprimez",
-      "description": "Dans une imprimerie ou à la maison."
+      "description": "Dans une imprimerie ou أ  la maison."
     },
-    "downloadPdf": "Télécharger PDF",
-    "downloadPng": "Télécharger PNG",
+    "downloadPdf": "Tأ©lأ©charger PDF",
+    "downloadPng": "Tأ©lأ©charger PNG",
     "print": "Imprimer",
-    "note": "Concevez dans la plateforme et téléchargez un fichier prêt à imprimer"
+    "note": "Concevez dans la plateforme et tأ©lأ©chargez un fichier prأھt أ  imprimer"
   },
   "ProfileEditor": {
     "nameRequired": "Le nom est requis",
-    "saveSuccess": "Modifications enregistrées",
+    "saveSuccess": "Modifications enregistrأ©es",
     "saveError": "Une erreur s'est produite lors de l'enregistrement",
-    "avatarSizeError": "La taille de l'image doit être inférieure à 2 Mo",
-    "avatarTypeError": "Veuillez sélectionner une image valide",
-    "avatarSuccess": "Photo mise à jour",
-    "avatarError": "Échec du téléchargement de la photo",
-    "avatarHint": "PNG ou JPG — max 2 Mo",
+    "avatarSizeError": "La taille de l'image doit أھtre infأ©rieure أ  2 Mo",
+    "avatarTypeError": "Veuillez sأ©lectionner une image valide",
+    "avatarSuccess": "Photo mise أ  jour",
+    "avatarError": "أ‰chec du tأ©lأ©chargement de la photo",
+    "avatarHint": "PNG ou JPG â€” max 2 Mo",
     "fullName": "Nom complet",
     "companyName": "Nom de l'entreprise",
     "bio": "Biographie",
     "companyDesc": "Description de l'entreprise",
-    "bioPlaceholder": "Rédigez une courte biographie vous concernant...",
-    "companyDescPlaceholder": "Rédigez une brève description de votre entreprise et de vos services...",
-    "whatsapp": "Numéro WhatsApp",
+    "bioPlaceholder": "Rأ©digez une courte biographie vous concernant...",
+    "companyDescPlaceholder": "Rأ©digez une brأ¨ve description de votre entreprise et de vos services...",
+    "whatsapp": "Numأ©ro WhatsApp",
     "whatsappHint": "Exemple : 966512345678",
     "saving": "Enregistrement...",
     "save": "Enregistrer les modifications"
+  }
+,
+  "LinksManager": {
+    "linksLabel": "liens",
+    "addLink": "Ajouter un lien",
+    "upgradePrompt": "Passez à Pro pour en ajouter plus",
+    "empty": "Aucun lien pour l'instant. Ajoutez votre premier lien !",
+    "presets": { "whatsapp": "WhatsApp", "instagram": "Instagram", "twitter": "Twitter / X", "linkedin": "LinkedIn", "youtube": "YouTube", "website": "Mon site web" },
+    "form": { "newTitle": "Nouveau lien", "editTitle": "Modifier le lien", "nameLabel": "Nom du lien", "namePlaceholder": "Ex : Instagram", "urlLabel": "URL", "iconLabel": "Icône (emoji - optionnel)", "saving": "Enregistrement...", "update": "Mettre à jour", "add": "Ajouter", "cancel": "Annuler" },
+    "errors": { "missingFields": "Veuillez remplir le nom et le lien", "invalidUrl": "Le lien doit commencer par https://", "limitReached": "Le plan gratuit permet {max} liens seulement. Passez à Pro pour des liens illimités", "generic": "Une erreur s'est produite, veuillez réessayer", "deleteError": "Une erreur s'est produite lors de la suppression" },
+    "success": { "added": "Lien ajouté", "updated": "Lien mis à jour", "deleted": "Lien supprimé" },
+    "confirm": { "delete": "Êtes-vous sûr de vouloir supprimer ce lien ?" }
+  },
+  "ServicesManager": {
+    "servicesLabel": "service(s)",
+    "addService": "Ajouter un service",
+    "empty": "Aucun service pour l'instant. Ajoutez votre premier service !",
+    "form": { "newTitle": "Nouveau service", "editTitle": "Modifier le service", "nameLabel": "Nom du service", "namePlaceholder": "Ex : Création d'identité visuelle", "descLabel": "Description du service (optionnel)", "descPlaceholder": "Courte description du service...", "saving": "Enregistrement...", "update": "Mettre à jour", "add": "Ajouter", "cancel": "Annuler" },
+    "errors": { "nameRequired": "Le nom du service est requis", "generic": "Une erreur s'est produite, veuillez réessayer" },
+    "success": { "added": "Service ajouté", "updated": "Service mis à jour", "deleted": "Service supprimé" },
+    "confirm": { "delete": "Êtes-vous sûr de vouloir supprimer ce service ?" }
   }
 }

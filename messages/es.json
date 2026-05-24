@@ -1,49 +1,49 @@
-{
+﻿{
   "navbar": {
     "dashboard": "Panel",
-    "login": "Iniciar sesión",
+    "login": "Iniciar sesiأ³n",
     "signup": "Comenzar",
-    "logout": "Cerrar sesión",
+    "logout": "Cerrar sesiأ³n",
     "profile": "Perfil",
     "language": "Idioma"
   },
   "languageSwitcher": {
     "languages": {
-      "ar": "العربية",
+      "ar": "ط§ظ„ط¹ط±ط¨ظٹط©",
       "en": "English",
-      "zh": "中文",
-      "fr": "Français",
-      "es": "Español"
+      "zh": "ن¸­و–‡",
+      "fr": "Franأ§ais",
+      "es": "Espaأ±ol"
     }
   },
   "home": {
     "hero": {
       "badge": "Plataforma digital contactme",
-      "title1": "Conecta fácilmente",
-      "title2": "Trabaja más inteligentemente",
-      "description": "Crea tu perfil digital profesional en minutos. Enlaces, datos de contacto y un código QR personalizado: todo en un solo lugar.",
+      "title1": "Conecta fأ،cilmente",
+      "title2": "Trabaja mأ،s inteligentemente",
+      "description": "Crea tu perfil digital profesional en minutos. Enlaces, datos de contacto y un cأ³digo QR personalizado: todo en un solo lugar.",
       "ctaPrimary": "Crea tu perfil",
       "ctaSecondary": "Ver demo"
     },
     "benefit1": "Gratis para siempre",
-    "benefit2": "Sin tarjeta de crédito",
-    "benefit3": "Total soporte en árabe",
+    "benefit2": "Sin tarjeta de crأ©dito",
+    "benefit3": "Total soporte en أ،rabe",
     "features": {
       "unlimitedLinks": {
         "title": "Enlaces ilimitados",
-        "description": "Pon todos tus URLs importantes en una sola página compartible."
+        "description": "Pon todos tus URLs importantes en una sola pأ،gina compartible."
       },
       "smartQR": {
         "title": "QR inteligente",
-        "description": "Crea un código que abra tu perfil o texto al instante."
+        "description": "Crea un cأ³digo que abra tu perfil o texto al instante."
       },
       "aiScanner": {
         "title": "Escaneo AI de tarjetas",
-        "description": "Extrae datos del contacto desde una foto con rapidez y precisión."
+        "description": "Extrae datos del contacto desde una foto con rapidez y precisiأ³n."
       },
       "analytics": {
-        "title": "Analíticas reales",
-        "description": "Monitorea visitas e interacción con un panel claro."
+        "title": "Analأ­ticas reales",
+        "description": "Monitorea visitas e interacciأ³n con un panel claro."
       },
       "businessReady": {
         "title": "Listo para negocios",
@@ -51,43 +51,43 @@
       },
       "darkMode": {
         "title": "Modo oscuro",
-        "description": "Una experiencia cómoda a cualquier hora."
+        "description": "Una experiencia cأ³moda a cualquier hora."
       }
     },
     "qrSection": {
       "title": "Prueba el generador de QR ahora",
-      "description": "Ingresa cualquier enlace o correo y obtén un QR instantáneo."
+      "description": "Ingresa cualquier enlace o correo y obtأ©n un QR instantأ،neo."
     },
     "printSection": {
-      "badge": "🖨️ Nuevo",
-      "titleArabic": "اطبع بزنس كارتك المجاني",
+      "badge": "ًں–¨ï¸ڈ Nuevo",
+      "titleArabic": "ط§ط·ط¨ط¹ ط¨ط²ظ†ط³ ظƒط§ط±طھظƒ ط§ظ„ظ…ط¬ط§ظ†ظٹ",
       "titleEnglish": "Print Your Business Card Free",
-      "subtitle": "Diseña dentro de la plataforma, descarga un PDF listo para imprimir.",
+      "subtitle": "Diseأ±a dentro de la plataforma, descarga un PDF listo para imprimir.",
       "step1": {
-        "title": "Diseña",
-        "description": "Elige colores y tipografía desde el panel."
+        "title": "Diseأ±a",
+        "description": "Elige colores y tipografأ­a desde el panel."
       },
       "step2": {
         "title": "Descarga PDF",
-        "description": "Listo para imprimir en alta resolución."
+        "description": "Listo para imprimir en alta resoluciأ³n."
       },
       "step3": {
         "title": "Imprime",
         "description": "En cualquier imprenta o desde casa."
       },
-      "cta": "Comienza a diseñar tu tarjeta ←"
+      "cta": "Comienza a diseأ±ar tu tarjeta â†گ"
     },
     "whySection": {
-      "title": "¿Por qué contactme?"
+      "title": "آ؟Por quأ© contactme?"
     },
     "ctaSection": {
       "title": "Comienza tu viaje digital hoy",
-      "description": "Únete a miles de profesionales que usan contactme para mejorar su presencia digital.",
+      "description": "أڑnete a miles de profesionales que usan contactme para mejorar su presencia digital.",
       "button": "Crea tu perfil"
     },
     "footer": {
       "adPlaceholder": "Anuncio",
-      "copy": "Conecta fácilmente, trabaja más inteligentemente © {year}"
+      "copy": "Conecta fأ،cilmente, trabaja mأ،s inteligentemente آ© {year}"
     }
   },
   "qrGenerator": {
@@ -96,11 +96,11 @@
       "text": "Texto"
     },
     "urlPlaceholder": "https://contactme.cc/username",
-    "textPlaceholder": "Escribe tu texto aquí...",
-    "hintText": "Ideal para: datos de contacto, dirección, descripción de servicio",
+    "textPlaceholder": "Escribe tu texto aquأ­...",
+    "hintText": "Ideal para: datos de contacto, direcciأ³n, descripciأ³n de servicio",
     "generate": "Generar",
     "download": "Descargar PNG",
-    "invalidLink": "Por favor ingresa una URL o correo válido",
+    "invalidLink": "Por favor ingresa una URL o correo vأ،lido",
     "charCounter": "{count} / 500"
   },
   "dashboard": {
@@ -115,7 +115,7 @@
     },
     "planDescription": {
       "free": "Actualiza a Pro para funciones ilimitadas",
-      "pro": "Estás disfrutando de los beneficios completos de Pro"
+      "pro": "Estأ،s disfrutando de los beneficios completos de Pro"
     },
     "accountType": {
       "personal": "Personal",
@@ -127,26 +127,26 @@
       "services": "Servicios",
       "card": "Tarjeta de visita",
       "qr": "QR",
-      "scanner": "Escáner",
-      "analytics": "Analítica"
+      "scanner": "Escأ،ner",
+      "analytics": "Analأ­tica"
     },
     "profile": "Editar perfil",
     "links": "Gestionar enlaces",
     "services": "Gestionar servicios",
-    "qrContent": "Tu código QR",
-    "scanner": "Escáner de tarjetas",
-    "analytics": "Analítica del perfil",
+    "qrContent": "Tu cأ³digo QR",
+    "scanner": "Escأ،ner de tarjetas",
+    "analytics": "Analأ­tica del perfil",
     "profileUrl": "Copiar URL del perfil"
   },
   "login": {
     "titleLogin": "Bienvenido de nuevo",
     "titleRegister": "Crea tu cuenta",
     "subtitleLogin": "Encantado de verte otra vez",
-    "subtitleRegister": "Conecta fácilmente, trabaja más inteligentemente",
+    "subtitleRegister": "Conecta fأ،cilmente, trabaja mأ،s inteligentemente",
     "login": "Entrar",
     "register": "Registrarse",
-    "email": "Correo electrónico",
-    "password": "Contraseña",
+    "email": "Correo electrأ³nico",
+    "password": "Contraseأ±a",
     "fullName": "Nombre completo",
     "companyName": "Nombre de la empresa",
     "username": "Nombre de usuario",
@@ -156,28 +156,28 @@
     "submitLogin": "Entrar",
     "submitRegister": "Crear cuenta",
     "emailPlaceholder": "example@email.com",
-    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
     "usernamePlaceholder": "username",
     "errors": {
       "missingFields": "Por favor completa todos los campos",
-      "invalidCredentials": "Correo o contraseña incorrectos",
+      "invalidCredentials": "Correo o contraseأ±a incorrectos",
       "usernameRequired": "El nombre de usuario es obligatorio",
       "usernameLength": "El nombre de usuario debe tener al menos 3 caracteres",
-      "usernameChars": "Solo se permiten letras minúsculas, números y guiones bajos",
-      "passwordLength": "La contraseña debe tener al menos 8 caracteres",
-      "emailTaken": "Este correo ya está registrado"
+      "usernameChars": "Solo se permiten letras minأ؛sculas, nأ؛meros y guiones bajos",
+      "passwordLength": "La contraseأ±a debe tener al menos 8 caracteres",
+      "emailTaken": "Este correo ya estأ، registrado"
     }
   },
   "print": {
     "title": "Imprime tu tarjeta de visita gratis",
-    "subtitle": "Diseña dentro de la plataforma, descarga un PDF listo para imprimir.",
+    "subtitle": "Diseأ±a dentro de la plataforma, descarga un PDF listo para imprimir.",
     "step1": {
-      "title": "Diseña",
-      "description": "Elige colores y tipografía desde el panel."
+      "title": "Diseأ±a",
+      "description": "Elige colores y tipografأ­a desde el panel."
     },
     "step2": {
       "title": "Descarga PDF",
-      "description": "Listo para imprimir en alta resolución."
+      "description": "Listo para imprimir en alta resoluciأ³n."
     },
     "step3": {
       "title": "Imprime",
@@ -186,26 +186,47 @@
     "downloadPdf": "Descargar PDF",
     "downloadPng": "Descargar PNG",
     "print": "Imprimir",
-    "note": "Diseña dentro de la plataforma y descarga un archivo listo para imprimir"
+    "note": "Diseأ±a dentro de la plataforma y descarga un archivo listo para imprimir"
   },
   "ProfileEditor": {
     "nameRequired": "El nombre es obligatorio",
     "saveSuccess": "Cambios guardados",
-    "saveError": "Ocurrió un error al guardar",
-    "avatarSizeError": "El tamaño de la imagen debe ser menor a 2MB",
-    "avatarTypeError": "Por favor selecciona una imagen válida",
+    "saveError": "Ocurriأ³ un error al guardar",
+    "avatarSizeError": "El tamaأ±o de la imagen debe ser menor a 2MB",
+    "avatarTypeError": "Por favor selecciona una imagen vأ،lida",
     "avatarSuccess": "Foto actualizada",
     "avatarError": "Error al subir la foto",
-    "avatarHint": "PNG o JPG — máx. 2MB",
+    "avatarHint": "PNG o JPG â€” mأ،x. 2MB",
     "fullName": "Nombre completo",
     "companyName": "Nombre de la empresa",
-    "bio": "Biografía",
-    "companyDesc": "Descripción de la empresa",
-    "bioPlaceholder": "Escribe una breve descripción sobre ti...",
-    "companyDescPlaceholder": "Escribe una breve descripción de tu empresa y servicios...",
-    "whatsapp": "Número de WhatsApp",
+    "bio": "Biografأ­a",
+    "companyDesc": "Descripciأ³n de la empresa",
+    "bioPlaceholder": "Escribe una breve descripciأ³n sobre ti...",
+    "companyDescPlaceholder": "Escribe una breve descripciأ³n de tu empresa y servicios...",
+    "whatsapp": "Nأ؛mero de WhatsApp",
     "whatsappHint": "Ejemplo: 966512345678",
     "saving": "Guardando...",
     "save": "Guardar cambios"
+  }
+,
+  "LinksManager": {
+    "linksLabel": "enlaces",
+    "addLink": "Agregar enlace",
+    "upgradePrompt": "Actualiza a Pro para agregar más",
+    "empty": "Aún no hay enlaces. ¡Agrega tu primer enlace!",
+    "presets": { "whatsapp": "WhatsApp", "instagram": "Instagram", "twitter": "Twitter / X", "linkedin": "LinkedIn", "youtube": "YouTube", "website": "Mi sitio web" },
+    "form": { "newTitle": "Nuevo enlace", "editTitle": "Editar enlace", "nameLabel": "Nombre del enlace", "namePlaceholder": "Ej: Instagram", "urlLabel": "URL", "iconLabel": "Ícono (emoji - opcional)", "saving": "Guardando...", "update": "Actualizar", "add": "Agregar", "cancel": "Cancelar" },
+    "errors": { "missingFields": "Por favor completa el nombre y el enlace", "invalidUrl": "El enlace debe comenzar con https://", "limitReached": "El plan gratuito permite solo {max} enlaces. Actualiza a Pro para enlaces ilimitados", "generic": "Ocurrió un error, por favor intenta de nuevo", "deleteError": "Ocurrió un error al eliminar" },
+    "success": { "added": "Enlace agregado", "updated": "Enlace actualizado", "deleted": "Enlace eliminado" },
+    "confirm": { "delete": "¿Estás seguro de que quieres eliminar este enlace?" }
+  },
+  "ServicesManager": {
+    "servicesLabel": "servicio(s)",
+    "addService": "Agregar servicio",
+    "empty": "Aún no hay servicios. ¡Agrega tu primer servicio!",
+    "form": { "newTitle": "Nuevo servicio", "editTitle": "Editar servicio", "nameLabel": "Nombre del servicio", "namePlaceholder": "Ej: Diseño de identidad visual", "descLabel": "Descripción del servicio (opcional)", "descPlaceholder": "Breve descripción del servicio...", "saving": "Guardando...", "update": "Actualizar", "add": "Agregar", "cancel": "Cancelar" },
+    "errors": { "nameRequired": "El nombre del servicio es obligatorio", "generic": "Ocurrió un error, por favor intenta de nuevo" },
+    "success": { "added": "Servicio agregado", "updated": "Servicio actualizado", "deleted": "Servicio eliminado" },
+    "confirm": { "delete": "¿Estás seguro de que quieres eliminar este servicio?" }
   }
 }

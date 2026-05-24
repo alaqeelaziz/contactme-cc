@@ -1,4 +1,4 @@
-{
+﻿{
   "navbar": {
     "dashboard": "Dashboard",
     "login": "Login",
@@ -9,11 +9,11 @@
   },
   "languageSwitcher": {
     "languages": {
-      "ar": "العربية",
+      "ar": "ط§ظ„ط¹ط±ط¨ظٹط©",
       "en": "English",
-      "zh": "中文",
-      "fr": "Français",
-      "es": "Español"
+      "zh": "ن¸­و–‡",
+      "fr": "Franأ§ais",
+      "es": "Espaأ±ol"
     }
   },
   "home": {
@@ -21,7 +21,7 @@
       "badge": "contactme digital platform",
       "title1": "Connect effortlessly",
       "title2": "Work smarter",
-      "description": "Build your professional digital profile in minutes. Links, contact details, and a custom QR code — all in one place.",
+      "description": "Build your professional digital profile in minutes. Links, contact details, and a custom QR code â€” all in one place.",
       "ctaPrimary": "Create your profile",
       "ctaSecondary": "See the demo"
     },
@@ -59,8 +59,8 @@
       "description": "Enter any link or email and get an instant QR code."
     },
     "printSection": {
-      "badge": "🖨️ New",
-      "titleArabic": "اطبع بزنس كارتك المجاني",
+      "badge": "ًں–¨ï¸ڈ New",
+      "titleArabic": "ط§ط·ط¨ط¹ ط¨ط²ظ†ط³ ظƒط§ط±طھظƒ ط§ظ„ظ…ط¬ط§ظ†ظٹ",
       "titleEnglish": "Print Your Business Card Free",
       "subtitle": "Design inside the platform, download a print-ready PDF.",
       "step1": {
@@ -75,7 +75,7 @@
         "title": "Print",
         "description": "At a print shop or from home."
       },
-      "cta": "Start designing your card ←"
+      "cta": "Start designing your card â†گ"
     },
     "whySection": {
       "title": "Why contactme?"
@@ -87,7 +87,7 @@
     },
     "footer": {
       "adPlaceholder": "Ad",
-      "copy": "Connect effortlessly, work smarter © {year}"
+      "copy": "Connect effortlessly, work smarter آ© {year}"
     }
   },
   "qrGenerator": {
@@ -156,7 +156,7 @@
     "submitLogin": "Login",
     "submitRegister": "Create account",
     "emailPlaceholder": "example@email.com",
-    "passwordPlaceholder": "••••••••",
+    "passwordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
     "usernamePlaceholder": "username",
     "errors": {
       "missingFields": "Please fill in all fields",
@@ -196,7 +196,7 @@
     "avatarTypeError": "Please select a valid image",
     "avatarSuccess": "Photo updated",
     "avatarError": "Failed to upload photo",
-    "avatarHint": "PNG or JPG — max 2MB",
+    "avatarHint": "PNG or JPG â€” max 2MB",
     "fullName": "Full Name",
     "companyName": "Company Name",
     "bio": "Bio",
@@ -207,5 +207,26 @@
     "whatsappHint": "Example: 966512345678",
     "saving": "Saving...",
     "save": "Save Changes"
+  }
+,
+  "LinksManager": {
+    "linksLabel": "links",
+    "addLink": "Add link",
+    "upgradePrompt": "Upgrade to Pro to add more",
+    "empty": "No links yet. Add your first link!",
+    "presets": { "whatsapp": "WhatsApp", "instagram": "Instagram", "twitter": "Twitter / X", "linkedin": "LinkedIn", "youtube": "YouTube", "website": "My Website" },
+    "form": { "newTitle": "New link", "editTitle": "Edit link", "nameLabel": "Link name", "namePlaceholder": "e.g. Instagram", "urlLabel": "URL", "iconLabel": "Icon (emoji - optional)", "saving": "Saving...", "update": "Update", "add": "Add", "cancel": "Cancel" },
+    "errors": { "missingFields": "Please fill in the name and URL", "invalidUrl": "URL must start with https://", "limitReached": "Free plan allows {max} links only. Upgrade to Pro for unlimited links", "generic": "An error occurred, please try again", "deleteError": "An error occurred while deleting" },
+    "success": { "added": "Link added", "updated": "Link updated", "deleted": "Link deleted" },
+    "confirm": { "delete": "Are you sure you want to delete this link?" }
+  },
+  "ServicesManager": {
+    "servicesLabel": "services",
+    "addService": "Add service",
+    "empty": "No services yet. Add your first service!",
+    "form": { "newTitle": "New service", "editTitle": "Edit service", "nameLabel": "Service name", "namePlaceholder": "e.g. Brand identity design", "descLabel": "Service description (optional)", "descPlaceholder": "Brief description of the service...", "saving": "Saving...", "update": "Update", "add": "Add", "cancel": "Cancel" },
+    "errors": { "nameRequired": "Service name is required", "generic": "An error occurred, please try again" },
+    "success": { "added": "Service added", "updated": "Service updated", "deleted": "Service deleted" },
+    "confirm": { "delete": "Are you sure you want to delete this service?" }
   }
 }
