@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm audit *)",
+      "PowerShell(npm view *)"
+    ]
+  }
+}

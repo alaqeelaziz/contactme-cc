@@ -187,25 +187,5 @@
     "downloadPng": "Télécharger PNG",
     "print": "Imprimer",
     "note": "Concevez dans la plateforme et téléchargez un fichier prêt à imprimer"
-  },
-  "ProfileEditor": {
-    "nameRequired": "Le nom est requis",
-    "saveSuccess": "Modifications enregistrées",
-    "saveError": "Une erreur s'est produite lors de l'enregistrement",
-    "avatarSizeError": "La taille de l'image doit être inférieure à 2 Mo",
-    "avatarTypeError": "Veuillez sélectionner une image valide",
-    "avatarSuccess": "Photo mise à jour",
-    "avatarError": "Échec du téléchargement de la photo",
-    "avatarHint": "PNG ou JPG — max 2 Mo",
-    "fullName": "Nom complet",
-    "companyName": "Nom de l'entreprise",
-    "bio": "Biographie",
-    "companyDesc": "Description de l'entreprise",
-    "bioPlaceholder": "Rédigez une courte biographie vous concernant...",
-    "companyDescPlaceholder": "Rédigez une brève description de votre entreprise et de vos services...",
-    "whatsapp": "Numéro WhatsApp",
-    "whatsappHint": "Exemple : 966512345678",
-    "saving": "Enregistrement...",
-    "save": "Enregistrer les modifications"
   }
 }

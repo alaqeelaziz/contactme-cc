@@ -93,25 +93,5 @@
     "no_account": "ليس لديك حساب؟",
     "noAccount": "ما عندك حساب؟",
     "signup": "سجّل الآن"
-  },
-  "ProfileEditor": {
-    "nameRequired": "الاسم مطلوب",
-    "saveSuccess": "تم حفظ التغييرات",
-    "saveError": "حدث خطأ أثناء الحفظ",
-    "avatarSizeError": "حجم الصورة يجب أن يكون أقل من 2MB",
-    "avatarTypeError": "يرجى اختيار صورة صالحة",
-    "avatarSuccess": "تم تحديث الصورة",
-    "avatarError": "فشل رفع الصورة",
-    "avatarHint": "PNG أو JPG — حد أقصى 2MB",
-    "fullName": "الاسم الكامل",
-    "companyName": "اسم الشركة",
-    "bio": "نبذة شخصية",
-    "companyDesc": "وصف الشركة",
-    "bioPlaceholder": "اكتب نبذة مختصرة عن نفسك...",
-    "companyDescPlaceholder": "اكتب وصفاً مختصراً عن شركتك وخدماتها...",
-    "whatsapp": "رقم واتساب",
-    "whatsappHint": "مثال: 966512345678",
-    "saving": "جاري الحفظ...",
-    "save": "حفظ التغييرات"
   }
 }

@@ -1,9 +1,7 @@
-// components/ProfileEditor.tsx
 'use client'
 
 import { useState, useRef } from 'react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { getInitials } from '@/lib/utils'
 import toast from 'react-hot-toast'
@@ -15,8 +13,6 @@ interface Props {
 }
 
 export default function ProfileEditor({ profile, onUpdate }: Props) {
-  const t = useTranslations('ProfileEditor')
-
   const [data, setData] = useState({
     full_name: profile.full_name,
     bio: profile.bio || '',
@@ -29,7 +25,7 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    if (!data.full_name.trim()) { toast.error(t('nameRequired')); return }
+    if (!data.full_name.trim()) { toast.error('الاسم مطلوب'); return }
     setSaving(true)
     try {
       const { data: updated, error } = await supabase
@@ -45,9 +41,9 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
 
       if (error) throw error
       onUpdate(updated)
-      toast.success(t('saveSuccess'))
+      toast.success('تم حفظ التغييرات')
     } catch {
-      toast.error(t('saveError'))
+      toast.error('حدث خطأ أثناء الحفظ')
     } finally {
       setSaving(false)
     }
@@ -56,8 +52,8 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > 2 * 1024 * 1024) { toast.error(t('avatarSizeError')); return }
-    if (!file.type.startsWith('image/')) { toast.error(t('avatarTypeError')); return }
+    if (file.size > 2 * 1024 * 1024) { toast.error('حجم الصورة يجب أن يكون أقل من 2MB'); return }
+    if (!file.type.startsWith('image/')) { toast.error('يرجى اختيار صورة صالحة'); return }
 
     setUploading(true)
     try {
@@ -81,15 +77,13 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
 
       if (updateError) throw updateError
       onUpdate(updated)
-      toast.success(t('avatarSuccess'))
+      toast.success('تم تحديث الصورة')
     } catch {
-      toast.error(t('avatarError'))
+      toast.error('فشل رفع الصورة')
     } finally {
       setUploading(false)
     }
   }
-
-  const isPersonal = profile.account_type === 'personal'
 
   return (
     <form onSubmit={handleSave} className="space-y-5">
@@ -134,14 +128,14 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
         <div>
           <p className="font-semibold text-sm">{profile.full_name}</p>
           <p className="text-xs text-[var(--text-muted)]">contactme.cc/{profile.username}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">{t('avatarHint')}</p>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">PNG أو JPG — حد أقصى 2MB</p>
         </div>
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
       </div>
 
       <div>
         <label className="block text-sm font-medium mb-1.5">
-          {isPersonal ? t('fullName') : t('companyName')}
+          {profile.account_type === 'personal' ? 'الاسم الكامل' : 'اسم الشركة'}
         </label>
         <input
           type="text"
@@ -154,21 +148,23 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
 
       <div>
         <label className="block text-sm font-medium mb-1.5">
-          {isPersonal ? t('bio') : t('companyDesc')}
+          {profile.account_type === 'personal' ? 'نبذة شخصية' : 'وصف الشركة'}
         </label>
         <textarea
           value={data.bio}
           onChange={(e) => setData({ ...data, bio: e.target.value })}
           className="input-field resize-none"
           rows={3}
-          placeholder={isPersonal ? t('bioPlaceholder') : t('companyDescPlaceholder')}
+          placeholder={profile.account_type === 'personal'
+            ? 'اكتب نبذة مختصرة عن نفسك...'
+            : 'اكتب وصفاً مختصراً عن شركتك وخدماتها...'}
           maxLength={200}
         />
         <p className="text-xs text-[var(--text-muted)] mt-1 text-left">{data.bio.length}/200</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1.5">{t('whatsapp')}</label>
+        <label className="block text-sm font-medium mb-1.5">رقم واتساب</label>
         <input
           type="tel"
           value={data.whatsapp}
@@ -177,7 +173,7 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
           placeholder="966XXXXXXXXX"
           dir="ltr"
         />
-        <p className="text-xs text-[var(--text-muted)] mt-1">{t('whatsappHint')}</p>
+        <p className="text-xs text-[var(--text-muted)] mt-1">مثال: 966512345678</p>
       </div>
 
       <button type="submit" disabled={saving} className="btn-primary w-full disabled:opacity-60">
@@ -187,9 +183,9 @@ export default function ProfileEditor({ profile, onUpdate }: Props) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            {t('saving')}
+            جاري الحفظ...
           </span>
-        ) : t('save')}
+        ) : 'حفظ التغييرات'}
       </button>
     </form>
   )

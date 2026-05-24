@@ -187,25 +187,5 @@
     "downloadPng": "Download PNG",
     "print": "Print",
     "note": "Design inside the platform and download a print-ready file"
-  },
-  "ProfileEditor": {
-    "nameRequired": "Name is required",
-    "saveSuccess": "Changes saved",
-    "saveError": "An error occurred while saving",
-    "avatarSizeError": "Image size must be less than 2MB",
-    "avatarTypeError": "Please select a valid image",
-    "avatarSuccess": "Photo updated",
-    "avatarError": "Failed to upload photo",
-    "avatarHint": "PNG or JPG — max 2MB",
-    "fullName": "Full Name",
-    "companyName": "Company Name",
-    "bio": "Bio",
-    "companyDesc": "Company Description",
-    "bioPlaceholder": "Write a short bio about yourself...",
-    "companyDescPlaceholder": "Write a brief description of your company and services...",
-    "whatsapp": "WhatsApp Number",
-    "whatsappHint": "Example: 966512345678",
-    "saving": "Saving...",
-    "save": "Save Changes"
   }
 }

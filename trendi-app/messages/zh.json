@@ -187,25 +187,5 @@
     "downloadPng": "下载 PNG",
     "print": "打印",
     "note": "在平台中设计并下载可打印文件"
-  },
-  "ProfileEditor": {
-    "nameRequired": "姓名为必填项",
-    "saveSuccess": "更改已保存",
-    "saveError": "保存时发生错误",
-    "avatarSizeError": "图片大小必须小于 2MB",
-    "avatarTypeError": "请选择有效的图片",
-    "avatarSuccess": "头像已更新",
-    "avatarError": "上传头像失败",
-    "avatarHint": "PNG 或 JPG — 最大 2MB",
-    "fullName": "全名",
-    "companyName": "公司名称",
-    "bio": "个人简介",
-    "companyDesc": "公司简介",
-    "bioPlaceholder": "写一段关于自己的简短介绍...",
-    "companyDescPlaceholder": "写一段关于您公司及服务的简短描述...",
-    "whatsapp": "WhatsApp 号码",
-    "whatsappHint": "示例：966512345678",
-    "saving": "保存中...",
-    "save": "保存更改"
   }
 }
