@@ -207,5 +207,75 @@
     "whatsappHint": "示例：966512345678",
     "saving": "保存中...",
     "save": "保存更改"
+  },
+  "LinksManager": {
+    "linksLabel": "个链接",
+    "addLink": "添加链接",
+    "upgradePrompt": "升级到 Pro 以添加更多",
+    "empty": "暂无链接，添加您的第一个链接！",
+    "presets": {
+      "whatsapp": "WhatsApp",
+      "instagram": "Instagram",
+      "twitter": "Twitter / X",
+      "linkedin": "LinkedIn",
+      "youtube": "YouTube",
+      "website": "我的网站"
+    },
+    "form": {
+      "newTitle": "新链接",
+      "editTitle": "编辑链接",
+      "nameLabel": "链接名称",
+      "namePlaceholder": "例如：Instagram",
+      "urlLabel": "链接地址",
+      "iconLabel": "图标（表情符号 - 可选）",
+      "saving": "保存中...",
+      "update": "更新",
+      "add": "添加",
+      "cancel": "取消"
+    },
+    "errors": {
+      "missingFields": "请填写名称和链接",
+      "invalidUrl": "链接必须以 https:// 开头",
+      "limitReached": "免费计划仅允许 {max} 个链接，升级到 Pro 获取无限链接",
+      "generic": "发生错误，请重试",
+      "deleteError": "删除时发生错误"
+    },
+    "success": {
+      "added": "链接已添加",
+      "updated": "链接已更新",
+      "deleted": "链接已删除"
+    },
+    "confirm": {
+      "delete": "确定要删除此链接吗？"
+    }
+  },
+  "ServicesManager": {
+    "servicesLabel": "项服务",
+    "addService": "添加服务",
+    "empty": "暂无服务，添加您的第一项服务！",
+    "form": {
+      "newTitle": "新服务",
+      "editTitle": "编辑服务",
+      "nameLabel": "服务名称",
+      "namePlaceholder": "例如：品牌视觉设计",
+      "descLabel": "服务描述（可选）",
+      "descPlaceholder": "服务的简短描述...",
+      "saving": "保存中...",
+      "update": "更新",
+      "add": "添加",
+      "cancel": "取消"
+    },
+    "errors": {
+      "nameRequired": "服务名称为必填项",
+      "generic": "发生错误，请重试"
+    },
+    "success": {
+      "added": "服务已添加",
+      "updated": "服务已更新",
+      "deleted": "服务已删除"
+    },
+    "confirm": {
+      "delete": "确定要删除此服务吗？"
+    }
   }
 }
