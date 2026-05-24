@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import BusinessCardPreview, { type BusinessCardPreviewHandle } from '@/components/dashboard/BusinessCardPreview'
+import BusinessCardPreview, { type BusinessCardPreviewHandle } from '@/components/BusinessCardPreview'
 import type { Profile } from '@/lib/types'
 
 const supabase = createClient(
