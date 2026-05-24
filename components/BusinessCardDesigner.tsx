@@ -34,7 +34,8 @@ export default function BusinessCardDesigner() {
     email: '',
     website: '',
   })
-  const cardRef = useRef<HTMLDivElement>(null)
+  const cardRef  = useRef<HTMLDivElement>(null)
+  const frontRef = useRef<HTMLDivElement>(null) // ← hidden flat front for screenshot
 
   const colors = COLOR_PAIRS[colorIdx]
 
@@ -49,26 +50,8 @@ export default function BusinessCardDesigner() {
   const initial = form.name ? form.name.charAt(0).toUpperCase() : 'أ'
   const qrValue = form.website || form.email || 'https://contactme.cc'
 
-  async function handleDownload() {
-    const { default: domtoimage } = await import('dom-to-image')
-    const node = cardRef.current
-    if (!node) return
-    // تأكد الوجه الأمامي ظاهر
-    setFlipped(false)
-    setTimeout(async () => {
-      try {
-        const dataUrl = await domtoimage.toPng(node as HTMLElement)
-        const a = document.createElement('a')
-        a.download = 'business-card.png'
-        a.href = dataUrl
-        a.click()
-      } catch (e) {
-        console.error(e)
-      }
-    }, 300)
-  }
-
-  const Front = (
+  // ─── reusable front face JSX ───────────────────────────────────────────────
+  const FrontContent = (
     <div className="w-full h-full rounded-2xl overflow-hidden p-5 flex flex-col justify-between"
       style={{ background: t.bg, border: t.border, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
       <div className="flex items-start justify-between">
@@ -128,7 +111,7 @@ export default function BusinessCardDesigner() {
     </div>
   )
 
-  const Back = (
+  const BackContent = (
     <div className="w-full h-full rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-3"
       style={{ background: t.bg, border: t.border, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
       <div className="p-3 rounded-xl bg-white shadow-lg">
@@ -137,6 +120,22 @@ export default function BusinessCardDesigner() {
       <p className="text-[10px] px-6 text-center truncate w-full" style={{ color: t.metaText }}>{qrValue}</p>
     </div>
   )
+
+  async function handleDownload() {
+    const { default: domtoimage } = await import('dom-to-image')
+    // ← نصور من الـ div المخفي الثابت (بدون 3D)
+    const node = frontRef.current
+    if (!node) return
+    try {
+      const dataUrl = await domtoimage.toPng(node, { width: node.offsetWidth * 2, height: node.offsetHeight * 2, style: { transform: 'scale(2)', transformOrigin: 'top left' } })
+      const a = document.createElement('a')
+      a.download = 'business-card-front.png'
+      a.href = dataUrl
+      a.click()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -147,11 +146,11 @@ export default function BusinessCardDesigner() {
           <h3 className="text-lg font-bold">بياناتك</h3>
 
           {[
-            { key: 'name',     label: 'الاسم الكامل',    placeholder: 'محمد عبدالله' },
-            { key: 'jobTitle', label: 'المسمى الوظيفي',  placeholder: 'مدير تنفيذي' },
-            { key: 'phone',    label: 'رقم الجوال',      placeholder: '+966 5X XXX XXXX' },
+            { key: 'name',     label: 'الاسم الكامل',      placeholder: 'محمد عبدالله' },
+            { key: 'jobTitle', label: 'المسمى الوظيفي',    placeholder: 'مدير تنفيذي' },
+            { key: 'phone',    label: 'رقم الجوال',        placeholder: '+966 5X XXX XXXX' },
             { key: 'email',    label: 'البريد الإلكتروني', placeholder: 'you@example.com' },
-            { key: 'website',  label: 'الموقع / الرابط',  placeholder: 'https://contactme.cc/username' },
+            { key: 'website',  label: 'الموقع / الرابط',   placeholder: 'https://contactme.cc/username' },
           ].map(f => (
             <div key={f.key}>
               <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">{f.label}</label>
@@ -203,20 +202,28 @@ export default function BusinessCardDesigner() {
         <div className="space-y-4">
           <h3 className="text-lg font-bold">المعاينة</h3>
 
-          {/* Card */}
+          {/* Interactive flipping card */}
           <div style={{ perspective: '1000px' }}>
             <div ref={cardRef}
               onClick={() => setFlipped(f => !f)}
               className="w-full cursor-pointer transition-transform duration-500"
               style={{ aspectRatio: '1.75/1', transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
-              <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>{Front}</div>
-              <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>{Back}</div>
+              <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>{FrontContent}</div>
+              <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>{BackContent}</div>
             </div>
           </div>
 
           <p className="text-center text-[11px] text-[var(--text-muted)]">
             {flipped ? '← اضغط للوجه الأمامي' : 'اضغط لرؤية الخلف مع QR →'}
           </p>
+
+          {/* ← Hidden flat front used for screenshot only */}
+          <div
+            ref={frontRef}
+            style={{ position: 'absolute', left: '-9999px', top: '-9999px', width: '480px', aspectRatio: '1.75/1', pointerEvents: 'none' }}
+          >
+            {FrontContent}
+          </div>
 
           {/* Download */}
           <button
@@ -227,7 +234,7 @@ export default function BusinessCardDesigner() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            تحميل البطاقة PNG
+            تحميل الوجه الأمامي PNG
           </button>
 
           <p className="text-center text-[11px] text-[var(--text-muted)]">
