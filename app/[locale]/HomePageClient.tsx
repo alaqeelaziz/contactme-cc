@@ -5,7 +5,6 @@ import Navbar from '@/components/Navbar'
 import BusinessCardPreview from '@/components/BusinessCardPreview'
 import BusinessCardDesigner from '@/components/BusinessCardDesigner'
 import QRGenerator from '@/components/QRGenerator'
-import PricingSection from '@/components/PricingSection'
 
 interface Props {
   messages: any
@@ -132,7 +131,7 @@ const content = {
     features: [
       { icon: '🔗', title: 'Liens illimités', desc: 'Rassemblez tous vos liens importants sur une page partageable' },
       { icon: '📱', title: 'QR code intelligent', desc: 'Créez un QR personnalisé qui ouvre votre profil instantanément' },
-      { icon: '🤖', title: 'Scanner IA de cartes', desc: 'Extrayez les données de n\'importe quelle carte en une photo' },
+      { icon: '🤖', title: 'Scanner IA de cartes', desc: "Extrayez les données de n'importe quelle carte en une photo" },
       { icon: '🎴', title: 'Carte de visite digitale', desc: 'Concevez et téléchargez en image ou PDF prêt à imprimer' },
       { icon: '📊', title: 'Analyses de vues', desc: 'Suivez qui a visité votre profil et quand' },
       { icon: '🌍', title: 'Multilingue', desc: 'Interface complète en arabe, anglais, français, chinois et espagnol' },
@@ -191,7 +190,6 @@ export default function HomePageClient({ messages, locale }: Props) {
 
       {/* Hero */}
       <section className="relative overflow-hidden py-24 px-4">
-        {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl"
             style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }} />
@@ -313,11 +311,6 @@ export default function HomePageClient({ messages, locale }: Props) {
           <BusinessCardDesigner />
         </div>
       </section>
-
-      {/* Pricing */}
-      <div style={{ background: 'var(--surface)' }}>
-        <PricingSection locale={locale} />
-      </div>
 
       {/* CTA Section */}
       <section className="py-20 px-4">
