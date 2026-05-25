@@ -153,7 +153,7 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       ctx.closePath()
     }
 
-    const isDark = theme === 'dark' || theme === 'gradient'
+    const isDark    = theme === 'dark' || theme === 'gradient'
     const metaColor = isDark ? 'rgba(255,255,255,0.65)' : '#6B7280'
 
     ctx.save()
@@ -173,10 +173,8 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     ctx.restore()
 
     try {
-      // ✅ الإصلاح: استخدام named import بدل default
       const QRCodeLib = await import('qrcode')
-      const qrCanvas = document.createElement('canvas')
-      await QRCodeLib.toCanvas(qrCanvas, profileUrl || 'https://contactme.cc', {
+      const qrDataUrl = await QRCodeLib.toDataURL(profileUrl || 'https://contactme.cc', {
         width: 120,
         margin: 1,
         color: { dark: colors.primary, light: '#FFFFFF' },
@@ -188,7 +186,9 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       const bp = padding
       rr(qrX - bp, qrY - bp, qrSize + bp * 2, qrSize + bp * 2, 12)
       ctx.fill()
-      ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize)
+      const qrImg = new Image()
+      await new Promise<void>(res => { qrImg.onload = () => res(); qrImg.src = qrDataUrl })
+      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
       ctx.textAlign = 'center'; ctx.textBaseline = 'top'
       ctx.fillStyle = metaColor; ctx.font = '10px Arial'
       ctx.fillText(profileUrl, offsetX + W / 2, qrY + qrSize + padding * 2 + 8)
