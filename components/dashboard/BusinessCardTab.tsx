@@ -44,12 +44,7 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
 
   const colors = COLOR_PAIRS[colorIdx]
 
-  // ─── Draw single card face on provided ctx at offset X ───────────────────
-  async function drawFront(
-    ctx: CanvasRenderingContext2D,
-    W: number, H: number,
-    offsetX: number
-  ) {
+  async function drawFront(ctx: CanvasRenderingContext2D, W: number, H: number, offsetX: number) {
     function rr(x: number, y: number, w: number, h: number, r: number) {
       ctx.beginPath()
       ctx.moveTo(x + r, y)
@@ -71,7 +66,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     const email      = (profile as any).email ?? ''
     const initial    = name ? name.charAt(0) : 'أ'
 
-    // Background
     ctx.save()
     rr(offsetX, 0, W, H, 16)
     ctx.clip()
@@ -93,7 +87,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     }
     ctx.restore()
 
-    // Avatar (top-right)
     const AX = offsetX + W - 64, AY = 20, AS = 44
     const logoUrl = profile.avatar_url ?? null
     if (logoUrl) {
@@ -119,7 +112,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       ctx.fillText(initial, AX + AS / 2, AY + AS / 2)
     }
 
-    // Name + Job
     ctx.textAlign = 'right'; ctx.textBaseline = 'top'
     ctx.fillStyle = textColor
     ctx.font = 'bold 14px Arial'
@@ -128,7 +120,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     ctx.font = '12px Arial'
     ctx.fillText(jobTitle || '', AX - 12, AY + 23)
 
-    // Logo mark (top-left)
     const LMX = offsetX + 20, LMY = AY
     rr(LMX - 5, LMY - 5, 42, 42, 10)
     ctx.fillStyle = isDark ? 'rgba(255,255,255,0.12)' : `${colors.primary}22`
@@ -139,12 +130,10 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       ctx.fillStyle = dotColor; ctx.fill()
     }
 
-    // Divider
     const divY = H / 2 + 10
     ctx.save(); ctx.globalAlpha = 0.2; ctx.fillStyle = textColor
     ctx.fillRect(offsetX + 20, divY, W - 40, 1); ctx.restore()
 
-    // Contact info
     ctx.textAlign = 'left'; ctx.textBaseline = 'top'
     ctx.fillStyle = metaColor; ctx.font = '11px Arial'
     let cy = divY + 14
@@ -153,11 +142,7 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     ctx.fillText('🌐  ' + profileUrl, offsetX + 20, cy)
   }
 
-  async function drawBack(
-    ctx: CanvasRenderingContext2D,
-    W: number, H: number,
-    offsetX: number
-  ) {
+  async function drawBack(ctx: CanvasRenderingContext2D, W: number, H: number, offsetX: number) {
     function rr(x: number, y: number, w: number, h: number, r: number) {
       ctx.beginPath()
       ctx.moveTo(x + r, y)
@@ -171,7 +156,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     const isDark = theme === 'dark' || theme === 'gradient'
     const metaColor = isDark ? 'rgba(255,255,255,0.65)' : '#6B7280'
 
-    // Background
     ctx.save()
     rr(offsetX, 0, W, H, 16); ctx.clip()
     if (theme === 'gradient') {
@@ -188,16 +172,15 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     ctx.fillRect(offsetX, 0, W, H)
     ctx.restore()
 
-    // QR code using qrcode library
     try {
-      const QRCode = (await import('qrcode')).default
+      // ✅ الإصلاح: استخدام named import بدل default
+      const QRCodeLib = await import('qrcode')
       const qrCanvas = document.createElement('canvas')
-      await QRCode.toCanvas(qrCanvas, profileUrl || 'https://contactme.cc', {
+      await QRCodeLib.toCanvas(qrCanvas, profileUrl || 'https://contactme.cc', {
         width: 120,
         margin: 1,
         color: { dark: colors.primary, light: '#FFFFFF' },
       })
-      // White background box
       const qrSize = 120, padding = 12
       const qrX = offsetX + (W - qrSize - padding * 2) / 2
       const qrY = (H - qrSize - padding * 2) / 2 - 10
@@ -206,8 +189,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       rr(qrX - bp, qrY - bp, qrSize + bp * 2, qrSize + bp * 2, 12)
       ctx.fill()
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize)
-
-      // URL text
       ctx.textAlign = 'center'; ctx.textBaseline = 'top'
       ctx.fillStyle = metaColor; ctx.font = '10px Arial'
       ctx.fillText(profileUrl, offsetX + W / 2, qrY + qrSize + padding * 2 + 8)
@@ -216,21 +197,17 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     }
   }
 
-  // ─── Generate combined canvas (front + back side by side) ────────────────
   async function generateCanvas(): Promise<HTMLCanvasElement> {
     const PX = 3
     const CW = 480, CH = 274, GAP = 20
     const totalW = CW * 2 + GAP
-
     const canvas = document.createElement('canvas')
     canvas.width  = totalW * PX
     canvas.height = CH * PX
     const ctx = canvas.getContext('2d')!
     ctx.scale(PX, PX)
-
     await drawFront(ctx, CW, CH, 0)
     await drawBack(ctx, CW, CH, CW + GAP)
-
     return canvas
   }
 
@@ -254,7 +231,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     try {
       const canvas = await generateCanvas()
       const { jsPDF } = await import('jspdf')
-      // A6 landscape ≈ 148 x 105 mm — تناسب وجهي البطاقة جنباً لجنب
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [180, 54] })
       pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 180, 54)
       pdf.save('business-card.pdf')
@@ -272,8 +248,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
 
   return (
     <div className="space-y-6">
-
-      {/* Preview */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-3 font-medium">معاينة البطاقة</p>
         <BusinessCardPreview
@@ -291,7 +265,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
         />
       </div>
 
-      {/* Theme */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-2 font-medium">السمة</p>
         <div className="grid grid-cols-4 gap-2">
@@ -308,7 +281,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
         </div>
       </div>
 
-      {/* Colors */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-2 font-medium">الألوان</p>
         <div className="grid grid-cols-4 gap-2">
@@ -325,14 +297,12 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
         </div>
       </div>
 
-      {/* Save */}
       <button onClick={handleSave} disabled={saving}
         className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
         style={{ background: saved ? '#10B981' : 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
         {saving ? 'جاري الحفظ...' : saved ? '✓ تم الحفظ' : 'حفظ التصميم'}
       </button>
 
-      {/* Download buttons */}
       <div className="grid grid-cols-2 gap-2">
         <button onClick={handlePdf} disabled={!!loading}
           className="py-3 rounded-xl text-sm font-semibold border border-[var(--border)] hover:border-[#6366F1] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
@@ -345,17 +315,12 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
           {loading === 'png'
             ? <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
             : '🖼'} تحميل PNG
-      </button>
+        </button>
       </div>
 
-      {/* Tickets button */}
-      
-        href="https://ticketme.cc"
-        target="_blank"
-        rel="noopener noreferrer"
+      <a href="https://ticketme.cc" target="_blank" rel="noopener noreferrer"
         className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90 border-2"
-        style={{ borderColor: colors.primary, color: colors.primary }}
-      >
+        style={{ borderColor: colors.primary, color: colors.primary }}>
         🎟 التذاكر — ticketme.cc
       </a>
 
