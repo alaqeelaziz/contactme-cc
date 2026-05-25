@@ -109,7 +109,11 @@ const BusinessCardPreview = forwardRef<BusinessCardPreviewHandle, BusinessCardPr
         ctx.clip()
         const img = new Image()
         img.crossOrigin = 'anonymous'
-        await new Promise<void>(resolve => { img.onload = () => resolve(); img.onerror = () => resolve(); img.src = logoUrl })
+        await new Promise<void>(resolve => {
+          img.onload = () => resolve()
+          img.onerror = () => resolve()
+          img.src = logoUrl
+        })
         ctx.drawImage(img, AX, AY, AS, AS)
         ctx.restore()
       } else {
@@ -150,8 +154,8 @@ const BusinessCardPreview = forwardRef<BusinessCardPreviewHandle, BusinessCardPr
         ctx.fillText(bio.length > 45 ? bio.substring(0, 45) + '...' : bio, TX, AY + 40)
       }
 
-      // 6. Logo mark pattern (top right)
-      const LMX = W - 60, LMY = AY
+      // 6. Logo mark (top-right)
+      const LMX = W - 58, LMY = AY
       rr(LMX - 5, LMY - 5, 42, 42, 10)
       ctx.fillStyle = isDark ? 'rgba(255,255,255,0.12)' : `${primaryColor}22`
       ctx.fill()
@@ -175,14 +179,17 @@ const BusinessCardPreview = forwardRef<BusinessCardPreviewHandle, BusinessCardPr
       ctx.fillRect(20, divY, W - 40, 1)
       ctx.restore()
 
-      // 8. Phone & Email
+      // 8. Contact info
       let cy = divY + 14
       ctx.textAlign = 'left'
       ctx.textBaseline = 'top'
       ctx.fillStyle = metaColor
       ctx.font = '11px Arial, sans-serif'
-      if (phone) { ctx.fillText('📞  ' + phone, 20, cy); cy += 19 }
-      if (email) { ctx.fillText('✉  ' + email, 20, cy) }
+      if (phone)  { ctx.fillText('📞  ' + phone,  20, cy); cy += 19 }
+      if (email)  { ctx.fillText('✉  '  + email,  20, cy); cy += 19 }
+      if (qrValue && !phone && !email) {
+        ctx.fillText('🌐  ' + qrValue, 20, cy)
+      }
 
       return canvas
     }
@@ -230,14 +237,15 @@ const BusinessCardPreview = forwardRef<BusinessCardPreviewHandle, BusinessCardPr
       },
     }))
 
-    // ─── Card JSX ─────────────────────────────────────────────────────────────
+    // ─── Visible card JSX ─────────────────────────────────────────────────────
     const FrontFace = (
       <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl p-5 flex flex-col justify-between"
         style={{ background: t.bg, border: t.border }}>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt="logo" className="w-11 h-11 rounded-xl object-contain" style={{ background: t.iconBg }} />
+              <img src={logoUrl} alt="logo" className="w-11 h-11 rounded-xl object-contain"
+                style={{ background: t.iconBg }} />
             ) : (
               <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-black text-base flex-shrink-0"
                 style={{ background: theme === 'gradient' ? 'rgba(255,255,255,0.25)' : `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})` }}>
