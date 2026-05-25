@@ -44,7 +44,6 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
 
   const colors = COLOR_PAIRS[colorIdx]
 
-  // ─── Pure Canvas 2D — draws front face directly ──────────────────────────
   async function generateCanvas(): Promise<HTMLCanvasElement> {
     const PX = 3, W = 480, H = 274
     const canvas = document.createElement('canvas')
@@ -63,7 +62,7 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       ctx.closePath()
     }
 
-    const isDark = theme === 'dark' || theme === 'gradient'
+    const isDark     = theme === 'dark' || theme === 'gradient'
     const textColor  = isDark ? '#FFFFFF' : '#111827'
     const subtextClr = theme === 'dark' ? '#93C5FD' : theme === 'gradient' ? 'rgba(255,255,255,0.85)' : colors.primary
     const metaColor  = isDark ? 'rgba(255,255,255,0.65)' : '#6B7280'
@@ -96,8 +95,8 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     }
     ctx.restore()
 
-    // 2. Avatar
-    const AX = 20, AY = 20, AS = 44
+    // 2. Avatar (top-right for RTL)
+    const AX = W - 64, AY = 20, AS = 44
     const logoUrl = profile.avatar_url ?? null
     if (logoUrl) {
       ctx.save()
@@ -118,13 +117,15 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
       ctx.fill()
       ctx.fillStyle = '#FFF'
       ctx.font = 'bold 18px Arial'
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
       ctx.fillText(initial, AX + AS / 2, AY + AS / 2)
     }
 
-    // 3. Name + Job
-    const TX = AX + AS + 12
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top'
+    // 3. Name + Job title (RTL — text starts from right)
+    const TX = AX - 12  // يسار الأفاتار
+    ctx.textAlign = 'right'
+    ctx.textBaseline = 'top'
     ctx.fillStyle = textColor
     ctx.font = 'bold 14px Arial'
     ctx.fillText(name || 'اسمك هنا', TX, AY + 4)
@@ -132,28 +133,33 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
     ctx.font = '12px Arial'
     ctx.fillText(jobTitle || '', TX, AY + 23)
 
-    // 4. Logo mark
-    const LMX = W - 58, LMY = AY
+    // 4. Logo mark (top-left for RTL layout)
+    const LMX = 20, LMY = AY
     rr(LMX - 5, LMY - 5, 42, 42, 10)
     ctx.fillStyle = isDark ? 'rgba(255,255,255,0.12)' : `${colors.primary}22`
     ctx.fill()
     for (let i = 0; i < 9; i++) {
       if (![0,1,3,4,7,8].includes(i)) continue
-      const dx = LMX + (i % 3) * 10.5, dy = LMY + Math.floor(i / 3) * 10.5
+      const dx = LMX + (i % 3) * 10.5
+      const dy = LMY + Math.floor(i / 3) * 10.5
       rr(dx, dy, 9, 9, 2); ctx.fillStyle = dotColor; ctx.fill()
     }
 
     // 5. Divider
     const divY = H / 2 + 10
-    ctx.save(); ctx.globalAlpha = 0.2; ctx.fillStyle = textColor
-    ctx.fillRect(20, divY, W - 40, 1); ctx.restore()
+    ctx.save(); ctx.globalAlpha = 0.2
+    ctx.fillStyle = textColor
+    ctx.fillRect(20, divY, W - 40, 1)
+    ctx.restore()
 
-    // 6. Contact info
+    // 6. Contact info (LTR — numbers and emails are LTR)
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillStyle = metaColor
+    ctx.font = '11px Arial'
     let cy = divY + 14
-    ctx.textAlign = 'left'; ctx.textBaseline = 'top'
-    ctx.fillStyle = metaColor; ctx.font = '11px Arial'
-    if (phone) { ctx.fillText('📞  ' + phone, 20, cy); cy += 20 }
-    if (email) { ctx.fillText('✉  '  + email, 20, cy); cy += 20 }
+    if (phone)  { ctx.fillText('📞  ' + phone, 20, cy); cy += 20 }
+    if (email)  { ctx.fillText('✉  '  + email, 20, cy); cy += 20 }
     ctx.fillText('🌐  ' + profileUrl, 20, cy)
 
     return canvas
@@ -208,13 +214,16 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
 
   async function handleSave() {
     setSaving(true)
-    await supabase.from('profiles').update({ card_theme: theme, card_color_idx: colorIdx }).eq('id', profile.id)
+    await supabase.from('profiles')
+      .update({ card_theme: theme, card_color_idx: colorIdx })
+      .eq('id', profile.id)
     setSaving(false); setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
   return (
     <div className="space-y-6">
+
       {/* Preview */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-3 font-medium">معاينة البطاقة</p>
@@ -240,7 +249,9 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
           {THEMES.map(t => (
             <button key={t.id} onClick={() => setTheme(t.id)}
               className={`flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl text-xs font-medium transition-all border ${
-                theme === t.id ? 'border-[#6366F1] bg-[#6366F110] text-[#6366F1]' : 'border-[var(--border)] text-[var(--text-muted)]'
+                theme === t.id
+                  ? 'border-[#6366F1] bg-[#6366F110] text-[#6366F1]'
+                  : 'border-[var(--border)] text-[var(--text-muted)]'
               }`}>
               <span className="text-base">{t.emoji}</span>{t.label}
             </button>
@@ -287,6 +298,7 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
           {loading === 'print' ? '...' : '🖨 طباعة'}
         </button>
       </div>
+
     </div>
   )
 }
