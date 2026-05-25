@@ -1,5 +1,4 @@
 import Navbar from '@/components/Navbar'
-import PricingSection from '@/components/PricingSection'
 import QRGenerator from '@/components/QRGenerator'
 import PrintDesigner from '@/components/PrintDesigner'
 import Link from 'next/link'
@@ -158,10 +157,6 @@ export default async function HomePage({ params }: Props) {
           printLabel={c.print.printLabel}
           noteLabel={c.print.noteLabel}
         />
-      </section>
-
-      <section className="max-w-4xl mx-auto px-4 py-12">
-        <PricingSection />
       </section>
     </div>
   )

@@ -10,10 +10,7 @@ import BusinessCardScanner from '@/components/dashboard/BusinessCardScanner'
 import QRDownloader from '@/components/dashboard/QRDownloader'
 import AnalyticsCard from '@/components/dashboard/AnalyticsCard'
 import ServicesManager from '@/components/dashboard/ServicesManager'
-import AdminPricing from '@/components/dashboard/AdminPricing'
 import type { Profile, Link as LinkType, Service } from '@/lib/types'
-
-const ADMIN_ID = 'a6fb80bd-3407-4cc5-9ba0-6c80a9e46818'
 
 interface Props {
   initialProfile: Profile
@@ -23,7 +20,7 @@ interface Props {
   profileUrl: string
 }
 
-type Tab = 'profile' | 'links' | 'services' | 'qr' | 'scanner' | 'analytics' | 'admin'
+type Tab = 'profile' | 'links' | 'services' | 'qr' | 'scanner' | 'analytics'
 
 export default function DashboardClient({
   initialProfile,
@@ -36,8 +33,6 @@ export default function DashboardClient({
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const t = useTranslations('dashboard')
 
-  const isAdmin = profile.id === ADMIN_ID
-
   const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: 'profile',   label: t('tabs.profile'),   icon: '👤' },
     { id: 'links',     label: t('tabs.links'),      icon: '🔗' },
@@ -45,7 +40,6 @@ export default function DashboardClient({
     { id: 'qr',        label: t('tabs.qr'),         icon: '📱' },
     { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷' },
     { id: 'analytics', label: t('tabs.analytics'),  icon: '📊' },
-    ...(isAdmin ? [{ id: 'admin' as Tab, label: 'الإدارة', icon: '⚙️' }] : []),
   ]
 
   return (
@@ -74,13 +68,12 @@ export default function DashboardClient({
           ))}
         </div>
         <div className="card">
-          {activeTab === 'profile' && <div><h2 className="text-lg font-bold mb-5">{t('profile')}</h2><ProfileEditor profile={profile} onUpdate={setProfile} /></div>}
-          {activeTab === 'links' && <div><h2 className="text-lg font-bold mb-5">{t('links')}</h2><LinksManager userId={profile.user_id} isPro={true} initialLinks={initialLinks} /></div>}
-          {activeTab === 'services' && <div><h2 className="text-lg font-bold mb-5">{t('services')}</h2><ServicesManager userId={profile.user_id} initialServices={initialServices} /></div>}
-          {activeTab === 'qr' && <div><h2 className="text-lg font-bold mb-5">{t('qrContent')}</h2><QRDownloader profileUrl={profileUrl} isPro={true} username={profile.username} /></div>}
-          {activeTab === 'scanner' && <div><h2 className="text-lg font-bold mb-5">{t('scanner')}</h2><BusinessCardScanner isPro={true} /></div>}
+          {activeTab === 'profile'   && <div><h2 className="text-lg font-bold mb-5">{t('profile')}</h2><ProfileEditor profile={profile} onUpdate={setProfile} /></div>}
+          {activeTab === 'links'     && <div><h2 className="text-lg font-bold mb-5">{t('links')}</h2><LinksManager userId={profile.user_id} isPro={true} initialLinks={initialLinks} /></div>}
+          {activeTab === 'services'  && <div><h2 className="text-lg font-bold mb-5">{t('services')}</h2><ServicesManager userId={profile.user_id} initialServices={initialServices} /></div>}
+          {activeTab === 'qr'        && <div><h2 className="text-lg font-bold mb-5">{t('qrContent')}</h2><QRDownloader profileUrl={profileUrl} isPro={true} username={profile.username} /></div>}
+          {activeTab === 'scanner'   && <div><h2 className="text-lg font-bold mb-5">{t('scanner')}</h2><BusinessCardScanner isPro={true} /></div>}
           {activeTab === 'analytics' && <div><h2 className="text-lg font-bold mb-5">{t('analytics')}</h2><AnalyticsCard viewCount={viewCount} isPro={true} createdAt={profile.created_at} /></div>}
-          {activeTab === 'admin' && isAdmin && <div><h2 className="text-lg font-bold mb-5">⚙️ إدارة الأسعار والخصومات</h2><AdminPricing /></div>}
         </div>
         <div className="mt-4 p-4 rounded-xl flex items-center gap-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <svg className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

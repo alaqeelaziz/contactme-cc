@@ -20,7 +20,6 @@ export default async function DashboardPage({ params }: Props) {
     .single()
 
   if (!profile) {
-    // أنشئ profile تلقائياً إذا ما موجود
     const cleanUsername = (user.email?.split('@')[0] ?? 'user')
       .replace(/[^a-zA-Z0-9_]/g, '')
       .trim()
@@ -32,8 +31,6 @@ export default async function DashboardPage({ params }: Props) {
         id: user.id,
         username: cleanUsername,
         full_name: user.email?.split('@')[0]?.trim(),
-        plan: 'free',
-        is_pro: false,
         account_type: 'personal',
       })
       .select()
