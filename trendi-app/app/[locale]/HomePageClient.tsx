@@ -5,7 +5,6 @@ import Navbar from '@/components/Navbar'
 import BusinessCardPreview from '@/components/BusinessCardPreview'
 import BusinessCardDesigner from '@/components/BusinessCardDesigner'
 import QRGenerator from '@/components/QRGenerator'
-import PricingSection from '@/components/PricingSection'
 
 interface Props {
   messages: any
@@ -132,7 +131,7 @@ const content = {
     features: [
       { icon: '🔗', title: 'Liens illimités', desc: 'Rassemblez tous vos liens importants sur une page partageable' },
       { icon: '📱', title: 'QR code intelligent', desc: 'Créez un QR personnalisé qui ouvre votre profil instantanément' },
-      { icon: '🤖', title: 'Scanner IA de cartes', desc: 'Extrayez les données de n\'importe quelle carte en une photo' },
+      { icon: '🤖', title: 'Scanner IA de cartes', desc: "Extrayez les données de n'importe quelle carte en une photo" },
       { icon: '🎴', title: 'Carte de visite digitale', desc: 'Concevez et téléchargez en image ou PDF prêt à imprimer' },
       { icon: '📊', title: 'Analyses de vues', desc: 'Suivez qui a visité votre profil et quand' },
       { icon: '🌍', title: 'Multilingue', desc: 'Interface complète en arabe, anglais, français, chinois et espagnol' },
@@ -189,9 +188,7 @@ export default function HomePageClient({ messages, locale }: Props) {
     <div className="min-h-screen">
       <Navbar />
 
-      {/* Hero */}
       <section className="relative overflow-hidden py-24 px-4">
-        {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl"
             style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }} />
@@ -207,27 +204,18 @@ export default function HomePageClient({ messages, locale }: Props) {
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 {c.badge}
               </div>
-
               <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
                 <span className="gradient-text">{c.title1}</span>
                 <br />
                 {c.title2}
               </h1>
-
-              <p className="text-lg text-[var(--text-muted)] mb-8 leading-relaxed">
-                {c.description}
-              </p>
-
+              <p className="text-lg text-[var(--text-muted)] mb-8 leading-relaxed">{c.description}</p>
               <div className="flex flex-wrap gap-4 mb-8">
-                <Link href="/login?tab=register"
-                  className="btn-primary text-base px-8 py-4 hover:scale-105 transition-transform">
+                <Link href="/login?tab=register" className="btn-primary text-base px-8 py-4 hover:scale-105 transition-transform">
                   {c.ctaPrimary}
                 </Link>
-                <Link href="#demo" className="btn-secondary text-base px-8 py-4">
-                  {c.ctaSecondary}
-                </Link>
+                <Link href="#demo" className="btn-secondary text-base px-8 py-4">{c.ctaSecondary}</Link>
               </div>
-
               <div className="flex flex-wrap gap-5 text-sm text-[var(--text-muted)]">
                 {c.badges.map(b => (
                   <div key={b} className="flex items-center gap-2">
@@ -239,7 +227,6 @@ export default function HomePageClient({ messages, locale }: Props) {
                 ))}
               </div>
             </div>
-
             <div className="flex justify-center lg:justify-end">
               <BusinessCardPreview />
             </div>
@@ -247,7 +234,6 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      {/* Stats Bar */}
       <section className="py-12 px-4" style={{ background: 'linear-gradient(135deg, #6366F108, #A855F708)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto">
           <p className="text-center text-sm text-[var(--text-muted)] mb-8 font-medium">{c.statsTitle}</p>
@@ -262,7 +248,6 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      {/* Features */}
       <section className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
@@ -285,7 +270,6 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      {/* QR Generator */}
       <section id="demo" className="py-20 px-4" style={{ background: 'var(--surface)' }}>
         <div className="max-w-4xl mx-auto text-center">
           <span className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
@@ -299,7 +283,6 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      {/* Business Card Designer */}
       <section className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -314,16 +297,9 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      {/* Pricing */}
-      <div style={{ background: 'var(--surface)' }}>
-        <PricingSection locale={locale} />
-      </div>
-
-      {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="p-10 rounded-3xl"
-            style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
+          <div className="p-10 rounded-3xl" style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
             <h2 className="text-3xl font-extrabold text-white mb-3">{c.ctaTitle}</h2>
             <p className="text-white/80 mb-8">{c.ctaDesc}</p>
             <Link href="/login?tab=register"
@@ -335,7 +311,6 @@ export default function HomePageClient({ messages, locale }: Props) {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="border-t py-8 px-4 text-center text-sm text-[var(--text-muted)]"
         style={{ borderColor: 'var(--border)' }}>
         {c.footer}
