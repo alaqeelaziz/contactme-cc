@@ -10,12 +10,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-interface Props {
-  profile: Profile
-  profileUrl: string
-}
-
-type Theme = 'dark' | 'light' | 'gradient' | 'minimal'
+interface Props { profile: Profile; profileUrl: string }
+type Theme     = 'dark' | 'light' | 'gradient' | 'minimal'
 type CardShape = 'landscape' | 'square' | 'portrait'
 
 const THEMES: { id: Theme; label: string; emoji: string }[] = [
@@ -24,354 +20,263 @@ const THEMES: { id: Theme; label: string; emoji: string }[] = [
   { id: 'gradient', label: 'متدرج', emoji: '🌈' },
   { id: 'minimal',  label: 'بسيط',  emoji: '⬜' },
 ]
-
 const SHAPES: { id: CardShape; label: string; icon: string }[] = [
   { id: 'landscape', label: 'أفقي',  icon: '▬' },
   { id: 'square',    label: 'مربع',  icon: '■' },
   { id: 'portrait',  label: 'عمودي', icon: '▮' },
 ]
-
 const COLOR_PAIRS = [
-  { primary: '#4B9EFF', secondary: '#8B5CF6', name: 'اوشن' },
+  { primary: '#4B9EFF', secondary: '#8B5CF6', name: 'اوشن'  },
   { primary: '#6366F1', secondary: '#A855F7', name: 'برايم' },
   { primary: '#10B981', secondary: '#3B82F6', name: 'نعناع' },
   { primary: '#F59E0B', secondary: '#EF4444', name: 'غروب' },
-  { primary: '#EC4899', secondary: '#8B5CF6', name: 'زهري' },
-  { primary: '#14B8A6', secondary: '#6366F1', name: 'تيل' },
-  { primary: '#F97316', secondary: '#EAB308', name: 'ذهبي' },
+  { primary: '#EC4899', secondary: '#8B5CF6', name: 'زهري'  },
+  { primary: '#14B8A6', secondary: '#6366F1', name: 'تيل'   },
+  { primary: '#F97316', secondary: '#EAB308', name: 'ذهبي'  },
   { primary: '#1E293B', secondary: '#475569', name: 'رمادي' },
 ]
 
-// Card dimensions per shape (logical px)
-const DIMS: Record<CardShape, { W: number; H: number }> = {
+// Card px dimensions
+const DIMS = {
   landscape: { W: 480, H: 274 },
-  square:    { W: 340, H: 340 },
-  portrait:  { W: 274, H: 420 },
+  square:    { W: 320, H: 320 },
+  portrait:  { W: 260, H: 400 },
 }
 
-// PDF dimensions in mm per shape
-const PDF_DIMS: Record<CardShape, { w: number; h: number; orientation: 'landscape' | 'portrait' }> = {
-  landscape: { w: 85.6, h: 54,   orientation: 'landscape' },
-  square:    { w: 70,   h: 70,   orientation: 'portrait'  },
-  portrait:  { w: 54,   h: 85.6, orientation: 'portrait'  },
+/* ─── helpers ─────────────────────────────────────────────────────────────── */
+
+function rr(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  c.beginPath()
+  c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r)
+  c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath()
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.arcTo(x + w, y,     x + w, y + h, r)
-  ctx.arcTo(x + w, y + h, x,     y + h, r)
-  ctx.arcTo(x,     y + h, x,     y,     r)
-  ctx.arcTo(x,     y,     x + w, y,     r)
-  ctx.closePath()
+/** Always draw Latin text LTR — fixes Arabic-page direction inheritance */
+function drawLTR(c: CanvasRenderingContext2D, txt: string, x: number, y: number, align: CanvasTextAlign = 'left') {
+  c.save(); c.direction = 'ltr'; c.textAlign = align; c.fillText(txt, x, y); c.restore()
 }
 
-/** Load Cairo font directly via FontFace API — reliable in Canvas */
-let _fontFamilyCache: string | null = null
+let _arabicFontFamily = ''
 async function loadArabicFont(): Promise<string> {
-  if (_fontFamilyCache) return _fontFamilyCache
-  const FAMILY = 'CairoCard'
-  const URLS = [
-    'https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpcWmhzfH5lWWgcQyyS4J0.woff2',
-    'https://fonts.gstatic.com/s/cairo/v28/SLXVc1nY6HkvangtZmpQdkhzfH5lWWgcQyyS4J0.woff2',
-  ]
-  for (const url of URLS) {
-    try {
-      const face = new FontFace(FAMILY, `url(${url})`)
-      const loaded = await face.load()
-      document.fonts.add(loaded)
-      _fontFamilyCache = FAMILY
-      return FAMILY
-    } catch { /* try next */ }
-  }
-  // Fallback
-  _fontFamilyCache = 'Arial'
-  return 'Arial'
-}
-
-function af(family: string, size: number, bold = false) {
-  return `${bold ? 'bold ' : ''}${size}px ${family}, Tahoma, Arial`
-}
-
-// ─── Background fill (shared) ─────────────────────────────────────────────────
-
-function fillBackground(
-  ctx: CanvasRenderingContext2D,
-  W: number, H: number, offsetX: number, offsetY: number,
-  theme: Theme, primary: string, secondary: string
-) {
-  ctx.save()
-  rr(ctx, offsetX, offsetY, W, H, 16); ctx.clip()
-  if (theme === 'gradient') {
-    const g = ctx.createLinearGradient(offsetX, offsetY, offsetX + W, offsetY + H)
-    g.addColorStop(0, primary); g.addColorStop(1, secondary)
-    ctx.fillStyle = g
-  } else if (theme === 'dark') {
-    const g = ctx.createLinearGradient(offsetX, offsetY, offsetX + W, offsetY + H)
-    g.addColorStop(0, '#1A1A3E'); g.addColorStop(1, '#2d2d5e')
-    ctx.fillStyle = g
-  } else {
-    ctx.fillStyle = theme === 'light' ? '#FFFFFF' : '#F8FAFC'
-  }
-  ctx.fillRect(offsetX, offsetY, W, H)
-  const isDark = theme === 'dark' || theme === 'gradient'
-  if (!isDark) {
-    ctx.strokeStyle = theme === 'light' ? '#E5E7EB' : '#E2E8F0'
-    ctx.lineWidth = 1; rr(ctx, offsetX, offsetY, W, H, 16); ctx.stroke()
-  }
-  ctx.restore()
-}
-
-// ─── Draw FRONT — Landscape ───────────────────────────────────────────────────
-
-async function drawFrontLandscape(
-  ctx: CanvasRenderingContext2D,
-  W: number, H: number, ox: number, oy: number,
-  theme: Theme, primary: string, secondary: string, font: string,
-  name: string, jobTitle: string, phone: string, email: string,
-  avatarUrl: string | null, profileUrl: string, initial: string
-) {
-  const isDark     = theme === 'dark' || theme === 'gradient'
-  const textColor  = isDark ? '#FFFFFF' : '#111827'
-  const subtextClr = theme === 'dark' ? '#93C5FD' : theme === 'gradient' ? 'rgba(255,255,255,0.85)' : primary
-  const metaColor  = isDark ? 'rgba(255,255,255,0.65)' : '#6B7280'
-  const dotColor   = theme === 'gradient' ? 'rgba(255,255,255,0.9)' : theme === 'dark' ? '#FFFFFF' : primary
-
-  fillBackground(ctx, W, H, ox, oy, theme, primary, secondary)
-
-  // Avatar
-  const AX = ox + W - 64, AY = oy + 20, AS = 44
-  if (avatarUrl) {
-    ctx.save(); rr(ctx, AX, AY, AS, AS, 10); ctx.clip()
-    const img = new Image(); img.crossOrigin = 'anonymous'
-    await new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); img.src = avatarUrl })
-    ctx.drawImage(img, AX, AY, AS, AS); ctx.restore()
-  } else {
-    rr(ctx, AX, AY, AS, AS, 10)
-    if (theme === 'gradient') { ctx.fillStyle = 'rgba(255,255,255,0.25)' }
-    else { const ag = ctx.createLinearGradient(AX, AY, AX+AS, AY+AS); ag.addColorStop(0, primary); ag.addColorStop(1, secondary); ctx.fillStyle = ag }
-    ctx.fill()
-    ctx.fillStyle = '#FFF'; ctx.font = af(font, 18, true)
-    ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-    ctx.fillText(initial, AX + AS/2, AY + AS/2)
-  }
-
-  // Name (Arabic — RTL)
-  ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'top'
-  ctx.fillStyle = textColor; ctx.font = af(font, 14, true)
-  ctx.fillText(name || 'اسمك هنا', AX - 12, AY + 4)
-  ctx.fillStyle = subtextClr; ctx.font = af(font, 11)
-  ctx.fillText(jobTitle || '', AX - 12, AY + 22)
-
-  // Dot grid logo mark
-  const LMX = ox + 20, LMY = AY
-  rr(ctx, LMX-5, LMY-5, 42, 42, 10)
-  ctx.fillStyle = isDark ? 'rgba(255,255,255,0.12)' : `${primary}22`; ctx.fill()
-  for (let i = 0; i < 9; i++) {
-    if (![0,1,3,4,7,8].includes(i)) continue
-    rr(ctx, LMX+(i%3)*10.5, LMY+Math.floor(i/3)*10.5, 9, 9, 2)
-    ctx.fillStyle = dotColor; ctx.fill()
-  }
-
-  // Divider
-  const divY = oy + H/2 + 10
-  ctx.save(); ctx.globalAlpha = 0.2; ctx.fillStyle = textColor
-  ctx.fillRect(ox + 20, divY, W - 40, 1); ctx.restore()
-
-  // Contact info (LTR — force direction)
-  ctx.direction = 'ltr'; ctx.textAlign = 'left'; ctx.textBaseline = 'top'
-  ctx.fillStyle = metaColor; ctx.font = af(font, 11)
-  let cy = divY + 14
-  if (phone) { ctx.fillText('📞  ' + phone,  ox + 20, cy); cy += 20 }
-  if (email) { ctx.fillText('✉  '  + email,  ox + 20, cy); cy += 20 }
-  ctx.fillText('🌐  ' + profileUrl, ox + 20, cy)
-}
-
-// ─── Draw FRONT — Square ──────────────────────────────────────────────────────
-
-async function drawFrontSquare(
-  ctx: CanvasRenderingContext2D,
-  W: number, H: number, ox: number, oy: number,
-  theme: Theme, primary: string, secondary: string, font: string,
-  name: string, jobTitle: string, phone: string, email: string,
-  avatarUrl: string | null, profileUrl: string, initial: string
-) {
-  const isDark    = theme === 'dark' || theme === 'gradient'
-  const textColor = isDark ? '#FFFFFF' : '#111827'
-  const subColor  = theme === 'dark' ? '#93C5FD' : theme === 'gradient' ? 'rgba(255,255,255,0.8)' : primary
-  const metaColor = isDark ? 'rgba(255,255,255,0.6)' : '#6B7280'
-
-  fillBackground(ctx, W, H, ox, oy, theme, primary, secondary)
-
-  // Center avatar at top
-  const AS = 72, AX = ox + (W - AS) / 2, AY = oy + 30
-  if (avatarUrl) {
-    ctx.save(); rr(ctx, AX, AY, AS, AS, AS/2); ctx.clip()
-    const img = new Image(); img.crossOrigin = 'anonymous'
-    await new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); img.src = avatarUrl })
-    ctx.drawImage(img, AX, AY, AS, AS); ctx.restore()
-    // Border ring
-    ctx.save(); rr(ctx, AX-2, AY-2, AS+4, AS+4, AS/2+2)
-    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.4)' : primary; ctx.lineWidth = 2; ctx.stroke(); ctx.restore()
-  } else {
-    rr(ctx, AX, AY, AS, AS, AS/2)
-    const ag = ctx.createLinearGradient(AX, AY, AX+AS, AY+AS)
-    ag.addColorStop(0, primary); ag.addColorStop(1, secondary); ctx.fillStyle = ag; ctx.fill()
-    ctx.fillStyle = '#FFF'; ctx.font = af(font, 28, true)
-    ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-    ctx.fillText(initial, AX + AS/2, AY + AS/2)
-  }
-
-  // Name centered
-  ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
-  ctx.fillStyle = textColor; ctx.font = af(font, 16, true)
-  ctx.fillText(name || 'اسمك هنا', ox + W/2, AY + AS + 14)
-  ctx.fillStyle = subColor; ctx.font = af(font, 12)
-  ctx.fillText(jobTitle || '', ox + W/2, AY + AS + 35)
-
-  // Divider
-  const divY = AY + AS + 58
-  ctx.save(); ctx.globalAlpha = 0.15; ctx.fillStyle = textColor
-  ctx.fillRect(ox + 30, divY, W - 60, 1); ctx.restore()
-
-  // Contact (centered, LTR)
-  ctx.direction = 'ltr'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
-  ctx.fillStyle = metaColor; ctx.font = af(font, 11)
-  let cy = divY + 12
-  if (phone) { ctx.fillText('📞  ' + phone,  ox + W/2, cy); cy += 20 }
-  if (email) { ctx.fillText('✉  '  + email,  ox + W/2, cy); cy += 20 }
-  ctx.font = af(font, 10)
-  ctx.fillText('🌐  ' + profileUrl, ox + W/2, cy)
-}
-
-// ─── Draw FRONT — Portrait ────────────────────────────────────────────────────
-
-async function drawFrontPortrait(
-  ctx: CanvasRenderingContext2D,
-  W: number, H: number, ox: number, oy: number,
-  theme: Theme, primary: string, secondary: string, font: string,
-  name: string, jobTitle: string, phone: string, email: string,
-  avatarUrl: string | null, profileUrl: string, initial: string
-) {
-  const isDark    = theme === 'dark' || theme === 'gradient'
-  const textColor = isDark ? '#FFFFFF' : '#111827'
-  const subColor  = theme === 'dark' ? '#93C5FD' : theme === 'gradient' ? 'rgba(255,255,255,0.8)' : primary
-  const metaColor = isDark ? 'rgba(255,255,255,0.6)' : '#6B7280'
-
-  fillBackground(ctx, W, H, ox, oy, theme, primary, secondary)
-
-  // Gradient header strip
-  ctx.save()
-  const headerH = H * 0.38
-  rr(ctx, ox, oy, W, H, 16); ctx.clip()
-  const hg = ctx.createLinearGradient(ox, oy, ox + W, oy + headerH)
-  if (isDark) { hg.addColorStop(0, 'rgba(255,255,255,0.08)'); hg.addColorStop(1, 'rgba(255,255,255,0)') }
-  else        { hg.addColorStop(0, `${primary}18`);           hg.addColorStop(1, 'rgba(255,255,255,0)') }
-  ctx.fillStyle = hg; ctx.fillRect(ox, oy, W, headerH)
-  ctx.restore()
-
-  // Avatar centered
-  const AS = 64, AX = ox + (W - AS) / 2, AY = oy + 28
-  if (avatarUrl) {
-    ctx.save(); rr(ctx, AX, AY, AS, AS, AS/2); ctx.clip()
-    const img = new Image(); img.crossOrigin = 'anonymous'
-    await new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); img.src = avatarUrl })
-    ctx.drawImage(img, AX, AY, AS, AS); ctx.restore()
-    ctx.save(); rr(ctx, AX-2, AY-2, AS+4, AS+4, AS/2+2)
-    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.4)' : primary; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore()
-  } else {
-    rr(ctx, AX, AY, AS, AS, AS/2)
-    const ag = ctx.createLinearGradient(AX, AY, AX+AS, AY+AS)
-    ag.addColorStop(0, primary); ag.addColorStop(1, secondary); ctx.fillStyle = ag; ctx.fill()
-    ctx.fillStyle = '#FFF'; ctx.font = af(font, 26, true)
-    ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-    ctx.fillText(initial, AX + AS/2, AY + AS/2)
-  }
-
-  // Name & title centered
-  ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
-  ctx.fillStyle = textColor; ctx.font = af(font, 15, true)
-  ctx.fillText(name || 'اسمك هنا', ox + W/2, AY + AS + 14)
-  ctx.fillStyle = subColor; ctx.font = af(font, 12)
-  ctx.fillText(jobTitle || '', ox + W/2, AY + AS + 34)
-
-  // Decorative line with dot
-  const lineY = AY + AS + 60
-  ctx.save(); ctx.globalAlpha = 0.2; ctx.fillStyle = textColor
-  ctx.fillRect(ox + 20, lineY, W - 40, 1)
-  ctx.restore()
-  ctx.save(); ctx.globalAlpha = 0.6
-  rr(ctx, ox + W/2 - 3, lineY - 3, 6, 6, 3)
-  ctx.fillStyle = isDark ? '#FFFFFF' : primary; ctx.fill(); ctx.restore()
-
-  // Contact info
-  ctx.direction = 'ltr'; ctx.textAlign = 'left'; ctx.textBaseline = 'top'
-  ctx.fillStyle = metaColor; ctx.font = af(font, 12)
-  let cy = lineY + 16
-  const lx = ox + 24
-  if (phone) { ctx.fillText('📞  ' + phone,  lx, cy); cy += 24 }
-  if (email) { ctx.fillText('✉  '  + email,  lx, cy); cy += 24 }
-  ctx.font = af(font, 11)
-  ctx.fillText('🌐  ' + profileUrl, lx, cy)
-}
-
-// ─── Draw BACK (works for all shapes) ────────────────────────────────────────
-
-async function drawBack(
-  ctx: CanvasRenderingContext2D,
-  W: number, H: number, ox: number, oy: number,
-  theme: Theme, primary: string, secondary: string, font: string,
-  profileUrl: string
-) {
-  const isDark    = theme === 'dark' || theme === 'gradient'
-  const metaColor = isDark ? 'rgba(255,255,255,0.6)' : '#6B7280'
-
-  fillBackground(ctx, W, H, ox, oy, theme, primary, secondary)
-
+  if (_arabicFontFamily) return _arabicFontFamily
   try {
-    const QRCodeLib = await import('qrcode')
-    // QR size proportional to card
-    const qrSize = Math.min(W, H) * 0.52
-    const padding = 14
-    const qrX = ox + (W - qrSize) / 2
-    const qrY = oy + (H - qrSize) / 2 - 10
+    const face = new FontFace('CairoCard',
+      'url(https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpcWmhzfH5lWWgcQyyS4J0.woff2)')
+    document.fonts.add(await face.load())
+    _arabicFontFamily = 'CairoCard'
+  } catch { _arabicFontFamily = 'Tahoma' }
+  return _arabicFontFamily
+}
 
-    const qrDataUrl = await QRCodeLib.toDataURL(profileUrl || 'https://contactme.cc', {
-      width: Math.round(qrSize * 3),
-      margin: 1,
-      color: { dark: primary, light: '#FFFFFF' },
-    })
+const LATIN = 'Arial,sans-serif'
+const fAr   = (fam: string, sz: number, b = false) => `${b?'bold ':''}${sz}px ${fam},Tahoma,Arial`
+const fLa   = (sz: number, b = false)              => `${b?'bold ':''}${sz}px ${LATIN}`
 
-    // White card behind QR
-    rr(ctx, qrX - padding, qrY - padding, qrSize + padding*2, qrSize + padding*2, 14)
-    ctx.fillStyle = '#FFFFFF'; ctx.fill()
+/* ─── background ──────────────────────────────────────────────────────────── */
 
-    const qrImg = new Image()
-    await new Promise<void>(res => { qrImg.onload = () => res(); qrImg.src = qrDataUrl })
-    ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+function drawBg(c: CanvasRenderingContext2D, W: number, H: number, ox: number, oy: number,
+                theme: Theme, p: string, s: string) {
+  c.save(); rr(c,ox,oy,W,H,16); c.clip()
+  if (theme==='gradient')      { const g=c.createLinearGradient(ox,oy,ox+W,oy+H); g.addColorStop(0,p); g.addColorStop(1,s); c.fillStyle=g }
+  else if (theme==='dark')     { const g=c.createLinearGradient(ox,oy,ox+W,oy+H); g.addColorStop(0,'#1A1A3E'); g.addColorStop(1,'#2d2d5e'); c.fillStyle=g }
+  else if (theme==='light')    { c.fillStyle='#FFFFFF' }
+  else                         { c.fillStyle='#F8FAFC' }
+  c.fillRect(ox,oy,W,H)
+  const isDark = theme==='dark'||theme==='gradient'
+  if (!isDark) { c.strokeStyle=theme==='light'?'#E5E7EB':'#E2E8F0'; c.lineWidth=1; rr(c,ox,oy,W,H,16); c.stroke() }
+  c.restore()
+}
 
-    // URL label — force LTR
-    ctx.direction = 'ltr'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
-    ctx.fillStyle = metaColor; ctx.font = af(font, 10)
-    ctx.fillText(profileUrl, ox + W/2, qrY + qrSize + padding + 8)
-  } catch (e) {
-    console.error('QR error', e)
+/* ─── avatar ──────────────────────────────────────────────────────────────── */
+
+async function drawAvatar(c: CanvasRenderingContext2D, ax: number, ay: number, as_: number, r: number,
+                           url: string|null, initial: string, fam: string, theme: Theme, p: string, s: string) {
+  if (url) {
+    c.save(); rr(c,ax,ay,as_,as_,r); c.clip()
+    const img=new Image(); img.crossOrigin='anonymous'
+    await new Promise<void>(res=>{img.onload=()=>res();img.onerror=()=>res();img.src=url})
+    c.drawImage(img,ax,ay,as_,as_); c.restore()
+  } else {
+    rr(c,ax,ay,as_,as_,r)
+    if (theme==='gradient') { c.fillStyle='rgba(255,255,255,0.25)' }
+    else { const g=c.createLinearGradient(ax,ay,ax+as_,ay+as_); g.addColorStop(0,p); g.addColorStop(1,s); c.fillStyle=g }
+    c.fill()
+    c.fillStyle='#FFF'; c.font=fAr(fam,Math.round(as_*0.38),true)
+    c.save(); c.direction='rtl'; c.textAlign='center'; c.textBaseline='middle'
+    c.fillText(initial,ax+as_/2,ay+as_/2); c.restore()
   }
 }
 
-// ─── Canvas factory ───────────────────────────────────────────────────────────
+/* ─── FRONT landscape ─────────────────────────────────────────────────────── */
 
-function makeCanvas(W: number, H: number, PX: number): [HTMLCanvasElement, CanvasRenderingContext2D] {
-  const c = document.createElement('canvas')
-  c.width = W * PX; c.height = H * PX
-  const ctx = c.getContext('2d')!
-  ctx.scale(PX, PX)
-  return [c, ctx]
+async function drawFrontL(c: CanvasRenderingContext2D, W: number, H: number, ox: number, oy: number,
+                           theme: Theme, p: string, s: string, fam: string,
+                           name: string, job: string, phone: string, email: string,
+                           avatar: string|null, url: string, initial: string) {
+  const isDark  = theme==='dark'||theme==='gradient'
+  const txtClr  = isDark?'#FFF':'#111827'
+  const subClr  = theme==='dark'?'#93C5FD':theme==='gradient'?'rgba(255,255,255,0.85)':p
+  const metaClr = isDark?'rgba(255,255,255,0.65)':'#6B7280'
+  const dotClr  = theme==='gradient'?'rgba(255,255,255,0.9)':isDark?'#FFF':p
+
+  drawBg(c,W,H,ox,oy,theme,p,s)
+
+  const AX=ox+W-64, AY=oy+20, AS=44
+  await drawAvatar(c,AX,AY,AS,10,avatar,initial,fam,theme,p,s)
+
+  // Name & job — Arabic RTL
+  c.save(); c.direction='rtl'; c.textAlign='right'; c.textBaseline='top'
+  c.fillStyle=txtClr; c.font=fAr(fam,14,true); c.fillText(name||'اسمك هنا',AX-12,AY+4)
+  c.fillStyle=subClr; c.font=fAr(fam,11);       c.fillText(job||'',AX-12,AY+22); c.restore()
+
+  // Dot grid
+  const LMX=ox+20, LMY=AY
+  rr(c,LMX-5,LMY-5,42,42,10); c.fillStyle=isDark?'rgba(255,255,255,0.12)':`${p}22`; c.fill()
+  for(let i=0;i<9;i++){
+    if(![0,1,3,4,7,8].includes(i)) continue
+    rr(c,LMX+(i%3)*10.5,LMY+Math.floor(i/3)*10.5,9,9,2); c.fillStyle=dotClr; c.fill()
+  }
+
+  // Divider
+  const divY=oy+H/2+10
+  c.save(); c.globalAlpha=0.2; c.fillStyle=txtClr; c.fillRect(ox+20,divY,W-40,1); c.restore()
+
+  // Contact — Latin font, forced LTR
+  c.fillStyle=metaClr; c.font=fLa(11); c.textBaseline='top'
+  let cy=divY+14
+  if(phone){ drawLTR(c,'📞  '+phone,ox+20,cy); cy+=20 }
+  if(email){ drawLTR(c,'✉  '+email, ox+20,cy); cy+=20 }
+  drawLTR(c,'🌐  '+url, ox+20,cy)
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+/* ─── FRONT square ────────────────────────────────────────────────────────── */
+
+async function drawFrontS(c: CanvasRenderingContext2D, W: number, H: number, ox: number, oy: number,
+                           theme: Theme, p: string, s: string, fam: string,
+                           name: string, job: string, phone: string, email: string,
+                           avatar: string|null, url: string, initial: string) {
+  const isDark  = theme==='dark'||theme==='gradient'
+  const txtClr  = isDark?'#FFF':'#111827'
+  const subClr  = theme==='dark'?'#93C5FD':theme==='gradient'?'rgba(255,255,255,0.8)':p
+  const metaClr = isDark?'rgba(255,255,255,0.6)':'#6B7280'
+
+  drawBg(c,W,H,ox,oy,theme,p,s)
+
+  const AS=70, AX=ox+(W-AS)/2, AY=oy+24
+  await drawAvatar(c,AX,AY,AS,AS/2,avatar,initial,fam,theme,p,s)
+  c.save(); rr(c,AX-2,AY-2,AS+4,AS+4,AS/2+2)
+  c.strokeStyle=isDark?'rgba(255,255,255,0.4)':p; c.lineWidth=2; c.stroke(); c.restore()
+
+  // Decorative dots top-left
+  for(let i=0;i<4;i++){
+    rr(c,ox+14+i*10,oy+14,6,6,3)
+    c.fillStyle=isDark?'rgba(255,255,255,0.2)':`${p}44`; c.fill()
+  }
+
+  c.save(); c.direction='rtl'; c.textAlign='center'; c.textBaseline='top'
+  c.fillStyle=txtClr; c.font=fAr(fam,15,true); c.fillText(name||'اسمك هنا',ox+W/2,AY+AS+12)
+  c.fillStyle=subClr; c.font=fAr(fam,11);       c.fillText(job||'',ox+W/2,AY+AS+30); c.restore()
+
+  const divY=AY+AS+52
+  c.save(); c.globalAlpha=0.15; c.fillStyle=txtClr; c.fillRect(ox+28,divY,W-56,1); c.restore()
+
+  c.fillStyle=metaClr; c.font=fLa(10); c.textBaseline='top'
+  let cy=divY+10; const lx=ox+20
+  if(phone){ drawLTR(c,'📞  '+phone,lx,cy); cy+=18 }
+  if(email){ drawLTR(c,'✉  '+email, lx,cy); cy+=18 }
+  drawLTR(c,'🌐  '+url,lx,cy)
+}
+
+/* ─── FRONT portrait ──────────────────────────────────────────────────────── */
+
+async function drawFrontP(c: CanvasRenderingContext2D, W: number, H: number, ox: number, oy: number,
+                           theme: Theme, p: string, s: string, fam: string,
+                           name: string, job: string, phone: string, email: string,
+                           avatar: string|null, url: string, initial: string) {
+  const isDark  = theme==='dark'||theme==='gradient'
+  const txtClr  = isDark?'#FFF':'#111827'
+  const subClr  = theme==='dark'?'#93C5FD':theme==='gradient'?'rgba(255,255,255,0.8)':p
+  const metaClr = isDark?'rgba(255,255,255,0.6)':'#6B7280'
+
+  drawBg(c,W,H,ox,oy,theme,p,s)
+
+  // Header gradient strip
+  c.save(); rr(c,ox,oy,W,H,16); c.clip()
+  const hg=c.createLinearGradient(ox,oy,ox+W,oy+H*0.45)
+  hg.addColorStop(0,isDark?'rgba(255,255,255,0.08)':`${p}18`)
+  hg.addColorStop(1,'rgba(0,0,0,0)')
+  c.fillStyle=hg; c.fillRect(ox,oy,W,H*0.45); c.restore()
+
+  // Accent line top
+  c.save(); rr(c,ox,oy,W,5,0)
+  const ag=c.createLinearGradient(ox,oy,ox+W,oy)
+  ag.addColorStop(0,p); ag.addColorStop(1,s)
+  c.fillStyle=ag; c.fill(); c.restore()
+
+  const AS=60, AX=ox+(W-AS)/2, AY=oy+22
+  await drawAvatar(c,AX,AY,AS,AS/2,avatar,initial,fam,theme,p,s)
+  c.save(); rr(c,AX-2,AY-2,AS+4,AS+4,AS/2+2)
+  c.strokeStyle=isDark?'rgba(255,255,255,0.4)':p; c.lineWidth=2.5; c.stroke(); c.restore()
+
+  c.save(); c.direction='rtl'; c.textAlign='center'; c.textBaseline='top'
+  c.fillStyle=txtClr; c.font=fAr(fam,14,true); c.fillText(name||'اسمك هنا',ox+W/2,AY+AS+12)
+  c.fillStyle=subClr; c.font=fAr(fam,11);       c.fillText(job||'',ox+W/2,AY+AS+29); c.restore()
+
+  const lineY=AY+AS+50
+  c.save(); c.globalAlpha=0.2; c.fillStyle=txtClr; c.fillRect(ox+16,lineY,W-32,1); c.restore()
+
+  c.fillStyle=metaClr; c.font=fLa(11); c.textBaseline='top'
+  let cy=lineY+12; const lx=ox+18
+  if(phone){ drawLTR(c,'📞  '+phone,lx,cy); cy+=22 }
+  if(email){ drawLTR(c,'✉  '+email, lx,cy); cy+=22 }
+  c.font=fLa(10); drawLTR(c,'🌐  '+url,lx,cy)
+}
+
+/* ─── BACK (all shapes) ───────────────────────────────────────────────────── */
+
+async function drawBack(c: CanvasRenderingContext2D, W: number, H: number, ox: number, oy: number,
+                         theme: Theme, p: string, s: string, url: string) {
+  const isDark  = theme==='dark'||theme==='gradient'
+  const metaClr = isDark?'rgba(255,255,255,0.6)':'#6B7280'
+
+  drawBg(c,W,H,ox,oy,theme,p,s)
+
+  const QR      = await import('qrcode')
+  const qrSize  = Math.round(Math.min(W,H)*0.50)
+  const pad     = 14
+  const qrX     = ox+(W-qrSize)/2
+  const qrY     = oy+(H-qrSize)/2 - 10
+
+  const dataUrl = await QR.toDataURL(url||'https://contactme.cc',{
+    width:qrSize*3, margin:1, color:{dark:p,light:'#FFFFFF'}
+  })
+
+  rr(c,qrX-pad,qrY-pad,qrSize+pad*2,qrSize+pad*2,14)
+  c.fillStyle='#FFFFFF'; c.fill()
+
+  const img=new Image()
+  await new Promise<void>(res=>{img.onload=()=>res();img.src=dataUrl})
+  c.drawImage(img,qrX,qrY,qrSize,qrSize)
+
+  // URL — explicit Latin font + LTR
+  c.fillStyle=metaClr; c.font=fLa(9)
+  c.textBaseline='top'
+  drawLTR(c, url, ox+W/2, qrY+qrSize+pad+8, 'center')
+}
+
+/* ─── Canvas builder ──────────────────────────────────────────────────────── */
+
+function mkCanvas(W: number, H: number): [HTMLCanvasElement, CanvasRenderingContext2D] {
+  const PX=3, cv=document.createElement('canvas')
+  cv.width=W*PX; cv.height=H*PX
+  const ctx=cv.getContext('2d')!
+  // Solid white base — ensures jsPDF never gets a transparent/empty page
+  ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,cv.width,cv.height)
+  ctx.scale(PX,PX)
+  return [cv,ctx]
+}
+
+/* ─── Component ───────────────────────────────────────────────────────────── */
 
 export default function BusinessCardTab({ profile, profileUrl }: Props) {
   const [theme,    setTheme]    = useState<Theme>((profile as any).card_theme     ?? 'dark')
@@ -379,181 +284,160 @@ export default function BusinessCardTab({ profile, profileUrl }: Props) {
   const [shape,    setShape]    = useState<CardShape>('landscape')
   const [saving,   setSaving]   = useState(false)
   const [saved,    setSaved]    = useState(false)
-  const [loading,  setLoading]  = useState<'png' | 'pdf' | null>(null)
+  const [loading,  setLoading]  = useState<'png'|'pdf'|null>(null)
 
-  const colors = COLOR_PAIRS[colorIdx]
+  const colors  = COLOR_PAIRS[colorIdx]
+  const name    = profile.full_name ?? ''
+  const job     = (profile as any).job_title ?? ''
+  const phone   = (profile as any).whatsapp  ?? (profile as any).phone ?? ''
+  const email   = (profile as any).email     ?? ''
+  const avatar  = profile.avatar_url ?? null
+  const initial = name ? name.charAt(0) : 'أ'
 
-  // Shared profile fields
-  const name      = profile.full_name ?? ''
-  const jobTitle  = (profile as any).job_title ?? ''
-  const phone     = (profile as any).whatsapp  ?? (profile as any).phone ?? ''
-  const email     = (profile as any).email     ?? ''
-  const avatarUrl = profile.avatar_url ?? null
-  const initial   = name ? name.charAt(0) : 'أ'
-
-  async function buildFrontCanvas(): Promise<HTMLCanvasElement> {
-    const font = await loadArabicFont()
-    const { W, H } = DIMS[shape]
-    const [c, ctx] = makeCanvas(W, H, 3)
-    const args = [ctx, W, H, 0, 0, theme, colors.primary, colors.secondary, font,
-                  name, jobTitle, phone, email, avatarUrl, profileUrl, initial] as const
-    if (shape === 'landscape') await drawFrontLandscape(...args)
-    else if (shape === 'square')   await drawFrontSquare(...args)
-    else                           await drawFrontPortrait(...args)
-    return c
+  async function renderFront(ctx: CanvasRenderingContext2D, W: number, H: number, ox=0, oy=0) {
+    const fam = await loadArabicFont()
+    const args = [ctx,W,H,ox,oy,theme,colors.primary,colors.secondary,fam,
+                  name,job,phone,email,avatar,profileUrl,initial] as const
+    if      (shape==='landscape') await drawFrontL(...args)
+    else if (shape==='square')    await drawFrontS(...args)
+    else                          await drawFrontP(...args)
   }
 
-  async function buildBackCanvas(): Promise<HTMLCanvasElement> {
-    const font = await loadArabicFont()
-    const { W, H } = DIMS[shape]
-    const [c, ctx] = makeCanvas(W, H, 3)
-    await drawBack(ctx, W, H, 0, 0, theme, colors.primary, colors.secondary, font, profileUrl)
-    return c
+  // PDF — single page, both sides side by side (most compatible with jsPDF)
+  async function handlePdf() {
+    setLoading('pdf')
+    try {
+      const {W,H} = DIMS[shape]
+      const GAP   = 16
+      const TW    = W*2+GAP
+
+      // Front canvas
+      const [fc, fctx] = mkCanvas(W,H)
+      await renderFront(fctx,W,H)
+
+      // Back canvas
+      const [bc, bctx] = mkCanvas(W,H)
+      await drawBack(bctx,W,H,0,0,theme,colors.primary,colors.secondary,profileUrl)
+
+      // Merge into one wide canvas
+      const [mc, mctx] = mkCanvas(TW,H)
+      mctx.drawImage(fc, 0, 0, W, H)
+      mctx.drawImage(bc, (W+GAP), 0, W, H)
+
+      // PDF sized to show both cards — width = 2× card
+      const mmH = 54
+      const mmW = Math.round(mmH * TW / H * 10) / 10   // keep aspect ratio
+      const {jsPDF} = await import('jspdf')
+      const pdf = new jsPDF({orientation:'landscape', unit:'mm', format:[mmW, mmH]})
+      pdf.addImage(mc.toDataURL('image/png'),'PNG', 0, 0, mmW, mmH)
+      pdf.save('contactme-card.pdf')
+    } finally { setLoading(null) }
   }
 
   async function handlePng() {
     setLoading('png')
     try {
-      await loadArabicFont()
-      const { W, H } = DIMS[shape]
-      const GAP = 20
-      const font = await loadArabicFont()
-      const [c, ctx] = makeCanvas(W * 2 + GAP, H, 3)
-      const args = [ctx, W, H, 0, 0, theme, colors.primary, colors.secondary, font,
-                    name, jobTitle, phone, email, avatarUrl, profileUrl, initial] as const
-      if (shape === 'landscape') await drawFrontLandscape(...args)
-      else if (shape === 'square')   await drawFrontSquare(...args)
-      else                           await drawFrontPortrait(...args)
-      await drawBack(ctx, W, H, W + GAP, 0, theme, colors.primary, colors.secondary, font, profileUrl)
-      c.toBlob(blob => {
-        if (!blob) return
-        const url = URL.createObjectURL(blob)
-        const a   = document.createElement('a'); a.download = 'contactme-card.png'; a.href = url; a.click()
-        URL.revokeObjectURL(url)
-      }, 'image/png')
-    } finally { setLoading(null) }
-  }
-
-  async function handlePdf() {
-    setLoading('pdf')
-    try {
-      const [frontC, backC] = await Promise.all([buildFrontCanvas(), buildBackCanvas()])
-      const { jsPDF } = await import('jspdf')
-      const { w, h, orientation } = PDF_DIMS[shape]
-      const pdf = new jsPDF({ orientation, unit: 'mm', format: [w, h] })
-      pdf.addImage(frontC.toDataURL('image/png'), 'PNG', 0, 0, w, h)
-      pdf.addPage([w, h], orientation)
-      pdf.addImage(backC.toDataURL('image/png'),  'PNG', 0, 0, w, h)
-      pdf.save('contactme-card.pdf')
+      const {W,H} = DIMS[shape]; const GAP=16
+      const [c,ctx] = mkCanvas(W*2+GAP,H)
+      await renderFront(ctx,W,H,0,0)
+      await drawBack(ctx,W,H,W+GAP,0,theme,colors.primary,colors.secondary,profileUrl)
+      c.toBlob(blob=>{
+        if(!blob) return
+        const a=document.createElement('a'); a.download='contactme-card.png'
+        a.href=URL.createObjectURL(blob); a.click()
+      },'image/png')
     } finally { setLoading(null) }
   }
 
   async function handleSave() {
     setSaving(true)
-    await supabase.from('profiles')
-      .update({ card_theme: theme, card_color_idx: colorIdx })
-      .eq('id', profile.id)
-    setSaving(false); setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    await supabase.from('profiles').update({card_theme:theme,card_color_idx:colorIdx}).eq('id',profile.id)
+    setSaving(false); setSaved(true); setTimeout(()=>setSaved(false),2000)
   }
+
+  const Spinner = () => (
+    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+    </svg>
+  )
 
   return (
     <div className="space-y-6">
-      {/* Preview */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-3 font-medium">معاينة البطاقة</p>
         <BusinessCardPreview
-          name={profile.full_name ?? ''}
-          jobTitle={(profile as any).job_title ?? ''}
-          bio={profile.bio ?? ''}
-          phone={(profile as any).whatsapp ?? (profile as any).phone ?? ''}
-          email={(profile as any).email ?? ''}
-          logoUrl={profile.avatar_url ?? null}
-          qrValue={profileUrl}
-          theme={theme}
-          primaryColor={colors.primary}
-          secondaryColor={colors.secondary}
-          flippable={true}
+          name={profile.full_name??''} jobTitle={(profile as any).job_title??''}
+          bio={profile.bio??''} phone={(profile as any).whatsapp??(profile as any).phone??''}
+          email={(profile as any).email??''} logoUrl={profile.avatar_url??null}
+          qrValue={profileUrl} theme={theme}
+          primaryColor={colors.primary} secondaryColor={colors.secondary} flippable={true}
         />
       </div>
 
-      {/* Shape selector */}
+      {/* Shape */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-2 font-medium">شكل البطاقة</p>
         <div className="grid grid-cols-3 gap-2">
-          {SHAPES.map(s => (
-            <button key={s.id} onClick={() => setShape(s.id)}
+          {SHAPES.map(s=>(
+            <button key={s.id} onClick={()=>setShape(s.id)}
               className={`flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl text-xs font-medium transition-all border ${
-                shape === s.id
-                  ? 'border-[#6366F1] bg-[#6366F110] text-[#6366F1]'
-                  : 'border-[var(--border)] text-[var(--text-muted)]'
-              }`}>
+                shape===s.id?'border-[#6366F1] bg-[#6366F110] text-[#6366F1]':'border-[var(--border)] text-[var(--text-muted)]'}`}>
               <span className="text-base">{s.icon}</span>{s.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Theme selector */}
+      {/* Theme */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-2 font-medium">السمة</p>
         <div className="grid grid-cols-4 gap-2">
-          {THEMES.map(t => (
-            <button key={t.id} onClick={() => setTheme(t.id)}
+          {THEMES.map(t=>(
+            <button key={t.id} onClick={()=>setTheme(t.id)}
               className={`flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl text-xs font-medium transition-all border ${
-                theme === t.id
-                  ? 'border-[#6366F1] bg-[#6366F110] text-[#6366F1]'
-                  : 'border-[var(--border)] text-[var(--text-muted)]'
-              }`}>
+                theme===t.id?'border-[#6366F1] bg-[#6366F110] text-[#6366F1]':'border-[var(--border)] text-[var(--text-muted)]'}`}>
               <span className="text-base">{t.emoji}</span>{t.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Color selector */}
+      {/* Colors */}
       <div>
         <p className="text-xs text-[var(--text-muted)] mb-2 font-medium">الألوان</p>
         <div className="grid grid-cols-4 gap-2">
-          {COLOR_PAIRS.map((pair, idx) => (
-            <button key={idx} onClick={() => setColorIdx(idx)}
+          {COLOR_PAIRS.map((pair,idx)=>(
+            <button key={idx} onClick={()=>setColorIdx(idx)}
               className={`flex flex-col items-center gap-1.5 py-2.5 px-2 rounded-xl transition-all border ${
-                colorIdx === idx ? 'border-[#6366F1] scale-105' : 'border-[var(--border)]'
-              }`}>
-              <div className="w-8 h-4 rounded-full"
-                style={{ background: `linear-gradient(90deg, ${pair.primary}, ${pair.secondary})` }} />
+                colorIdx===idx?'border-[#6366F1] scale-105':'border-[var(--border)]'}`}>
+              <div className="w-8 h-4 rounded-full" style={{background:`linear-gradient(90deg,${pair.primary},${pair.secondary})`}}/>
               <span className="text-[10px] text-[var(--text-muted)]">{pair.name}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Save */}
       <button onClick={handleSave} disabled={saving}
         className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-        style={{ background: saved ? '#10B981' : 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
-        {saving ? 'جاري الحفظ...' : saved ? '✓ تم الحفظ' : 'حفظ التصميم'}
+        style={{background:saved?'#10B981':'linear-gradient(135deg,#6366F1,#A855F7)'}}>
+        {saving?'جاري الحفظ...':saved?'✓ تم الحفظ':'حفظ التصميم'}
       </button>
 
-      {/* Download buttons */}
       <div className="grid grid-cols-2 gap-2">
         <button onClick={handlePdf} disabled={!!loading}
           className="py-3 rounded-xl text-sm font-semibold border border-[var(--border)] hover:border-[#6366F1] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-          {loading === 'pdf'
-            ? <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-            : '📄'} تحميل PDF
+          {loading==='pdf'?<Spinner/>:'📄'} تحميل PDF
         </button>
         <button onClick={handlePng} disabled={!!loading}
           className="py-3 rounded-xl text-sm font-semibold border border-[var(--border)] hover:border-[#6366F1] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-          {loading === 'png'
-            ? <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-            : '🖼'} تحميل PNG
+          {loading==='png'?<Spinner/>:'🖼'} تحميل PNG
         </button>
       </div>
 
       <a href="https://ticketme.cc" target="_blank" rel="noopener noreferrer"
         className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90 border-2"
-        style={{ borderColor: colors.primary, color: colors.primary }}>
+        style={{borderColor:colors.primary,color:colors.primary}}>
         🎟 التذاكر — ticketme.cc
       </a>
     </div>
