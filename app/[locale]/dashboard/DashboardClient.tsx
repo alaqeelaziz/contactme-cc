@@ -36,7 +36,10 @@ export default function DashboardClient({
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const t = useTranslations('dashboard')
 
-  const isAdmin = profile.user_id === ADMIN_ID
+  // Check both profile.id and profile.user_id to cover all schema variations
+  const isAdmin =
+    profile.id === ADMIN_ID ||
+    (profile as any).user_id === ADMIN_ID
 
   const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: 'profile',   label: t('tabs.profile'),   icon: '👤' },
@@ -136,7 +139,6 @@ export default function DashboardClient({
           {activeTab === 'admin' && isAdmin && (
             <div>
               <h2 className="text-lg font-bold mb-5">لوحة الإدارة</h2>
-              {/* Admin content restored */}
               <p className="text-sm text-[var(--text-muted)]">مرحباً بك في لوحة الإدارة.</p>
             </div>
           )}
