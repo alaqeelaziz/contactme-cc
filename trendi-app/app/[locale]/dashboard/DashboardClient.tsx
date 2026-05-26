@@ -10,7 +10,6 @@ import BusinessCardScanner from '@/components/dashboard/BusinessCardScanner'
 import QRDownloader from '@/components/dashboard/QRDownloader'
 import AnalyticsCard from '@/components/dashboard/AnalyticsCard'
 import ServicesManager from '@/components/dashboard/ServicesManager'
-import AdminPricing from '@/components/dashboard/AdminPricing'
 import type { Profile, Link as LinkType, Service } from '@/lib/types'
 
 const ADMIN_ID = 'a6fb80bd-3407-4cc5-9ba0-6c80a9e46818'
@@ -80,7 +79,7 @@ export default function DashboardClient({
           {activeTab === 'qr' && <div><h2 className="text-lg font-bold mb-5">{t('qrContent')}</h2><QRDownloader profileUrl={profileUrl} isPro={true} username={profile.username} /></div>}
           {activeTab === 'scanner' && <div><h2 className="text-lg font-bold mb-5">{t('scanner')}</h2><BusinessCardScanner isPro={true} /></div>}
           {activeTab === 'analytics' && <div><h2 className="text-lg font-bold mb-5">{t('analytics')}</h2><AnalyticsCard viewCount={viewCount} isPro={true} createdAt={profile.created_at} /></div>}
-          {activeTab === 'admin' && isAdmin && <div><h2 className="text-lg font-bold mb-5">⚙️ إدارة الأسعار والخصومات</h2><AdminPricing /></div>}
+          
         </div>
         <div className="mt-4 p-4 rounded-xl flex items-center gap-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <svg className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
