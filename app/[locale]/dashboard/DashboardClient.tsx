@@ -10,7 +10,10 @@ import BusinessCardScanner from '@/components/dashboard/BusinessCardScanner'
 import QRDownloader from '@/components/dashboard/QRDownloader'
 import AnalyticsCard from '@/components/dashboard/AnalyticsCard'
 import ServicesManager from '@/components/dashboard/ServicesManager'
+import AdminPricing from '@/components/dashboard/AdminPricing'
 import type { Profile, Link as LinkType, Service } from '@/lib/types'
+
+const ADMIN_USERNAME = 'alaqeelaziz'
 
 interface Props {
   initialProfile: Profile
@@ -20,16 +23,7 @@ interface Props {
   profileUrl: string
 }
 
-type Tab = 'profile' | 'links' | 'services' | 'qr' | 'scanner' | 'analytics'
-
-const ALL_TABS: { id: Tab; labelKey: string; icon: string; companyOnly?: boolean }[] = [
-  { id: 'profile',   labelKey: 'tabs.profile',   icon: '👤' },
-  { id: 'links',     labelKey: 'tabs.links',      icon: '🔗' },
-  { id: 'services',  labelKey: 'tabs.services',   icon: '💼', companyOnly: true },
-  { id: 'qr',        labelKey: 'tabs.qr',         icon: '📱' },
-  { id: 'scanner',   labelKey: 'tabs.scanner',    icon: '📷' },
-  { id: 'analytics', labelKey: 'tabs.analytics',  icon: '📊' },
-]
+type Tab = 'profile' | 'links' | 'services' | 'qr' | 'scanner' | 'analytics' | 'admin'
 
 export default function DashboardClient({
   initialProfile,
@@ -41,7 +35,22 @@ export default function DashboardClient({
   const [profile, setProfile] = useState<Profile>(initialProfile)
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const t = useTranslations('dashboard')
-  const TABS = ALL_TABS.filter(tab => !tab.companyOnly || profile.account_type === 'company')
+
+  const isAdmin = profile.username === ADMIN_USERNAME
+
+  const TABS: { id: Tab; label: string; icon: string; companyOnly?: boolean; adminOnly?: boolean }[] = [
+    { id: 'profile',   label: t('tabs.profile'),   icon: '👤' },
+    { id: 'links',     label: t('tabs.links'),      icon: '🔗' },
+    { id: 'services',  label: t('tabs.services'),   icon: '💼', companyOnly: true },
+    { id: 'qr',        label: t('tabs.qr'),         icon: '📱' },
+    { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷' },
+    { id: 'analytics', label: t('tabs.analytics'),  icon: '📊' },
+    { id: 'admin',     label: 'الإدارة',            icon: '⚙️', adminOnly: true },
+  ].filter(tab => {
+    if (tab.companyOnly && profile.account_type !== 'company') return false
+    if (tab.adminOnly && !isAdmin) return false
+    return true
+  })
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
@@ -57,11 +66,7 @@ export default function DashboardClient({
               {t('greeting', { name: profile.full_name })}
             </p>
           </div>
-          <Link
-            href={`/${profile.username}`}
-            target="_blank"
-            className="btn-secondary text-sm py-2 px-4 gap-2"
-          >
+          <Link href={`/${profile.username}`} target="_blank" className="btn-secondary text-sm py-2 px-4 gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -74,18 +79,13 @@ export default function DashboardClient({
         <div className="flex gap-1 p-1 rounded-xl mb-6 overflow-x-auto"
           style={{ background: 'var(--surface)', scrollbarWidth: 'none' }}>
           {TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
-                activeTab === tab.id
-                  ? 'text-white shadow-sm'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                activeTab === tab.id ? 'text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
-              style={activeTab === tab.id ? { background: 'linear-gradient(135deg, #6366F1, #A855F7)' } : {}}
-            >
+              style={activeTab === tab.id ? { background: 'linear-gradient(135deg, #6366F1, #A855F7)' } : {}}>
               <span>{tab.icon}</span>
-              {t(tab.labelKey)}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -128,6 +128,12 @@ export default function DashboardClient({
               <AnalyticsCard viewCount={viewCount} isPro={true} createdAt={profile.created_at} />
             </div>
           )}
+          {activeTab === 'admin' && isAdmin && (
+            <div>
+              <h2 className="text-lg font-bold mb-5">⚙️ إدارة الأسعار والخصومات</h2>
+              <AdminPricing />
+            </div>
+          )}
         </div>
 
         {/* Profile URL */}
@@ -138,10 +144,8 @@ export default function DashboardClient({
               d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
           <p className="text-sm text-[var(--text-muted)] flex-1 truncate" dir="ltr">{profileUrl}</p>
-          <button
-            onClick={() => navigator.clipboard.writeText(profileUrl)}
-            className="text-xs font-medium text-[#6366F1] hover:underline flex-shrink-0"
-          >
+          <button onClick={() => navigator.clipboard.writeText(profileUrl)}
+            className="text-xs font-medium text-[#6366F1] hover:underline flex-shrink-0">
             {t('profileUrl')}
           </button>
         </div>
