@@ -2,7 +2,7 @@
 // يجلب كل المستخدمين باستخدام service_role (server-side فقط)
 
 import { createClient } from "@supabase/supabase-js";
-import { createClient as createServerClient } from "@/utils/supabase/server";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 const ADMIN_ID = "4c33904a-2041-48de-a53d-907f5b532a18";
