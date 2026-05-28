@@ -196,7 +196,7 @@ export default function PrintDesigner({ title, subtitle, steps, downloadPdfLabel
           <div className="space-y-2 pt-1">
             <button onClick={handleDownloadPDF} disabled={loading} className="btn-primary w-full text-sm disabled:opacity-50">{downloadPdfLabel}</button>
             <button onClick={handleDownloadPNG} disabled={loading} className="btn-secondary w-full text-sm disabled:opacity-50">{downloadPngLabel}</button>
-            <button onClick={() => window.print()} className="btn-secondary w-full text-sm">{printLabel}</button>
+             
           </div>
         </div>
       </div>
