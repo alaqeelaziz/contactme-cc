@@ -11,6 +11,7 @@ import BusinessCardTab from '@/components/dashboard/BusinessCardTab'
 import QRDownloader from '@/components/dashboard/QRDownloader'
 import AnalyticsCard from '@/components/dashboard/AnalyticsCard'
 import ServicesManager from '@/components/dashboard/ServicesManager'
+import AdminPanel from '@/components/dashboard/AdminPanel'
 import type { Profile, Link as LinkType, Service } from '@/lib/types'
 
 interface Props {
@@ -72,7 +73,7 @@ export default function DashboardClient({
             { id: 'qr',        label: t('tabs.qr'),         icon: '📱', show: true },
             { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷', show: true },
             { id: 'analytics', label: t('tabs.analytics'),  icon: '📊', show: true },
-            { id: 'admin',     label: 'الإدارة',            icon: '⚙️', show: isAdmin },
+            { id: 'admin',     label: 'الإدارة',            icon: '🛡️', show: isAdmin },
           ].filter(tab => tab.show).map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
@@ -129,13 +130,7 @@ export default function DashboardClient({
             </div>
           )}
           {activeTab === 'admin' && isAdmin && (
-            <div>
-              <h2 className="text-lg font-bold mb-5">لوحة الإدارة</h2>
-              <p className="text-xs font-mono text-[var(--text-muted)] mb-4 break-all">
-                id: {profile.id} | user_id: {(profile as any).user_id} | username: {profile.username}
-              </p>
-              <p className="text-sm text-[var(--text-muted)]">لوحة التحكم — قريباً</p>
-            </div>
+            <AdminPanel />
           )}
         </div>
 
