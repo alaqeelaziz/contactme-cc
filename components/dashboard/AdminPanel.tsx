@@ -26,21 +26,21 @@ interface Stats {
 }
 
 const DEFAULT_FEATURES = [
-  { id: 'scanner',  label: 'ماسح البطاقات',   enabled: true  },
-  { id: 'card',     label: 'بطاقة الأعمال',    enabled: true  },
-  { id: 'qr',       label: 'رمز QR',            enabled: true  },
-  { id: 'analytics',label: 'الإحصائيات',        enabled: true  },
-  { id: 'services', label: 'الخدمات (شركات)',  enabled: true  },
+  { id: 'scanner',   label: 'ماسح البطاقات',  enabled: true },
+  { id: 'card',      label: 'بطاقة الأعمال',   enabled: true },
+  { id: 'qr',        label: 'رمز QR',           enabled: true },
+  { id: 'analytics', label: 'الإحصائيات',       enabled: true },
+  { id: 'services',  label: 'الخدمات (شركات)', enabled: true },
 ]
 
 export default function AdminPanel() {
   const [tab,      setTab]      = useState<AdminTab>('stats')
-  const [stats,    setStats]    = useState<Stats|null>(null)
+  const [stats,    setStats]    = useState<Stats | null>(null)
   const [users,    setUsers]    = useState<UserRow[]>([])
   const [features, setFeatures] = useState(DEFAULT_FEATURES)
   const [search,   setSearch]   = useState('')
   const [loading,  setLoading]  = useState(false)
-  const [deleting, setDeleting] = useState<string|null>(null)
+  const [deleting, setDeleting] = useState<string | null>(null)
   const [msg,      setMsg]      = useState('')
 
   useEffect(() => { loadStats(); loadUsers() }, [])
@@ -48,18 +48,14 @@ export default function AdminPanel() {
   async function loadStats() {
     setLoading(true)
     try {
-      // Total users
       const { count: totalUsers } = await supabase
         .from('profiles').select('*', { count: 'exact', head: true })
 
-      // Users created in the last 24h (active proxy)
       const yesterday = new Date(Date.now() - 86400000).toISOString()
       const { count: activeToday } = await supabase
         .from('profiles').select('*', { count: 'exact', head: true })
         .gte('created_at', yesterday)
 
-      // Countries from profile_views or profiles (best effort)
-      // Try profile_views first, fallback to profiles
       let topCountries: { country: string; count: number }[] = []
       const { data: viewData } = await supabase
         .from('profile_views')
@@ -109,7 +105,9 @@ export default function AdminPanel() {
     u.email?.toLowerCase().includes(search.toLowerCase())
   )
 
-  const Stat = ({ icon, label, value, color }: { icon: string; label: string; value: string|number; color: string }) => (
+  const Stat = ({ icon, label, value, color }: {
+    icon: string; label: string; value: string | number; color: string
+  }) => (
     <div className="card flex items-center gap-4 p-4">
       <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
         style={{ background: `${color}15` }}>{icon}</div>
@@ -123,7 +121,7 @@ export default function AdminPanel() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">⚙️ لوحة الإدارة</h2>
+        <h2 className="text-lg font-bold">🛡️ لوحة الإدارة</h2>
         <button onClick={() => { loadStats(); loadUsers() }}
           className="text-xs text-[#6366F1] hover:underline">تحديث</button>
       </div>
@@ -140,14 +138,16 @@ export default function AdminPanel() {
           { id: 'settings', label: '🔧 الإعدادات' },
         ] as const).map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${tab===t.id?'text-white shadow-sm':'text-[var(--text-muted)]'}`}
-            style={tab===t.id?{background:'linear-gradient(135deg,#6366F1,#A855F7)'}:{}}>
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+              tab === t.id ? 'text-white shadow-sm' : 'text-[var(--text-muted)]'
+            }`}
+            style={tab === t.id ? { background: 'linear-gradient(135deg,#6366F1,#A855F7)' } : {}}>
             {t.label}
           </button>
         ))}
       </div>
 
-      {/* ── Stats ── */}
+      {/* Stats */}
       {tab === 'stats' && (
         <div className="space-y-4">
           {loading && <p className="text-sm text-[var(--text-muted)] text-center">جاري التحميل...</p>}
@@ -155,38 +155,34 @@ export default function AdminPanel() {
             <>
               <div className="grid grid-cols-2 gap-3">
                 <Stat icon="👤" label="إجمالي المستخدمين" value={stats.totalUsers} color="#6366F1" />
-                <Stat icon="🆕" label="مسجلون اليوم" value={stats.activeToday} color="#10B981" />
+                <Stat icon="🆕" label="مسجلون اليوم"      value={stats.activeToday} color="#10B981" />
               </div>
-
-              {stats.topCountries.length > 0 && (
-                <div className="card p-4 space-y-3">
-                  <p className="font-semibold text-sm">🌍 الدول الأكثر استخداماً</p>
-                  {stats.topCountries.map(({ country, count }) => {
-                    const max = stats.topCountries[0]?.count || 1
-                    return (
-                      <div key={country}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span>{country}</span>
-                          <span className="text-[var(--text-muted)]">{count} زيارة</span>
-                        </div>
-                        <div className="h-1.5 rounded-full" style={{ background: 'var(--border)' }}>
-                          <div className="h-full rounded-full"
-                            style={{ width: `${(count/max)*100}%`, background: 'linear-gradient(90deg,#6366F1,#A855F7)' }} />
-                        </div>
+              <div className="card p-4 space-y-3">
+                <p className="font-semibold text-sm">🌍 الدول الأكثر استخداماً</p>
+                {stats.topCountries.length > 0 ? stats.topCountries.map(({ country, count }) => {
+                  const max = stats.topCountries[0]?.count || 1
+                  return (
+                    <div key={country}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span>{country}</span>
+                        <span className="text-[var(--text-muted)]">{count} زيارة</span>
                       </div>
-                    )
-                  })}
-                  {stats.topCountries.length === 0 && (
-                    <p className="text-xs text-[var(--text-muted)]">لا توجد بيانات دول متاحة — تأكد من وجود جدول profile_views مع عمود country</p>
-                  )}
-                </div>
-              )}
+                      <div className="h-1.5 rounded-full" style={{ background: 'var(--border)' }}>
+                        <div className="h-full rounded-full"
+                          style={{ width: `${(count / max) * 100}%`, background: 'linear-gradient(90deg,#6366F1,#A855F7)' }} />
+                      </div>
+                    </div>
+                  )
+                }) : (
+                  <p className="text-xs text-[var(--text-muted)]">لا توجد بيانات دول متاحة</p>
+                )}
+              </div>
             </>
           )}
         </div>
       )}
 
-      {/* ── Users ── */}
+      {/* Users */}
       {tab === 'users' && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
@@ -195,7 +191,6 @@ export default function AdminPanel() {
               className="input flex-1 text-sm" />
             <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">{filtered.length} مستخدم</span>
           </div>
-
           <div className="space-y-2">
             {filtered.map(u => (
               <div key={u.id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--border)]">
@@ -225,25 +220,26 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* ── Settings / Feature flags ── */}
+      {/* Settings */}
       {tab === 'settings' && (
         <div className="space-y-3">
           <p className="text-xs text-[var(--text-muted)]">تحكم بالخصائص المتاحة لجميع المستخدمين</p>
           {features.map((f, idx) => (
             <div key={f.id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--border)]">
               <span className="text-sm font-medium">{f.label}</span>
-              <button onClick={() => {
-                setFeatures(prev => prev.map((p, i) => i === idx ? { ...p, enabled: !p.enabled } : p))
-                setMsg(`تم ${features[idx].enabled ? 'تعطيل' : 'تفعيل'} ${f.label}`)
-                setTimeout(() => setMsg(''), 2000)
-              }}
+              <button
+                onClick={() => {
+                  setFeatures(prev => prev.map((p, i) => i === idx ? { ...p, enabled: !p.enabled } : p))
+                  setMsg(`تم ${features[idx].enabled ? 'تعطيل' : 'تفعيل'} ${f.label}`)
+                  setTimeout(() => setMsg(''), 2000)
+                }}
                 className={`relative w-12 h-6 rounded-full transition-colors ${f.enabled ? 'bg-[#6366F1]' : 'bg-[var(--border)]'}`}>
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${f.enabled ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
             </div>
           ))}
           <p className="text-[10px] text-[var(--text-muted)] mt-2">
-            ملاحظة: هذه الإعدادات تحلية حالياً — لتطبيقها على المستخدمين تحتاج جدول feature_flags في Supabase
+            ملاحظة: هذه الإعدادات تجميلية حالياً — لتطبيقها تحتاج جدول feature_flags في Supabase
           </p>
         </div>
       )}
