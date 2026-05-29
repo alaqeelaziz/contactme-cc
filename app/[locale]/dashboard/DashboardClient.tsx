@@ -66,14 +66,14 @@ export default function DashboardClient({
         <div className="flex gap-1 p-1 rounded-xl mb-6 overflow-x-auto"
           style={{ background: 'var(--surface)', scrollbarWidth: 'none' }}>
           {[
-            { id: 'profile',   label: t('tabs.profile'),   icon: '👤', show: true },
-            { id: 'links',     label: t('tabs.links'),      icon: '🔗', show: true },
+            { id: 'profile',   label: t('tabs.profile'),   icon: '👤', show: isAdmin },
+            { id: 'links',     label: t('tabs.links'),      icon: '🔗', show: isAdmin },
             { id: 'services',  label: t('tabs.services'),   icon: '💼', show: isCompany },
-            { id: 'card',      label: 'بطاقتي',             icon: '💳', show: true },
-            { id: 'qr',        label: t('tabs.qr'),         icon: '📱', show: true },
-            { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷', show: true },
-            { id: 'analytics', label: t('tabs.analytics'),  icon: '📊', show: true },
-            { id: 'admin', label: 'الإدارة', icon: '🛡️', show: true },
+            { id: 'card',      label: 'بطاقتي',             icon: '💳', show: isAdmin },
+            { id: 'qr',        label: t('tabs.qr'),         icon: '📱', show: isAdmin },
+            { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷', show: isAdmin },
+            { id: 'analytics', label: t('tabs.analytics'),  icon: '📊', show: isAdmin },
+            { id: 'admin', label: 'الإدارة', icon: '🛡️', show: isAdmin },
           ].filter(tab => tab.show).map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
