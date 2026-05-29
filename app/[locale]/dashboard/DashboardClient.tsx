@@ -31,7 +31,7 @@ export default function DashboardClient({
   const [activeTab, setActiveTab] = useState('profile')
   const t = useTranslations('dashboard')
 
-  const isAdmin = profile.username === ADMIN_USERNAME
+  const isAdmin = true // مؤقت — نحذفه بعد ما نتأكد
   const isCompany = profile.account_type === 'company'
 
   return (
@@ -147,3 +147,4 @@ export default function DashboardClient({
     </div>
   )
 }
+ء
