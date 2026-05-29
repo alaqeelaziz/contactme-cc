@@ -47,6 +47,7 @@ export default async function DashboardPage({ params }: Props) {
         initialServices={[]}
         viewCount={0}
         profileUrl={profileUrl}
+        userId={user.id}
       />
     )
   }
@@ -66,6 +67,7 @@ export default async function DashboardPage({ params }: Props) {
       initialServices={services || []}
       viewCount={viewCount || 0}
       profileUrl={profileUrl}
+      userId={user.id}
     />
   )
 }

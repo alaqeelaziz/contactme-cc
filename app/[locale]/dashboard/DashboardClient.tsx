@@ -20,20 +20,19 @@ interface Props {
   initialServices: Service[]
   viewCount: number
   profileUrl: string
+  userId: string
 }
 
-const ADMIN_USERNAME = 'aalaqeel03'
+const ADMIN_ID = '4c33904a-2041-48de-a53d-907f5b532a18'
 
 export default function DashboardClient({
-  initialProfile, initialLinks, initialServices, viewCount, profileUrl,
+  initialProfile, initialLinks, initialServices, viewCount, profileUrl, userId,
 }: Props) {
   const [profile, setProfile] = useState<Profile>(initialProfile)
   const [activeTab, setActiveTab] = useState('profile')
   const t = useTranslations('dashboard')
 
-  const isAdmin = profile.username === ADMIN_USERNAME || 
-                (profile as any).user_id === '4c33904a-2041-48de-a53d-907f5b532a18' ||
-                profile.id === '4c33904a-2041-48de-a53d-907f5b532a18'
+  const isAdmin = userId === ADMIN_ID
   const isCompany = profile.account_type === 'company'
 
   return (
