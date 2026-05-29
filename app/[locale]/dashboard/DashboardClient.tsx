@@ -73,7 +73,7 @@ export default function DashboardClient({
             { id: 'qr',        label: t('tabs.qr'),         icon: '📱', show: true },
             { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷', show: true },
             { id: 'analytics', label: t('tabs.analytics'),  icon: '📊', show: true },
-            { id: 'admin',     label: 'الإدارة',            icon: '🛡️',  show: true },
+            { id: 'admin',     label: 'الإدارة',            icon: '🛡️', show: isAdmin },
           ].filter(tab => tab.show).map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
@@ -129,7 +129,7 @@ export default function DashboardClient({
               <AnalyticsCard viewCount={viewCount} isPro={true} createdAt={profile.created_at} />
             </div>
           )}
-          {activeTab === 'admin' && isAdmin && (
+          {activeTab === 'admin' && (
             <AdminPanel />
           )}
         </div>
