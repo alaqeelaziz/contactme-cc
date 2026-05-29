@@ -31,7 +31,9 @@ export default function DashboardClient({
   const [activeTab, setActiveTab] = useState('profile')
   const t = useTranslations('dashboard')
 
-  const isAdmin = profile.username === ADMIN_USERNAME
+  const isAdmin = profile.username === ADMIN_USERNAME || 
+                (profile as any).user_id === '4c33904a-2041-48de-a53d-907f5b532a18' ||
+                profile.id === '4c33904a-2041-48de-a53d-907f5b532a18'
   const isCompany = profile.account_type === 'company'
 
   return (
