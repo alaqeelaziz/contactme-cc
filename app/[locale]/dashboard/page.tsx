@@ -11,6 +11,7 @@ export default async function DashboardPage({ params }: Props) {
   const supabase = createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
+  console.log('USER ID:', user?.id)
   if (!user) redirect(`/${locale}/login`)
 
   const { data: profile } = await supabase
