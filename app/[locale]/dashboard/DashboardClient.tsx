@@ -23,7 +23,7 @@ interface Props {
   userId: string
 }
 
-const ADMIN_ID = '4c33904a-2041-48de-a53d-907f5b532a18'
+const ADMIN_ID = 'ccc18481-95a4-4aee-b795-5311cf560c52'
 
 export default function DashboardClient({
   initialProfile, initialLinks, initialServices, viewCount, profileUrl, userId,
