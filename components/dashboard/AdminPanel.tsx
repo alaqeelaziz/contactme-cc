@@ -1,248 +1,486 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { useState, useEffect, useCallback } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// ─── Types ───────────────────────────────────────────────────────────────────
+type Plan = "free" | "pro" | "enterprise";
+type UserStatus = "active" | "banned" | "suspended";
 
-type AdminTab = 'stats' | 'users' | 'settings'
-
-interface UserRow {
-  id: string
-  username: string
-  full_name: string | null
-  email: string | null
-  created_at: string
-  account_type: string | null
+interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string;
+  username: string;
+  plan: Plan;
+  status: UserStatus;
+  country: string;
+  last_seen: string;
+  created_at: string;
 }
 
 interface Stats {
-  totalUsers: number
-  activeToday: number
-  topCountries: { country: string; count: number }[]
+  total_users: number;
+  today_signups: number;
+  pro_users: number;
+  banned_users: number;
+  countries: { country: string; count: number }[];
+  daily_signups: { date: string; count: number }[];
 }
 
-const DEFAULT_FEATURES = [
-  { id: 'scanner',   label: 'ماسح البطاقات',  enabled: true },
-  { id: 'card',      label: 'بطاقة الأعمال',   enabled: true },
-  { id: 'qr',        label: 'رمز QR',           enabled: true },
-  { id: 'analytics', label: 'الإحصائيات',       enabled: true },
-  { id: 'services',  label: 'الخدمات (شركات)', enabled: true },
-]
+interface PlanConfig {
+  id: string;
+  name: string;
+  price_monthly: number;
+  price_yearly: number;
+  max_contacts: number;
+  features: string[];
+}
 
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminPanel() {
-  const [tab,      setTab]      = useState<AdminTab>('stats')
-  const [stats,    setStats]    = useState<Stats | null>(null)
-  const [users,    setUsers]    = useState<UserRow[]>([])
-  const [features, setFeatures] = useState(DEFAULT_FEATURES)
-  const [search,   setSearch]   = useState('')
-  const [loading,  setLoading]  = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
-  const [msg,      setMsg]      = useState('')
+  const supabase = createClientComponentClient();
+  const [activeTab, setActiveTab] = useState<"stats" | "users" | "plans" | "notifications">("stats");
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [plans, setPlans] = useState<PlanConfig[]>([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState({ title: "", body: "", target: "all", userId: "" });
+  const [sending, setSending] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<PlanConfig | null>(null);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
-  useEffect(() => { loadStats(); loadUsers() }, [])
+  const showToast = (msg: string, type: "success" | "error" = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
-  async function loadStats() {
-    setLoading(true)
-    try {
-      const { count: totalUsers } = await supabase
-        .from('profiles').select('*', { count: 'exact', head: true })
+  // ── Fetch Stats ──
+  const fetchStats = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch("/api/admin/stats");
+    if (res.ok) setStats(await res.json());
+    setLoading(false);
+  }, []);
 
-      const yesterday = new Date(Date.now() - 86400000).toISOString()
-      const { count: activeToday } = await supabase
-        .from('profiles').select('*', { count: 'exact', head: true })
-        .gte('created_at', yesterday)
+  // ── Fetch Users ──
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch(`/api/admin/users?search=${encodeURIComponent(search)}`);
+    if (res.ok) setUsers(await res.json());
+    setLoading(false);
+  }, [search]);
 
-      let topCountries: { country: string; count: number }[] = []
-      const { data: viewData } = await supabase
-        .from('profile_views')
-        .select('country')
-        .not('country', 'is', null)
-        .limit(500)
+  // ── Fetch Plans ──
+  const fetchPlans = useCallback(async () => {
+    const { data } = await supabase.from("plans").select("*").order("price_monthly");
+    if (data) setPlans(data);
+  }, [supabase]);
 
-      if (viewData && viewData.length > 0) {
-        const counts: Record<string, number> = {}
-        for (const row of viewData) {
-          const c = row.country || 'غير محدد'
-          counts[c] = (counts[c] || 0) + 1
-        }
-        topCountries = Object.entries(counts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 8)
-          .map(([country, count]) => ({ country, count }))
-      }
+  useEffect(() => {
+    if (activeTab === "stats") fetchStats();
+    if (activeTab === "users") fetchUsers();
+    if (activeTab === "plans") fetchPlans();
+  }, [activeTab, fetchStats, fetchUsers, fetchPlans]);
 
-      setStats({ totalUsers: totalUsers ?? 0, activeToday: activeToday ?? 0, topCountries })
-    } catch (e) { console.error(e) }
-    finally { setLoading(false) }
-  }
+  useEffect(() => {
+    if (activeTab === "users") fetchUsers();
+  }, [search, activeTab, fetchUsers]);
 
-  async function loadUsers() {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, username, full_name, email, created_at, account_type')
-      .order('created_at', { ascending: false })
-      .limit(100)
-    if (data) setUsers(data)
-  }
+  // ── Update User ──
+  const updateUser = async (id: string, updates: Partial<AdminUser>) => {
+    const res = await fetch(`/api/admin/users/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    if (res.ok) {
+      showToast("تم التحديث ✓");
+      fetchUsers();
+    } else {
+      showToast("فشل التحديث", "error");
+    }
+  };
 
-  async function deleteUser(id: string, username: string) {
-    if (!confirm(`حذف المستخدم @${username}؟`)) return
-    setDeleting(id)
-    await supabase.from('profiles').delete().eq('id', id)
-    setUsers(prev => prev.filter(u => u.id !== id))
-    setMsg(`تم حذف @${username}`)
-    setTimeout(() => setMsg(''), 3000)
-    setDeleting(null)
-  }
+  // ── Delete User ──
+  const deleteUser = async (id: string) => {
+    if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
+    const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+    if (res.ok) { showToast("تم الحذف ✓"); fetchUsers(); }
+    else showToast("فشل الحذف", "error");
+  };
 
-  const filtered = users.filter(u =>
-    u.username?.toLowerCase().includes(search.toLowerCase()) ||
-    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase())
-  )
+  // ── Save Plan ──
+  const savePlan = async () => {
+    if (!editingPlan) return;
+    const { error } = await supabase.from("plans").upsert(editingPlan);
+    if (!error) { showToast("تم حفظ الخطة ✓"); setEditingPlan(null); fetchPlans(); }
+    else showToast("فشل الحفظ", "error");
+  };
 
-  const Stat = ({ icon, label, value, color }: {
-    icon: string; label: string; value: string | number; color: string
-  }) => (
-    <div className="card flex items-center gap-4 p-4">
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-        style={{ background: `${color}15` }}>{icon}</div>
-      <div>
-        <p className="text-2xl font-extrabold">{value}</p>
-        <p className="text-xs text-[var(--text-muted)]">{label}</p>
-      </div>
-    </div>
-  )
+  // ── Send Notification ──
+  const sendNotification = async () => {
+    if (!notification.title || !notification.body) return showToast("الرجاء ملء العنوان والمحتوى", "error");
+    setSending(true);
+    const res = await fetch("/api/admin/notifications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(notification),
+    });
+    setSending(false);
+    if (res.ok) {
+      showToast("تم الإرسال ✓");
+      setNotification({ title: "", body: "", target: "all", userId: "" });
+    } else showToast("فشل الإرسال", "error");
+  };
+
+  const tabs = [
+    { id: "stats", label: "📊 الإحصائيات" },
+    { id: "users", label: "👥 المستخدمون" },
+    { id: "plans", label: "💰 الخطط" },
+    { id: "notifications", label: "📢 الإشعارات" },
+  ] as const;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">🛡️ لوحة الإدارة</h2>
-        <button onClick={() => { loadStats(); loadUsers() }}
-          className="text-xs text-[#6366F1] hover:underline">تحديث</button>
-      </div>
-
-      {msg && (
-        <div className="p-3 rounded-xl text-sm text-green-700 bg-green-50 border border-green-200">{msg}</div>
+    <div className="min-h-screen bg-gray-950 text-white p-6" dir="rtl">
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl text-sm font-medium shadow-xl transition-all ${toast.type === "success" ? "bg-emerald-600" : "bg-red-600"}`}>
+          {toast.msg}
+        </div>
       )}
 
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white">🛡️ لوحة الإدارة</h1>
+        <p className="text-gray-400 mt-1 text-sm">contactme.cc — إدارة شاملة للمنصة</p>
+      </div>
+
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl" style={{ background: 'var(--surface)' }}>
-        {([
-          { id: 'stats',    label: '📊 إحصائيات' },
-          { id: 'users',    label: '👥 المستخدمون' },
-          { id: 'settings', label: '🔧 الإعدادات' },
-        ] as const).map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-              tab === t.id ? 'text-white shadow-sm' : 'text-[var(--text-muted)]'
+      <div className="flex gap-2 mb-8 flex-wrap">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              activeTab === tab.id
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
+                : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
             }`}
-            style={tab === t.id ? { background: 'linear-gradient(135deg,#6366F1,#A855F7)' } : {}}>
-            {t.label}
+          >
+            {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Stats */}
-      {tab === 'stats' && (
-        <div className="space-y-4">
-          {loading && <p className="text-sm text-[var(--text-muted)] text-center">جاري التحميل...</p>}
-          {stats && (
+      {/* ── STATS TAB ── */}
+      {activeTab === "stats" && (
+        <div className="space-y-6">
+          {loading ? (
+            <div className="text-center text-gray-500 py-20">جاري التحميل...</div>
+          ) : stats ? (
             <>
-              <div className="grid grid-cols-2 gap-3">
-                <Stat icon="👤" label="إجمالي المستخدمين" value={stats.totalUsers} color="#6366F1" />
-                <Stat icon="🆕" label="مسجلون اليوم"      value={stats.activeToday} color="#10B981" />
+              {/* KPI Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { label: "إجمالي المستخدمين", value: stats.total_users, color: "indigo", icon: "👥" },
+                  { label: "تسجيلات اليوم", value: stats.today_signups, color: "emerald", icon: "🆕" },
+                  { label: "مستخدمو Pro", value: stats.pro_users, color: "amber", icon: "⭐" },
+                  { label: "محظورون", value: stats.banned_users, color: "red", icon: "🚫" },
+                ].map((kpi) => (
+                  <div key={kpi.label} className="bg-gray-800/60 rounded-2xl p-5 border border-gray-700/50">
+                    <div className="text-2xl mb-2">{kpi.icon}</div>
+                    <div className="text-3xl font-bold text-white">{kpi.value}</div>
+                    <div className="text-gray-400 text-sm mt-1">{kpi.label}</div>
+                  </div>
+                ))}
               </div>
-              <div className="card p-4 space-y-3">
-                <p className="font-semibold text-sm">🌍 الدول الأكثر استخداماً</p>
-                {stats.topCountries.length > 0 ? stats.topCountries.map(({ country, count }) => {
-                  const max = stats.topCountries[0]?.count || 1
-                  return (
-                    <div key={country}>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>{country}</span>
-                        <span className="text-[var(--text-muted)]">{count} زيارة</span>
+
+              {/* Daily Signups Chart */}
+              <div className="bg-gray-800/60 rounded-2xl p-6 border border-gray-700/50">
+                <h3 className="text-lg font-semibold mb-4">📈 تسجيلات آخر 14 يوم</h3>
+                <div className="flex items-end gap-2 h-32">
+                  {stats.daily_signups?.map((d, i) => {
+                    const max = Math.max(...stats.daily_signups.map((x) => x.count), 1);
+                    const height = Math.round((d.count / max) * 100);
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+                        <div className="text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {d.count}
+                        </div>
+                        <div
+                          className="w-full rounded-t bg-indigo-500 hover:bg-indigo-400 transition-all cursor-default"
+                          style={{ height: `${Math.max(height, 4)}%` }}
+                        />
+                        <div className="text-xs text-gray-500 -rotate-45 origin-top-right whitespace-nowrap">
+                          {d.date?.slice(5)}
+                        </div>
                       </div>
-                      <div className="h-1.5 rounded-full" style={{ background: 'var(--border)' }}>
-                        <div className="h-full rounded-full"
-                          style={{ width: `${(count / max) * 100}%`, background: 'linear-gradient(90deg,#6366F1,#A855F7)' }} />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Countries */}
+              <div className="bg-gray-800/60 rounded-2xl p-6 border border-gray-700/50">
+                <h3 className="text-lg font-semibold mb-4">🌍 توزيع الدول (أعلى 10)</h3>
+                <div className="space-y-3">
+                  {stats.countries?.slice(0, 10).map((c) => {
+                    const max = stats.countries[0]?.count || 1;
+                    return (
+                      <div key={c.country} className="flex items-center gap-3">
+                        <div className="w-28 text-sm text-gray-300 text-right truncate">{c.country || "غير محدد"}</div>
+                        <div className="flex-1 bg-gray-700 rounded-full h-2">
+                          <div
+                            className="bg-indigo-500 h-2 rounded-full transition-all"
+                            style={{ width: `${(c.count / max) * 100}%` }}
+                          />
+                        </div>
+                        <div className="text-sm text-gray-400 w-8 text-left">{c.count}</div>
                       </div>
-                    </div>
-                  )
-                }) : (
-                  <p className="text-xs text-[var(--text-muted)]">لا توجد بيانات دول متاحة</p>
-                )}
+                    );
+                  })}
+                </div>
               </div>
             </>
+          ) : (
+            <div className="text-center text-gray-500 py-20">لا توجد بيانات</div>
           )}
         </div>
       )}
 
-      {/* Users */}
-      {tab === 'users' && (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <input type="text" placeholder="بحث بالاسم أو البريد..." value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="input flex-1 text-sm" />
-            <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">{filtered.length} مستخدم</span>
-          </div>
-          <div className="space-y-2">
-            {filtered.map(u => (
-              <div key={u.id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--border)]">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold truncate">
-                    {u.full_name || u.username}
-                    {u.account_type === 'company' && (
-                      <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">شركة</span>
-                    )}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] truncate">@{u.username} · {u.email}</p>
-                  <p className="text-[10px] text-[var(--text-muted)]">
-                    {new Date(u.created_at).toLocaleDateString('ar-SA')}
-                  </p>
-                </div>
-                <button onClick={() => deleteUser(u.id, u.username)}
-                  disabled={deleting === u.id}
-                  className="flex-shrink-0 mr-2 text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-2.5 py-1.5 rounded-lg transition-all disabled:opacity-40">
-                  {deleting === u.id ? '...' : 'حذف'}
-                </button>
-              </div>
-            ))}
-            {filtered.length === 0 && (
-              <p className="text-center text-sm text-[var(--text-muted)] py-8">لا توجد نتائج</p>
-            )}
+      {/* ── USERS TAB ── */}
+      {activeTab === "users" && (
+        <div className="space-y-4">
+          {/* Search */}
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="🔍 ابحث بالاسم أو الإيميل..."
+            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+
+          {/* Table */}
+          <div className="bg-gray-800/60 rounded-2xl border border-gray-700/50 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-700 text-gray-400">
+                    <th className="text-right px-4 py-3">المستخدم</th>
+                    <th className="text-right px-4 py-3">الخطة</th>
+                    <th className="text-right px-4 py-3">الحالة</th>
+                    <th className="text-right px-4 py-3">الدولة</th>
+                    <th className="text-right px-4 py-3">آخر ظهور</th>
+                    <th className="text-right px-4 py-3">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan={6} className="text-center py-10 text-gray-500">جاري التحميل...</td></tr>
+                  ) : users.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-10 text-gray-500">لا يوجد مستخدمون</td></tr>
+                  ) : users.map((u) => (
+                    <tr key={u.id} className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-white">{u.full_name || "—"}</div>
+                        <div className="text-gray-400 text-xs">{u.email}</div>
+                        {u.username && <div className="text-gray-500 text-xs">@{u.username}</div>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={u.plan || "free"}
+                          onChange={(e) => updateUser(u.id, { plan: e.target.value as Plan })}
+                          className="bg-gray-700 border border-gray-600 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        >
+                          <option value="free">Free</option>
+                          <option value="pro">Pro</option>
+                          <option value="enterprise">Enterprise</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={u.status || "active"}
+                          onChange={(e) => updateUser(u.id, { status: e.target.value as UserStatus })}
+                          className={`bg-gray-700 border border-gray-600 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
+                            u.status === "banned" ? "text-red-400" : u.status === "suspended" ? "text-amber-400" : "text-emerald-400"
+                          }`}
+                        >
+                          <option value="active">✅ نشط</option>
+                          <option value="suspended">⚠️ موقوف</option>
+                          <option value="banned">🚫 محظور</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-gray-400">{u.country || "—"}</td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">
+                        {u.last_seen ? new Date(u.last_seen).toLocaleDateString("ar-SA") : "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => deleteUser(u.id)}
+                          className="text-red-400 hover:text-red-300 text-xs px-2 py-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                        >
+                          حذف
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="px-4 py-3 text-gray-500 text-xs border-t border-gray-700">
+              {users.length} مستخدم
+            </div>
           </div>
         </div>
       )}
 
-      {/* Settings */}
-      {tab === 'settings' && (
-        <div className="space-y-3">
-          <p className="text-xs text-[var(--text-muted)]">تحكم بالخصائص المتاحة لجميع المستخدمين</p>
-          {features.map((f, idx) => (
-            <div key={f.id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--border)]">
-              <span className="text-sm font-medium">{f.label}</span>
-              <button
-                onClick={() => {
-                  setFeatures(prev => prev.map((p, i) => i === idx ? { ...p, enabled: !p.enabled } : p))
-                  setMsg(`تم ${features[idx].enabled ? 'تعطيل' : 'تفعيل'} ${f.label}`)
-                  setTimeout(() => setMsg(''), 2000)
-                }}
-                className={`relative w-12 h-6 rounded-full transition-colors ${f.enabled ? 'bg-[#6366F1]' : 'bg-[var(--border)]'}`}>
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${f.enabled ? 'translate-x-7' : 'translate-x-1'}`} />
-              </button>
+      {/* ── PLANS TAB ── */}
+      {activeTab === "plans" && (
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-3">
+            {plans.map((plan) => (
+              <div key={plan.id} className="bg-gray-800/60 rounded-2xl p-6 border border-gray-700/50">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-bold text-white capitalize">{plan.name}</h3>
+                  <button
+                    onClick={() => setEditingPlan({ ...plan })}
+                    className="text-xs bg-indigo-600/20 text-indigo-400 px-3 py-1 rounded-lg hover:bg-indigo-600/40 transition-colors"
+                  >
+                    تعديل
+                  </button>
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  ${plan.price_monthly}<span className="text-sm text-gray-400">/شهر</span>
+                </div>
+                <div className="text-gray-400 text-sm mb-4">${plan.price_yearly}/سنة</div>
+                <div className="text-sm text-gray-300">
+                  <span className="text-indigo-400 font-medium">{plan.max_contacts === -1 ? "∞" : plan.max_contacts}</span> جهة اتصال
+                </div>
+                <div className="mt-3 space-y-1">
+                  {plan.features?.map((f, i) => (
+                    <div key={i} className="text-xs text-gray-400 flex items-center gap-1">
+                      <span className="text-emerald-500">✓</span> {f}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Edit Modal */}
+          {editingPlan && (
+            <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={() => setEditingPlan(null)}>
+              <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-gray-700" onClick={(e) => e.stopPropagation()}>
+                <h3 className="text-lg font-bold mb-5">تعديل خطة {editingPlan.name}</h3>
+                <div className="space-y-4">
+                  {[
+                    { label: "السعر الشهري ($)", key: "price_monthly", type: "number" },
+                    { label: "السعر السنوي ($)", key: "price_yearly", type: "number" },
+                    { label: "الحد الأقصى للجهات (-1 = لامحدود)", key: "max_contacts", type: "number" },
+                  ].map((field) => (
+                    <div key={field.key}>
+                      <label className="block text-sm text-gray-400 mb-1">{field.label}</label>
+                      <input
+                        type={field.type}
+                        value={(editingPlan as any)[field.key]}
+                        onChange={(e) => setEditingPlan({ ...editingPlan, [field.key]: Number(e.target.value) })}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  ))}
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">المميزات (كل سطر ميزة)</label>
+                    <textarea
+                      rows={4}
+                      value={editingPlan.features?.join("\n")}
+                      onChange={(e) => setEditingPlan({ ...editingPlan, features: e.target.value.split("\n").filter(Boolean) })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button onClick={savePlan} className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl py-2.5 text-sm font-medium transition-colors">
+                    حفظ التغييرات
+                  </button>
+                  <button onClick={() => setEditingPlan(null)} className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded-xl py-2.5 text-sm font-medium transition-colors">
+                    إلغاء
+                  </button>
+                </div>
+              </div>
             </div>
-          ))}
-          <p className="text-[10px] text-[var(--text-muted)] mt-2">
-            ملاحظة: هذه الإعدادات تجميلية حالياً — لتطبيقها تحتاج جدول feature_flags في Supabase
-          </p>
+          )}
+        </div>
+      )}
+
+      {/* ── NOTIFICATIONS TAB ── */}
+      {activeTab === "notifications" && (
+        <div className="max-w-xl">
+          <div className="bg-gray-800/60 rounded-2xl p-6 border border-gray-700/50 space-y-4">
+            <h3 className="text-lg font-semibold">إرسال إشعار</h3>
+
+            {/* Target */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">المستهدف</label>
+              <div className="flex gap-2">
+                {[{ v: "all", l: "🌐 الكل" }, { v: "pro", l: "⭐ Pro فقط" }, { v: "free", l: "🆓 Free فقط" }, { v: "user", l: "👤 مستخدم محدد" }].map((opt) => (
+                  <button
+                    key={opt.v}
+                    onClick={() => setNotification({ ...notification, target: opt.v })}
+                    className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${notification.target === opt.v ? "bg-indigo-600 text-white" : "bg-gray-700 text-gray-400 hover:bg-gray-600"}`}
+                  >
+                    {opt.l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* User ID if specific */}
+            {notification.target === "user" && (
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">User ID أو الإيميل</label>
+                <input
+                  value={notification.userId}
+                  onChange={(e) => setNotification({ ...notification, userId: e.target.value })}
+                  placeholder="أدخل UUID أو الإيميل"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            )}
+
+            {/* Title */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">العنوان</label>
+              <input
+                value={notification.title}
+                onChange={(e) => setNotification({ ...notification, title: e.target.value })}
+                placeholder="عنوان الإشعار..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Body */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">المحتوى</label>
+              <textarea
+                rows={4}
+                value={notification.body}
+                onChange={(e) => setNotification({ ...notification, body: e.target.value })}
+                placeholder="نص الإشعار..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              />
+            </div>
+
+            <button
+              onClick={sendNotification}
+              disabled={sending}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl py-3 text-sm font-medium transition-colors"
+            >
+              {sending ? "جاري الإرسال..." : "📢 إرسال الإشعار"}
+            </button>
+          </div>
         </div>
       )}
     </div>
-  )
+  );
 }
