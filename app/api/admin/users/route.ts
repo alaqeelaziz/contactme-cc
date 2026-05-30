@@ -1,90 +1,60 @@
-// app/api/admin/users/route.ts
-// يجلب كل المستخدمين باستخدام service_role (server-side فقط)
-
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 const ADMIN_ID = "4c33904a-2041-48de-a53d-907f5b532a18";
 
-// Supabase Admin Client (service_role — server only)
 const adminSupabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // هذا المتغير سري — لا يُكشف للعميل
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
 export async function GET() {
-  // التحقق من أن الطالب هو الأدمن
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || user.id !== ADMIN_ID)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!user || user.id !== ADMIN_ID) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  const { count: total_users } = await adminSupabase
+    .from("profiles").select("*", { count: "exact", head: true });
+
+  const today = new Date().toISOString().slice(0, 10);
+  const { count: today_signups } = await adminSupabase
+    .from("profiles").select("*", { count: "exact", head: true })
+    .gte("created_at", `${today}T00:00:00`);
+
+  const { count: pro_users } = await adminSupabase
+    .from("profiles").select("*", { count: "exact", head: true })
+    .eq("plan", "pro");
+
+  const { count: banned_users } = await adminSupabase
+    .from("profiles").select("*", { count: "exact", head: true })
+    .eq("status", "banned");
+
+  const { data: countryData } = await adminSupabase
+    .from("profiles").select("country").not("country", "is", null);
+
+  const countryCounts: Record<string, number> = {};
+  countryData?.forEach((r) => {
+    const c = r.country || "غير محدد";
+    countryCounts[c] = (countryCounts[c] || 0) + 1;
+  });
+  const countries = Object.entries(countryCounts)
+    .map(([country, count]) => ({ country, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const daily_signups: { date: string; count: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const { count } = await adminSupabase
+      .from("profiles").select("*", { count: "exact", head: true })
+      .gte("created_at", `${dateStr}T00:00:00`)
+      .lt("created_at", `${dateStr}T23:59:59`);
+    daily_signups.push({ date: dateStr, count: count || 0 });
   }
 
-  // جلب كل المستخدمين من auth.users عبر service_role
-  const { data: authUsers, error: authError } =
-    await adminSupabase.auth.admin.listUsers({ perPage: 1000 });
-
-  if (authError) {
-    return NextResponse.json({ error: authError.message }, { status: 500 });
-  }
-
-  // جلب profiles مع الإحصائيات
-  const { data: profiles } = await adminSupabase
-    .from("profiles")
-    .select("id, username, full_name, country, plan, status, created_at, last_seen");
-
-  // جلب عدد جهات الاتصال لكل مستخدم
-  const { data: contactCounts } = await adminSupabase
-    .from("contacts")
-    .select("user_id");
-
-  // جلب عدد QR codes
-  const { data: qrCounts } = await adminSupabase
-    .from("qr_codes")
-    .select("user_id");
-
-  const profileMap = new Map(
-    (profiles ?? []).map((p) => [p.id, p])
-  );
-
-  const contactCountMap: Record<string, number> = {};
-  (contactCounts ?? []).forEach((c: { user_id: string }) => {
-    contactCountMap[c.user_id] = (contactCountMap[c.user_id] || 0) + 1;
-  });
-
-  const qrCountMap: Record<string, number> = {};
-  (qrCounts ?? []).forEach((q: { user_id: string }) => {
-    qrCountMap[q.user_id] = (qrCountMap[q.user_id] || 0) + 1;
-  });
-
-  const users = authUsers.users.map((u) => {
-    const profile = profileMap.get(u.id);
-    return {
-      id: u.id,
-      email: u.email ?? "",
-      username: profile?.username ?? null,
-      full_name: profile?.full_name ?? null,
-      country: profile?.country ?? null,
-      plan: profile?.plan ?? "free",
-      status: profile?.status ?? "active",
-      created_at: profile?.created_at ?? u.created_at,
-      last_seen: profile?.last_seen ?? null,
-      last_sign_in_at: u.last_sign_in_at ?? null,
-      contacts_count: contactCountMap[u.id] ?? 0,
-      qr_count: qrCountMap[u.id] ?? 0,
-    };
-  });
-
-  // ترتيب من الأحدث إلى الأقدم
-  users.sort(
-    (a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-
-  return NextResponse.json(users);
+  return NextResponse.json({ total_users, today_signups, pro_users, banned_users, countries, daily_signups });
 }
