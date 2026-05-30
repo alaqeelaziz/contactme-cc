@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-const ADMIN_ID = "4c33904a-2041-48de-a53d-907f5b532a18";
+const ADMIN_ID = "ccc18481-95a4-4aee-b795-5311cf560c52";
 
 const adminSupabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
