@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-const ADMIN_ID = "4c33904a-2041-48de-a53d-907f5b532a18";
+const ADMIN_ID = "5085f0e4-eb5c-4da6-86f9-ebcc2f98e574";
 
 const adminSupabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,51 +10,38 @@ const adminSupabase = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-export async function GET() {
+export async function GET(req: Request) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || user.id !== ADMIN_ID)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { count: total_users } = await adminSupabase
-    .from("profiles").select("*", { count: "exact", head: true });
+  const { searchParams } = new URL(req.url);
+  const search = searchParams.get("search") || "";
 
-  const today = new Date().toISOString().slice(0, 10);
-  const { count: today_signups } = await adminSupabase
-    .from("profiles").select("*", { count: "exact", head: true })
-    .gte("created_at", `${today}T00:00:00`);
+  let query = adminSupabase
+    .from("profiles")
+    .select("id, full_name, username, plan, status, country, last_seen, created_at")
+    .order("created_at", { ascending: false })
+    .limit(100);
 
-  const { count: pro_users } = await adminSupabase
-    .from("profiles").select("*", { count: "exact", head: true })
-    .eq("plan", "pro");
-
-  const { count: banned_users } = await adminSupabase
-    .from("profiles").select("*", { count: "exact", head: true })
-    .eq("status", "banned");
-
-  const { data: countryData } = await adminSupabase
-    .from("profiles").select("country").not("country", "is", null);
-
-  const countryCounts: Record<string, number> = {};
-  countryData?.forEach((r) => {
-    const c = r.country || "غير محدد";
-    countryCounts[c] = (countryCounts[c] || 0) + 1;
-  });
-  const countries = Object.entries(countryCounts)
-    .map(([country, count]) => ({ country, count }))
-    .sort((a, b) => b.count - a.count);
-
-  const daily_signups: { date: string; count: number }[] = [];
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const { count } = await adminSupabase
-      .from("profiles").select("*", { count: "exact", head: true })
-      .gte("created_at", `${dateStr}T00:00:00`)
-      .lt("created_at", `${dateStr}T23:59:59`);
-    daily_signups.push({ date: dateStr, count: count || 0 });
+  if (search) {
+    query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%`);
   }
 
-  return NextResponse.json({ total_users, today_signups, pro_users, banned_users, countries, daily_signups });
+  const { data, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // جلب الإيميلات من auth.users عبر adminSupabase
+  const ids = data?.map((p) => p.id) || [];
+  const usersWithEmail = await Promise.all(
+    ids.map(async (id) => {
+      const { data: authUser } = await adminSupabase.auth.admin.getUserById(id);
+      return { id, email: authUser?.user?.email || "" };
+    })
+  );
+  const emailMap = Object.fromEntries(usersWithEmail.map((u) => [u.id, u.email]));
+
+  const result = data?.map((p) => ({ ...p, email: emailMap[p.id] || "" })) || [];
+  return NextResponse.json(result);
 }
