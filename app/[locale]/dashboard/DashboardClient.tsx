@@ -37,6 +37,10 @@ export default function DashboardClient({
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+      {/* DEBUG - remove after fixing */}
+      <div className="text-xs text-red-400 p-2 break-all bg-black/50">
+        ID: {userId} | isAdmin: {String(isAdmin)}
+      </div>
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
 
@@ -59,7 +63,7 @@ export default function DashboardClient({
         </div>
 
         {/* Tab bar */}
-        <div className="flex gap-1 p-1 rounded-xl mb-6 overflow-x-auto"
+        <div className="flex gap-1 p1 rounded-xl mb-6 overflow-x-auto"
           style={{ background: 'var(--surface)', scrollbarWidth: 'none' }}>
           {[
             { id: 'profile',   label: t('tabs.profile'),   icon: '👤', show: true },
