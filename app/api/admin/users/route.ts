@@ -23,7 +23,7 @@ export async function GET(req: Request) {
 
   let query = adminSupabase
     .from("profiles")
-    .select("id, full_name, username, plan, status, country, last_seen, created_at")
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(100);
 
