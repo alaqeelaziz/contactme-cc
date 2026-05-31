@@ -38,9 +38,7 @@ export default function DashboardClient({
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
       {/* DEBUG - remove after fixing */}
-      <div className="text-xs text-red-400 p-2 break-all bg-black/50">
-        ID: {userId} | isAdmin: {String(isAdmin)}
-      </div>
+      
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
 
