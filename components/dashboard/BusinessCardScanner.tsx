@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import type { ScannedCard } from '@/lib/types'
 
@@ -10,12 +11,15 @@ interface Props {
 }
 
 interface SavedContact extends ScannedCard {
+  notes?: string | null
   id: string
   created_at: string
 }
 
 export default function BusinessCardScanner({ isPro }: Props) {
   const supabase = createClient()
+  const n = useTranslations('contactNotes')
+  const [notes, setNotes] = useState('')
   const [image, setImage] = useState<string | null>(null)
   const [scanning, setScanning] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -71,6 +75,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const compressed = canvas.toDataURL('image/jpeg', 0.8)
     setImage(compressed)
     setResult(null)
+    setNotes('')
     URL.revokeObjectURL(url)
   }
   img.src = url
@@ -88,6 +93,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setResult(data)
+      setNotes('')
       toast.success('تم استخراج البيانات بنجاح')
     } catch (err: any) {
       toast.error(err.message || 'حدث خطأ أثناء المسح')
@@ -110,11 +116,13 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         phone: result.phone || null,
         email: result.email || null,
         website: result.website || null,
+        notes: notes.trim() || null,
       })
       if (error) throw error
       toast.success('تم حفظ جهة الاتصال ✓')
       loadContacts()
       setResult(null)
+      setNotes('')
       setImage(null)
       if (fileRef.current) fileRef.current.value = ''
       if (cameraRef.current) cameraRef.current.value = ''
@@ -133,6 +141,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
   function reset() {
     setImage(null)
     setResult(null)
+    setNotes('')
     if (fileRef.current) fileRef.current.value = ''
     if (cameraRef.current) cameraRef.current.value = ''
   }
@@ -145,6 +154,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       'الهاتف': c.phone || '',
       'البريد الإلكتروني': c.email || '',
       'الموقع': c.website || '',
+      [n('label')]: c.notes || '',
       'التاريخ': new Date(c.created_at).toLocaleDateString('ar-SA'),
     }))
   }
@@ -154,7 +164,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const rows = getRows()
     const headers = Object.keys(rows[0])
     const csv = [headers, ...rows.map(r => Object.values(r))]
-      .map(r => r.map(v => `"${v}"`).join(','))
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
       .join('\n')
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
     downloadBlob(blob, 'contacts.csv')
@@ -169,7 +179,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       const ws = XLSX.utils.json_to_sheet(getRows())
       const wb = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(wb, ws, 'Contacts')
-      ws['!cols'] = [20, 25, 25, 18, 30, 25, 15].map(w => ({ wch: w }))
+      ws['!cols'] = [20, 25, 25, 18, 30, 25, 45, 15].map(w => ({ wch: w }))
       XLSX.writeFile(wb, 'contacts.xlsx')
       toast.success('تم تصدير Excel')
     } catch {
@@ -188,6 +198,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       if (c.phone) lines.push(`TEL:${c.phone}`)
       if (c.email) lines.push(`EMAIL:${c.email}`)
       if (c.website) lines.push(`URL:${c.website}`)
+      if (c.notes) lines.push(`NOTE:${c.notes.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,')}`)
       lines.push('END:VCARD')
       return lines.join('\n')
     }).join('\n\n')
@@ -338,6 +349,12 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
               })}
             </div>
           </div>
+          <label className="block text-sm font-medium">
+            {n('label')}
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} maxLength={4000}
+              rows={3} placeholder={n('placeholder')} className="input-field w-full mt-2" />
+            <span className="text-xs text-[var(--text-muted)]">{n('private')}</span>
+          </label>
           <button onClick={handleSave} disabled={saving}
             className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2"
             style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
@@ -395,6 +412,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
                   <div className="min-w-0">
                     <p className="font-semibold text-sm truncate">{c.name || '—'}</p>
                     <p className="text-xs text-[var(--text-muted)] truncate">{c.company || c.title || c.phone || ''}</p>
+                    {c.notes && <p className="text-sm whitespace-pre-wrap break-words mt-2">{c.notes}</p>}
                   </div>
                   <p className="text-[10px] text-[var(--text-muted)] flex-shrink-0">
                     {new Date(c.created_at).toLocaleDateString('ar-SA')}

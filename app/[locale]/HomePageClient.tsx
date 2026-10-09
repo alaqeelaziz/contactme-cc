@@ -70,7 +70,7 @@ const content = {
       links: [
         { label: 'سياسة الخصوصية', href: '/ar/privacy' },
         { label: 'الشروط والأحكام', href: '/ar/terms' },
-        { label: 'تواصل معنا', href: 'mailto:support@contactme.cc' },
+        { label: 'تواصل معنا', href: 'mailto:controlcode26@gmail.com' },
       ],
       tagline: 'مبني بـ ❤️ للمحترفين العرب والعالم',
     },
@@ -133,7 +133,7 @@ const content = {
       links: [
         { label: 'Privacy Policy', href: '/en/privacy' },
         { label: 'Terms of Service', href: '/en/terms' },
-        { label: 'Contact Us', href: 'mailto:support@contactme.cc' },
+        { label: 'Contact Us', href: 'mailto:controlcode26@gmail.com' },
       ],
       tagline: 'Built with ❤️ for professionals worldwide',
     },
@@ -196,7 +196,7 @@ const content = {
       links: [
         { label: '隐私政策', href: '/zh/privacy' },
         { label: '服务条款', href: '/zh/terms' },
-        { label: '联系我们', href: 'mailto:support@contactme.cc' },
+        { label: '联系我们', href: 'mailto:controlcode26@gmail.com' },
       ],
       tagline: '用 ❤️ 为全球专业人士打造',
     },
@@ -259,7 +259,7 @@ const content = {
       links: [
         { label: 'Politique de confidentialité', href: '/fr/privacy' },
         { label: "Conditions d'utilisation", href: '/fr/terms' },
-        { label: 'Nous contacter', href: 'mailto:support@contactme.cc' },
+        { label: 'Nous contacter', href: 'mailto:controlcode26@gmail.com' },
       ],
       tagline: 'Fait avec ❤️ pour les professionnels du monde entier',
     },
@@ -322,7 +322,7 @@ const content = {
       links: [
         { label: 'Política de privacidad', href: '/es/privacy' },
         { label: 'Términos de servicio', href: '/es/terms' },
-        { label: 'Contáctanos', href: 'mailto:support@contactme.cc' },
+        { label: 'Contáctanos', href: 'mailto:controlcode26@gmail.com' },
       ],
       tagline: 'Hecho con ❤️ para profesionales de todo el mundo',
     },

@@ -18,7 +18,7 @@ const content: Record<string, any> = {
       { title: '5. الخدمة المجانية', body: 'نقدم الخدمة الأساسية مجاناً. نحتفظ بالحق في تغيير الميزات المتاحة في الخطة المجانية مع إشعار مسبق.' },
       { title: '6. إنهاء الخدمة', body: 'نحتفظ بحق تعليق أو إنهاء أي حساب يخالف هذه الشروط. يمكنك حذف حسابك في أي وقت.' },
       { title: '7. تحديث الشروط', body: 'قد نحدّث هذه الشروط من وقت لآخر. سنخطرك بأي تغييرات جوهرية عبر البريد الإلكتروني.' },
-      { title: '8. التواصل', body: 'لأي استفسار بخصوص هذه الشروط، تواصل معنا على: support@contactme.cc' },
+      { title: '8. التواصل', body: 'لأي استفسار بخصوص هذه الشروط، تواصل معنا على: controlcode26@gmail.com' },
     ],
   },
   en: {
@@ -33,7 +33,7 @@ const content: Record<string, any> = {
       { title: '5. Free Service', body: 'We provide the basic service for free. We reserve the right to change features available in the free plan with prior notice.' },
       { title: '6. Termination', body: 'We reserve the right to suspend or terminate any account that violates these terms. You may delete your account at any time.' },
       { title: '7. Updates to Terms', body: 'We may update these terms from time to time. We will notify you of any material changes via email.' },
-      { title: '8. Contact', body: 'For any questions about these terms, contact us at: support@contactme.cc' },
+      { title: '8. Contact', body: 'For any questions about these terms, contact us at: controlcode26@gmail.com' },
     ],
   },
   zh: {
@@ -48,7 +48,7 @@ const content: Record<string, any> = {
       { title: '5. 免费服务', body: '我们免费提供基本服务。我们保留在提前通知的情况下更改免费计划功能的权利。' },
       { title: '6. 终止', body: '我们保留暂停或终止违反条款账户的权利。您可以随时删除账户。' },
       { title: '7. 条款更新', body: '我们可能不时更新这些条款。我们将通过电子邮件通知您任何重大变更。' },
-      { title: '8. 联系', body: '如有关于条款的问题，请联系：support@contactme.cc' },
+      { title: '8. 联系', body: '如有关于条款的问题，请联系：controlcode26@gmail.com' },
     ],
   },
   fr: {
@@ -63,7 +63,7 @@ const content: Record<string, any> = {
       { title: '5. Service gratuit', body: 'Nous fournissons le service de base gratuitement. Nous nous réservons le droit de modifier les fonctionnalités du plan gratuit avec préavis.' },
       { title: '6. Résiliation', body: 'Nous nous réservons le droit de suspendre ou résilier tout compte violant ces conditions. Vous pouvez supprimer votre compte à tout moment.' },
       { title: '7. Mises à jour', body: 'Nous pouvons mettre à jour ces conditions de temps à autre. Nous vous informerons de tout changement important par email.' },
-      { title: '8. Contact', body: 'Pour toute question sur ces conditions : support@contactme.cc' },
+      { title: '8. Contact', body: 'Pour toute question sur ces conditions : controlcode26@gmail.com' },
     ],
   },
   es: {
@@ -78,7 +78,7 @@ const content: Record<string, any> = {
       { title: '5. Servicio gratuito', body: 'Ofrecemos el servicio básico gratis. Nos reservamos el derecho de cambiar las funciones del plan gratuito con aviso previo.' },
       { title: '6. Terminación', body: 'Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos. Puedes eliminar tu cuenta en cualquier momento.' },
       { title: '7. Actualizaciones', body: 'Podemos actualizar estos términos ocasionalmente. Te notificaremos cualquier cambio importante por email.' },
-      { title: '8. Contacto', body: 'Para preguntas sobre estos términos: support@contactme.cc' },
+      { title: '8. Contacto', body: 'Para preguntas sobre estos términos: controlcode26@gmail.com' },
     ],
   },
 }

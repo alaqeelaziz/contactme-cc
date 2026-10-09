@@ -1,4 +1,4 @@
-﻿{
+{
   "navbar": {
     "dashboard": "Panel",
     "login": "Iniciar sesiأ³n",
@@ -128,7 +128,8 @@
       "card": "Tarjeta de visita",
       "qr": "QR",
       "scanner": "Escأ،ner",
-      "analytics": "Analأ­tica"
+      "analytics": "Analأ­tica",
+      "textSync": "Mis textos"
     },
     "profile": "Editar perfil",
     "links": "Gestionar enlaces",
@@ -207,26 +208,111 @@
     "whatsappHint": "Ejemplo: 966512345678",
     "saving": "Guardando...",
     "save": "Guardar cambios"
-  }
-,
+  },
   "LinksManager": {
     "linksLabel": "enlaces",
     "addLink": "Agregar enlace",
     "upgradePrompt": "Actualiza a Pro para agregar más",
     "empty": "Aún no hay enlaces. ¡Agrega tu primer enlace!",
-    "presets": { "whatsapp": "WhatsApp", "instagram": "Instagram", "twitter": "Twitter / X", "linkedin": "LinkedIn", "youtube": "YouTube", "website": "Mi sitio web" },
-    "form": { "newTitle": "Nuevo enlace", "editTitle": "Editar enlace", "nameLabel": "Nombre del enlace", "namePlaceholder": "Ej: Instagram", "urlLabel": "URL", "iconLabel": "Ícono (emoji - opcional)", "saving": "Guardando...", "update": "Actualizar", "add": "Agregar", "cancel": "Cancelar" },
-    "errors": { "missingFields": "Por favor completa el nombre y el enlace", "invalidUrl": "El enlace debe comenzar con https://", "limitReached": "El plan gratuito permite solo {max} enlaces. Actualiza a Pro para enlaces ilimitados", "generic": "Ocurrió un error, por favor intenta de nuevo", "deleteError": "Ocurrió un error al eliminar" },
-    "success": { "added": "Enlace agregado", "updated": "Enlace actualizado", "deleted": "Enlace eliminado" },
-    "confirm": { "delete": "¿Estás seguro de que quieres eliminar este enlace?" }
+    "presets": {
+      "whatsapp": "WhatsApp",
+      "instagram": "Instagram",
+      "twitter": "Twitter / X",
+      "linkedin": "LinkedIn",
+      "youtube": "YouTube",
+      "website": "Mi sitio web"
+    },
+    "form": {
+      "newTitle": "Nuevo enlace",
+      "editTitle": "Editar enlace",
+      "nameLabel": "Nombre del enlace",
+      "namePlaceholder": "Ej: Instagram",
+      "urlLabel": "URL",
+      "iconLabel": "Ícono (emoji - opcional)",
+      "saving": "Guardando...",
+      "update": "Actualizar",
+      "add": "Agregar",
+      "cancel": "Cancelar"
+    },
+    "errors": {
+      "missingFields": "Por favor completa el nombre y el enlace",
+      "invalidUrl": "El enlace debe comenzar con https://",
+      "limitReached": "El plan gratuito permite solo {max} enlaces. Actualiza a Pro para enlaces ilimitados",
+      "generic": "Ocurrió un error, por favor intenta de nuevo",
+      "deleteError": "Ocurrió un error al eliminar"
+    },
+    "success": {
+      "added": "Enlace agregado",
+      "updated": "Enlace actualizado",
+      "deleted": "Enlace eliminado"
+    },
+    "confirm": {
+      "delete": "¿Estás seguro de que quieres eliminar este enlace?"
+    }
   },
   "ServicesManager": {
     "servicesLabel": "servicio(s)",
     "addService": "Agregar servicio",
     "empty": "Aún no hay servicios. ¡Agrega tu primer servicio!",
-    "form": { "newTitle": "Nuevo servicio", "editTitle": "Editar servicio", "nameLabel": "Nombre del servicio", "namePlaceholder": "Ej: Diseño de identidad visual", "descLabel": "Descripción del servicio (opcional)", "descPlaceholder": "Breve descripción del servicio...", "saving": "Guardando...", "update": "Actualizar", "add": "Agregar", "cancel": "Cancelar" },
-    "errors": { "nameRequired": "El nombre del servicio es obligatorio", "generic": "Ocurrió un error, por favor intenta de nuevo" },
-    "success": { "added": "Servicio agregado", "updated": "Servicio actualizado", "deleted": "Servicio eliminado" },
-    "confirm": { "delete": "¿Estás seguro de que quieres eliminar este servicio?" }
+    "form": {
+      "newTitle": "Nuevo servicio",
+      "editTitle": "Editar servicio",
+      "nameLabel": "Nombre del servicio",
+      "namePlaceholder": "Ej: Diseño de identidad visual",
+      "descLabel": "Descripción del servicio (opcional)",
+      "descPlaceholder": "Breve descripción del servicio...",
+      "saving": "Guardando...",
+      "update": "Actualizar",
+      "add": "Agregar",
+      "cancel": "Cancelar"
+    },
+    "errors": {
+      "nameRequired": "El nombre del servicio es obligatorio",
+      "generic": "Ocurrió un error, por favor intenta de nuevo"
+    },
+    "success": {
+      "added": "Servicio agregado",
+      "updated": "Servicio actualizado",
+      "deleted": "Servicio eliminado"
+    },
+    "confirm": {
+      "delete": "¿Estás seguro de que quieres eliminar este servicio?"
+    }
+  },
+  "textSync": {
+    "title": "Mis textos",
+    "description": "Pega un texto o enlace para acceder desde tus dispositivos con la misma cuenta. Los textos son privados.",
+    "name": "Título (opcional)",
+    "body": "Texto o enlace",
+    "retention": "Conservar durante",
+    "hour": "1 hora",
+    "day": "24 horas",
+    "week": "7 días",
+    "forever": "Hasta que lo elimine",
+    "save": "Guardar y sincronizar",
+    "working": "Procesando…",
+    "saved": "Texto guardado",
+    "failed": "Error. Comprueba la conexión, la configuración y el límite de 500 textos.",
+    "loading": "Cargando…",
+    "connectionError": "No se pudo conectar. Comprueba la conexión y la configuración.",
+    "updated": "Última sincronización: {time}",
+    "refresh": "Actualizar",
+    "clear": "Eliminar todo",
+    "empty": "No hay textos guardados.",
+    "untitled": "Texto sin título",
+    "expires": "Caduca: {time}",
+    "copy": "Copiar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar este texto de todos tus dispositivos?",
+    "confirmClear": "¿Eliminar todos tus textos de todos tus dispositivos?",
+    "deleted": "Eliminado",
+    "copied": "Copiado",
+    "copyFailed": "No se pudo copiar. Selecciona y copia el texto manualmente.",
+    "limit": "Hasta 500 textos de 20 000 caracteres. El plazo comienza al guardar. Sincronización automática y comprobación cada 5 segundos."
+  },
+  "contactNotes": {
+    "label": "Notas privadas",
+    "placeholder": "Ejemplo: Nos conocimos en la feria; contactar la próxima semana.",
+    "private": "Se guardan con el contacto y no aparecen en tu perfil público."
   }
 }

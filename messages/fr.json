@@ -1,4 +1,4 @@
-﻿{
+{
   "navbar": {
     "dashboard": "Tableau de bord",
     "login": "Connexion",
@@ -128,7 +128,8 @@
       "card": "Carte de visite",
       "qr": "QR",
       "scanner": "Scanner",
-      "analytics": "Analytique"
+      "analytics": "Analytique",
+      "textSync": "Mes textes"
     },
     "profile": "Modifier le profil",
     "links": "Gأ©rer les liens",
@@ -207,26 +208,111 @@
     "whatsappHint": "Exemple : 966512345678",
     "saving": "Enregistrement...",
     "save": "Enregistrer les modifications"
-  }
-,
+  },
   "LinksManager": {
     "linksLabel": "liens",
     "addLink": "Ajouter un lien",
     "upgradePrompt": "Passez à Pro pour en ajouter plus",
     "empty": "Aucun lien pour l'instant. Ajoutez votre premier lien !",
-    "presets": { "whatsapp": "WhatsApp", "instagram": "Instagram", "twitter": "Twitter / X", "linkedin": "LinkedIn", "youtube": "YouTube", "website": "Mon site web" },
-    "form": { "newTitle": "Nouveau lien", "editTitle": "Modifier le lien", "nameLabel": "Nom du lien", "namePlaceholder": "Ex : Instagram", "urlLabel": "URL", "iconLabel": "Icône (emoji - optionnel)", "saving": "Enregistrement...", "update": "Mettre à jour", "add": "Ajouter", "cancel": "Annuler" },
-    "errors": { "missingFields": "Veuillez remplir le nom et le lien", "invalidUrl": "Le lien doit commencer par https://", "limitReached": "Le plan gratuit permet {max} liens seulement. Passez à Pro pour des liens illimités", "generic": "Une erreur s'est produite, veuillez réessayer", "deleteError": "Une erreur s'est produite lors de la suppression" },
-    "success": { "added": "Lien ajouté", "updated": "Lien mis à jour", "deleted": "Lien supprimé" },
-    "confirm": { "delete": "Êtes-vous sûr de vouloir supprimer ce lien ?" }
+    "presets": {
+      "whatsapp": "WhatsApp",
+      "instagram": "Instagram",
+      "twitter": "Twitter / X",
+      "linkedin": "LinkedIn",
+      "youtube": "YouTube",
+      "website": "Mon site web"
+    },
+    "form": {
+      "newTitle": "Nouveau lien",
+      "editTitle": "Modifier le lien",
+      "nameLabel": "Nom du lien",
+      "namePlaceholder": "Ex : Instagram",
+      "urlLabel": "URL",
+      "iconLabel": "Icône (emoji - optionnel)",
+      "saving": "Enregistrement...",
+      "update": "Mettre à jour",
+      "add": "Ajouter",
+      "cancel": "Annuler"
+    },
+    "errors": {
+      "missingFields": "Veuillez remplir le nom et le lien",
+      "invalidUrl": "Le lien doit commencer par https://",
+      "limitReached": "Le plan gratuit permet {max} liens seulement. Passez à Pro pour des liens illimités",
+      "generic": "Une erreur s'est produite, veuillez réessayer",
+      "deleteError": "Une erreur s'est produite lors de la suppression"
+    },
+    "success": {
+      "added": "Lien ajouté",
+      "updated": "Lien mis à jour",
+      "deleted": "Lien supprimé"
+    },
+    "confirm": {
+      "delete": "Êtes-vous sûr de vouloir supprimer ce lien ?"
+    }
   },
   "ServicesManager": {
     "servicesLabel": "service(s)",
     "addService": "Ajouter un service",
     "empty": "Aucun service pour l'instant. Ajoutez votre premier service !",
-    "form": { "newTitle": "Nouveau service", "editTitle": "Modifier le service", "nameLabel": "Nom du service", "namePlaceholder": "Ex : Création d'identité visuelle", "descLabel": "Description du service (optionnel)", "descPlaceholder": "Courte description du service...", "saving": "Enregistrement...", "update": "Mettre à jour", "add": "Ajouter", "cancel": "Annuler" },
-    "errors": { "nameRequired": "Le nom du service est requis", "generic": "Une erreur s'est produite, veuillez réessayer" },
-    "success": { "added": "Service ajouté", "updated": "Service mis à jour", "deleted": "Service supprimé" },
-    "confirm": { "delete": "Êtes-vous sûr de vouloir supprimer ce service ?" }
+    "form": {
+      "newTitle": "Nouveau service",
+      "editTitle": "Modifier le service",
+      "nameLabel": "Nom du service",
+      "namePlaceholder": "Ex : Création d'identité visuelle",
+      "descLabel": "Description du service (optionnel)",
+      "descPlaceholder": "Courte description du service...",
+      "saving": "Enregistrement...",
+      "update": "Mettre à jour",
+      "add": "Ajouter",
+      "cancel": "Annuler"
+    },
+    "errors": {
+      "nameRequired": "Le nom du service est requis",
+      "generic": "Une erreur s'est produite, veuillez réessayer"
+    },
+    "success": {
+      "added": "Service ajouté",
+      "updated": "Service mis à jour",
+      "deleted": "Service supprimé"
+    },
+    "confirm": {
+      "delete": "Êtes-vous sûr de vouloir supprimer ce service ?"
+    }
+  },
+  "textSync": {
+    "title": "Mes textes",
+    "description": "Collez un texte ou un lien pour le retrouver sur vos appareils connectés au même compte. Ces textes sont privés.",
+    "name": "Titre (facultatif)",
+    "body": "Texte ou lien",
+    "retention": "Conserver pendant",
+    "hour": "1 heure",
+    "day": "24 heures",
+    "week": "7 jours",
+    "forever": "Jusqu’à suppression",
+    "save": "Enregistrer et synchroniser",
+    "working": "En cours…",
+    "saved": "Texte enregistré",
+    "failed": "Échec. Vérifiez la connexion, la configuration et la limite de 500 textes.",
+    "loading": "Chargement…",
+    "connectionError": "Connexion impossible. Vérifiez la connexion et la configuration.",
+    "updated": "Dernière synchronisation : {time}",
+    "refresh": "Actualiser",
+    "clear": "Tout supprimer",
+    "empty": "Aucun texte enregistré.",
+    "untitled": "Texte sans titre",
+    "expires": "Expire : {time}",
+    "copy": "Copier",
+    "delete": "Supprimer",
+    "confirmDelete": "Supprimer ce texte sur tous vos appareils ?",
+    "confirmClear": "Supprimer tous vos textes sur tous vos appareils ?",
+    "deleted": "Supprimé",
+    "copied": "Copié",
+    "copyFailed": "Copie impossible. Sélectionnez et copiez le texte manuellement.",
+    "limit": "500 textes maximum, 20 000 caractères chacun. La durée commence à l’enregistrement. Synchronisation automatique et vérification toutes les 5 secondes."
+  },
+  "contactNotes": {
+    "label": "Notes privées",
+    "placeholder": "Exemple : rencontré au salon ; recontacter la semaine prochaine.",
+    "private": "Enregistrées avec ce contact, masquées sur votre profil public."
   }
 }

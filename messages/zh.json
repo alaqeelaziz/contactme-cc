@@ -128,7 +128,8 @@
       "card": "名片",
       "qr": "二维码",
       "scanner": "名片扫描",
-      "analytics": "分析"
+      "analytics": "分析",
+      "textSync": "我的文本"
     },
     "profile": "编辑个人资料",
     "links": "管理链接",
@@ -277,5 +278,41 @@
     "confirm": {
       "delete": "确定要删除此服务吗？"
     }
+  },
+  "textSync": {
+    "title": "我的文本",
+    "description": "粘贴文本或链接，即可在登录同一账户的设备上访问。只有您能访问这些文本。",
+    "name": "标题（可选）",
+    "body": "文本或链接",
+    "retention": "保留时间",
+    "hour": "1小时",
+    "day": "24小时",
+    "week": "7天",
+    "forever": "直到手动删除",
+    "save": "保存并同步",
+    "working": "处理中…",
+    "saved": "文本已保存",
+    "failed": "操作失败。请检查连接、数据库设置及500条限制。",
+    "loading": "加载中…",
+    "connectionError": "无法连接。请检查网络和数据库设置。",
+    "updated": "上次同步：{time}",
+    "refresh": "刷新",
+    "clear": "删除全部",
+    "empty": "暂无保存的文本。",
+    "untitled": "无标题文本",
+    "expires": "到期时间：{time}",
+    "copy": "复制",
+    "delete": "删除",
+    "confirmDelete": "从所有设备删除此文本？",
+    "confirmClear": "从所有设备删除全部文本？",
+    "deleted": "已删除",
+    "copied": "已复制",
+    "copyFailed": "无法复制。请手动选择并复制文本。",
+    "limit": "最多500条，每条20,000字符。保存时开始计时。自动同步，并每5秒检查遗漏更新。"
+  },
+  "contactNotes": {
+    "label": "私人备注",
+    "placeholder": "例如：在展会上认识，下周联系。",
+    "private": "与联系人一起保存，不会显示在公开资料中。"
   }
 }
