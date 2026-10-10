@@ -26,6 +26,9 @@ export default function BusinessCardScanner({ isPro }: Props) {
   const [result, setResult] = useState<ScannedCard | null>(null)
   const [contacts, setContacts] = useState<SavedContact[]>([])
   const [showContacts, setShowContacts] = useState(false)
+  const [expandedContactId, setExpandedContactId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const deletingRef = useRef(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
@@ -34,7 +37,7 @@ export default function BusinessCardScanner({ isPro }: Props) {
     loadContacts()
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) loadContacts()
-      else setContacts([])
+      else { setContacts([]); setExpandedContactId(null) }
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -130,6 +133,28 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       toast.error(err.message || 'فشل الحفظ')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleDelete(contact: SavedContact) {
+    if (deletingRef.current || !window.confirm(`حذف جهة الاتصال «${contact.name || 'بدون اسم'}»؟ لا يمكن التراجع عن الحذف.`)) return
+    deletingRef.current = true
+    setDeletingId(contact.id)
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError || !user) throw new Error('يرجى تسجيل الدخول مجدداً')
+      const { data, error } = await supabase.from('contacts').delete()
+        .eq('id', contact.id).eq('user_id', user.id).select('id')
+      if (error) throw error
+      if (!data?.length) throw new Error('لم يتم الحذف. حدّث القائمة وتحقق من صلاحيات الحساب.')
+      setContacts(current => current.filter(c => c.id !== contact.id))
+      setExpandedContactId(current => current === contact.id ? null : current)
+      toast.success('تم حذف جهة الاتصال')
+    } catch (err: any) {
+      toast.error(err.message || 'فشل حذف جهة الاتصال')
+    } finally {
+      deletingRef.current = false
+      setDeletingId(null)
     }
   }
 
@@ -405,18 +430,48 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
             </div>
           </div>
           {showContacts && (
-            <div className="space-y-2 max-h-64 overflow-y-auto">
+            <div className="space-y-2 max-h-[36rem] overflow-y-auto">
               {contacts.map(c => (
-                <div key={c.id} className="p-3 rounded-xl flex items-center justify-between gap-3"
+                <div key={c.id} className="rounded-xl overflow-hidden"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm truncate">{c.name || '—'}</p>
-                    <p className="text-xs text-[var(--text-muted)] truncate">{c.company || c.title || c.phone || ''}</p>
-                    {c.notes && <p className="text-sm whitespace-pre-wrap break-words mt-2">{c.notes}</p>}
+                  <div className="flex items-center gap-2 p-3">
+                    <button type="button" onClick={() => setExpandedContactId(current => current === c.id ? null : c.id)}
+                      aria-expanded={expandedContactId === c.id} aria-controls={`contact-details-${c.id}`}
+                      className="flex-1 min-w-0 text-start rounded-lg p-1 hover:bg-[var(--bg)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366F1]">
+                      <p className="font-semibold text-sm break-words">{c.name || 'بدون اسم'} <span aria-hidden="true">{expandedContactId === c.id ? '▴' : '▾'}</span></p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">{c.company || c.title || c.phone || ''}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1">{new Date(c.created_at).toLocaleDateString('ar-SA')}</p>
+                    </button>
+                    <button type="button" onClick={() => handleDelete(c)} disabled={deletingId !== null}
+                      aria-label={`حذف ${c.name || 'جهة الاتصال'}`}
+                      className="shrink-0 min-h-[44px] px-3 rounded-lg text-sm text-red-500 hover:bg-red-500/10 disabled:opacity-50">
+                      {deletingId === c.id ? 'جاري الحذف...' : 'حذف'}
+                    </button>
                   </div>
-                  <p className="text-[10px] text-[var(--text-muted)] flex-shrink-0">
-                    {new Date(c.created_at).toLocaleDateString('ar-SA')}
-                  </p>
+                  {expandedContactId === c.id && (
+                    <div id={`contact-details-${c.id}`} className="border-t p-4 space-y-3" style={{ borderColor: 'var(--border)' }}>
+                      <dl className="space-y-3">
+                        {[
+                          { label: 'الاسم', value: c.name },
+                          { label: 'المسمى الوظيفي', value: c.title },
+                          { label: 'الشركة', value: c.company },
+                          { label: 'الهاتف', value: c.phone },
+                          { label: 'البريد الإلكتروني', value: c.email },
+                          { label: 'الموقع الإلكتروني', value: c.website },
+                          { label: n('label'), value: c.notes },
+                        ].map(({ label, value }) => (
+                          <div key={label} className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <dt className="text-xs text-[var(--text-muted)]">{label}</dt>
+                              <dd className="text-sm whitespace-pre-wrap break-words mt-1" dir="auto">{value || '—'}</dd>
+                            </div>
+                            {value && <button type="button" onClick={() => copyField(value, label)}
+                              aria-label={`نسخ ${label}`} className="shrink-0 px-2 min-h-[44px] rounded-lg text-xs text-[#6366F1] hover:bg-[var(--bg)]">نسخ</button>}
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
