@@ -70,7 +70,7 @@ const content: Record<string, any> = {
       links: [
         { label: 'سياسة الخصوصية', href: '/ar/privacy' },
         { label: 'الشروط والأحكام', href: '/ar/terms' },
-        { label: 'تواصل معنا', href: 'mailto:support@contactme.cc' },
+        { label: 'تواصل معنا', href: 'mailto:controlcode26@gmail.com' },
       ],
     },
   },
@@ -136,7 +136,7 @@ const content: Record<string, any> = {
       links: [
         { label: 'Privacy Policy', href: '/en/privacy' },
         { label: 'Terms of Service', href: '/en/terms' },
-        { label: 'Contact Us', href: 'mailto:support@contactme.cc' },
+        { label: 'Contact Us', href: 'mailto:controlcode26@gmail.com' },
       ],
     },
   },
@@ -168,7 +168,7 @@ const content: Record<string, any> = {
     ctaTitle: '准备好开始了吗？',
     ctaDesc: '立即免费创建您的个人资料',
     ctaBtn: '立即免费开始',
-    footer: { copy: `© ${new Date().getFullYear()} contactme.cc — 保留所有权利`, tagline: '用 ❤️ 为全球专业人士打造', links: [{ label: '隐私政策', href: '/zh/privacy' }, { label: '服务条款', href: '/zh/terms' }, { label: '联系我们', href: 'mailto:support@contactme.cc' }] },
+    footer: { copy: `© ${new Date().getFullYear()} contactme.cc — 保留所有权利`, tagline: '用 ❤️ 为全球专业人士打造', links: [{ label: '隐私政策', href: '/zh/privacy' }, { label: '服务条款', href: '/zh/terms' }, { label: '联系我们', href: 'mailto:controlcode26@gmail.com' }] },
   },
   fr: {
     badge: 'Plateforme numérique contactme',
@@ -198,7 +198,7 @@ const content: Record<string, any> = {
     ctaTitle: 'Prêt à commencer ?',
     ctaDesc: 'Créez votre profil gratuitement',
     ctaBtn: 'Commencer gratuitement',
-    footer: { copy: `© ${new Date().getFullYear()} contactme.cc — Tous droits réservés`, tagline: 'Fait avec ❤️ pour les professionnels', links: [{ label: 'Confidentialité', href: '/fr/privacy' }, { label: 'Conditions', href: '/fr/terms' }, { label: 'Contact', href: 'mailto:support@contactme.cc' }] },
+    footer: { copy: `© ${new Date().getFullYear()} contactme.cc — Tous droits réservés`, tagline: 'Fait avec ❤️ pour les professionnels', links: [{ label: 'Confidentialité', href: '/fr/privacy' }, { label: 'Conditions', href: '/fr/terms' }, { label: 'Contact', href: 'mailto:controlcode26@gmail.com' }] },
   },
   es: {
     badge: 'Plataforma digital contactme',
@@ -228,7 +228,7 @@ const content: Record<string, any> = {
     ctaTitle: '¿Listo para empezar?',
     ctaDesc: 'Crea tu perfil ahora gratis',
     ctaBtn: 'Empieza gratis ahora',
-    footer: { copy: `© ${new Date().getFullYear()} contactme.cc — Todos los derechos reservados`, tagline: 'Hecho con ❤️ para profesionales', links: [{ label: 'Privacidad', href: '/es/privacy' }, { label: 'Términos', href: '/es/terms' }, { label: 'Contacto', href: 'mailto:support@contactme.cc' }] },
+    footer: { copy: `© ${new Date().getFullYear()} contactme.cc — Todos los derechos reservados`, tagline: 'Hecho con ❤️ para profesionales', links: [{ label: 'Privacidad', href: '/es/privacy' }, { label: 'Términos', href: '/es/terms' }, { label: 'Contacto', href: 'mailto:controlcode26@gmail.com' }] },
   },
 }
 

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import Navbar from '@/components/Navbar'
 import ProfileEditor from '@/components/dashboard/ProfileEditor'
 import LinksManager from '@/components/dashboard/LinksManager'
+import TextSync from '@/components/dashboard/TextSync'
 import BusinessCardScanner from '@/components/dashboard/BusinessCardScanner'
 import BusinessCardTab from '@/components/dashboard/BusinessCardTab'
 import QRDownloader from '@/components/dashboard/QRDownloader'
@@ -70,6 +71,7 @@ export default function DashboardClient({
             { id: 'card',      label: 'بطاقتي',             icon: '💳', show: true },
             { id: 'qr',        label: t('tabs.qr'),         icon: '📱', show: true },
             { id: 'scanner',   label: t('tabs.scanner'),    icon: '📷', show: true },
+            { id: 'textSync', label: t('tabs.textSync'), icon: '📝', show: true },
             { id: 'analytics', label: t('tabs.analytics'),  icon: '📊', show: true },
             { id: 'admin',     label: 'الإدارة',            icon: '🛡️', show: isAdmin },
           ].filter(tab => tab.show).map(tab => (
@@ -121,6 +123,7 @@ export default function DashboardClient({
               <BusinessCardScanner isPro={true} />
             </div>
           )}
+          {activeTab === 'textSync' && <TextSync userId={userId} />}
           {activeTab === 'analytics' && (
             <div>
               <h2 className="text-lg font-bold mb-5">{t('analytics')}</h2>

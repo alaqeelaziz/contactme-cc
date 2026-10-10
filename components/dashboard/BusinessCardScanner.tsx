@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import type { ScannedCard } from '@/lib/types'
 
@@ -10,18 +11,24 @@ interface Props {
 }
 
 interface SavedContact extends ScannedCard {
+  notes?: string | null
   id: string
   created_at: string
 }
 
 export default function BusinessCardScanner({ isPro }: Props) {
   const supabase = createClient()
+  const n = useTranslations('contactNotes')
+  const [notes, setNotes] = useState('')
   const [image, setImage] = useState<string | null>(null)
   const [scanning, setScanning] = useState(false)
   const [saving, setSaving] = useState(false)
   const [result, setResult] = useState<ScannedCard | null>(null)
   const [contacts, setContacts] = useState<SavedContact[]>([])
   const [showContacts, setShowContacts] = useState(false)
+  const [expandedContactId, setExpandedContactId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const deletingRef = useRef(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
@@ -30,7 +37,7 @@ export default function BusinessCardScanner({ isPro }: Props) {
     loadContacts()
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) loadContacts()
-      else setContacts([])
+      else { setContacts([]); setExpandedContactId(null) }
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -71,6 +78,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const compressed = canvas.toDataURL('image/jpeg', 0.8)
     setImage(compressed)
     setResult(null)
+    setNotes('')
     URL.revokeObjectURL(url)
   }
   img.src = url
@@ -88,6 +96,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setResult(data)
+      setNotes('')
       toast.success('تم استخراج البيانات بنجاح')
     } catch (err: any) {
       toast.error(err.message || 'حدث خطأ أثناء المسح')
@@ -110,11 +119,13 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         phone: result.phone || null,
         email: result.email || null,
         website: result.website || null,
+        notes: notes.trim() || null,
       })
       if (error) throw error
       toast.success('تم حفظ جهة الاتصال ✓')
       loadContacts()
       setResult(null)
+      setNotes('')
       setImage(null)
       if (fileRef.current) fileRef.current.value = ''
       if (cameraRef.current) cameraRef.current.value = ''
@@ -122,6 +133,28 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       toast.error(err.message || 'فشل الحفظ')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleDelete(contact: SavedContact) {
+    if (deletingRef.current || !window.confirm(`حذف جهة الاتصال «${contact.name || 'بدون اسم'}»؟ لا يمكن التراجع عن الحذف.`)) return
+    deletingRef.current = true
+    setDeletingId(contact.id)
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError || !user) throw new Error('يرجى تسجيل الدخول مجدداً')
+      const { data, error } = await supabase.from('contacts').delete()
+        .eq('id', contact.id).eq('user_id', user.id).select('id')
+      if (error) throw error
+      if (!data?.length) throw new Error('لم يتم الحذف. حدّث القائمة وتحقق من صلاحيات الحساب.')
+      setContacts(current => current.filter(c => c.id !== contact.id))
+      setExpandedContactId(current => current === contact.id ? null : current)
+      toast.success('تم حذف جهة الاتصال')
+    } catch (err: any) {
+      toast.error(err.message || 'فشل حذف جهة الاتصال')
+    } finally {
+      deletingRef.current = false
+      setDeletingId(null)
     }
   }
 
@@ -133,6 +166,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
   function reset() {
     setImage(null)
     setResult(null)
+    setNotes('')
     if (fileRef.current) fileRef.current.value = ''
     if (cameraRef.current) cameraRef.current.value = ''
   }
@@ -145,6 +179,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       'الهاتف': c.phone || '',
       'البريد الإلكتروني': c.email || '',
       'الموقع': c.website || '',
+      [n('label')]: c.notes || '',
       'التاريخ': new Date(c.created_at).toLocaleDateString('ar-SA'),
     }))
   }
@@ -154,7 +189,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const rows = getRows()
     const headers = Object.keys(rows[0])
     const csv = [headers, ...rows.map(r => Object.values(r))]
-      .map(r => r.map(v => `"${v}"`).join(','))
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
       .join('\n')
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
     downloadBlob(blob, 'contacts.csv')
@@ -169,7 +204,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       const ws = XLSX.utils.json_to_sheet(getRows())
       const wb = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(wb, ws, 'Contacts')
-      ws['!cols'] = [20, 25, 25, 18, 30, 25, 15].map(w => ({ wch: w }))
+      ws['!cols'] = [20, 25, 25, 18, 30, 25, 45, 15].map(w => ({ wch: w }))
       XLSX.writeFile(wb, 'contacts.xlsx')
       toast.success('تم تصدير Excel')
     } catch {
@@ -188,6 +223,7 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       if (c.phone) lines.push(`TEL:${c.phone}`)
       if (c.email) lines.push(`EMAIL:${c.email}`)
       if (c.website) lines.push(`URL:${c.website}`)
+      if (c.notes) lines.push(`NOTE:${c.notes.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,')}`)
       lines.push('END:VCARD')
       return lines.join('\n')
     }).join('\n\n')
@@ -338,6 +374,12 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
               })}
             </div>
           </div>
+          <label className="block text-sm font-medium">
+            {n('label')}
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} maxLength={4000}
+              rows={3} placeholder={n('placeholder')} className="input-field w-full mt-2" />
+            <span className="text-xs text-[var(--text-muted)]">{n('private')}</span>
+          </label>
           <button onClick={handleSave} disabled={saving}
             className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2"
             style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)' }}>
@@ -388,17 +430,48 @@ function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
             </div>
           </div>
           {showContacts && (
-            <div className="space-y-2 max-h-64 overflow-y-auto">
+            <div className="space-y-2 max-h-[36rem] overflow-y-auto">
               {contacts.map(c => (
-                <div key={c.id} className="p-3 rounded-xl flex items-center justify-between gap-3"
+                <div key={c.id} className="rounded-xl overflow-hidden"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm truncate">{c.name || '—'}</p>
-                    <p className="text-xs text-[var(--text-muted)] truncate">{c.company || c.title || c.phone || ''}</p>
+                  <div className="flex items-center gap-2 p-3">
+                    <button type="button" onClick={() => setExpandedContactId(current => current === c.id ? null : c.id)}
+                      aria-expanded={expandedContactId === c.id} aria-controls={`contact-details-${c.id}`}
+                      className="flex-1 min-w-0 text-start rounded-lg p-1 hover:bg-[var(--bg)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366F1]">
+                      <p className="font-semibold text-sm break-words">{c.name || 'بدون اسم'} <span aria-hidden="true">{expandedContactId === c.id ? '▴' : '▾'}</span></p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">{c.company || c.title || c.phone || ''}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1">{new Date(c.created_at).toLocaleDateString('ar-SA')}</p>
+                    </button>
+                    <button type="button" onClick={() => handleDelete(c)} disabled={deletingId !== null}
+                      aria-label={`حذف ${c.name || 'جهة الاتصال'}`}
+                      className="shrink-0 min-h-[44px] px-3 rounded-lg text-sm text-red-500 hover:bg-red-500/10 disabled:opacity-50">
+                      {deletingId === c.id ? 'جاري الحذف...' : 'حذف'}
+                    </button>
                   </div>
-                  <p className="text-[10px] text-[var(--text-muted)] flex-shrink-0">
-                    {new Date(c.created_at).toLocaleDateString('ar-SA')}
-                  </p>
+                  {expandedContactId === c.id && (
+                    <div id={`contact-details-${c.id}`} className="border-t p-4 space-y-3" style={{ borderColor: 'var(--border)' }}>
+                      <dl className="space-y-3">
+                        {[
+                          { label: 'الاسم', value: c.name },
+                          { label: 'المسمى الوظيفي', value: c.title },
+                          { label: 'الشركة', value: c.company },
+                          { label: 'الهاتف', value: c.phone },
+                          { label: 'البريد الإلكتروني', value: c.email },
+                          { label: 'الموقع الإلكتروني', value: c.website },
+                          { label: n('label'), value: c.notes },
+                        ].map(({ label, value }) => (
+                          <div key={label} className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <dt className="text-xs text-[var(--text-muted)]">{label}</dt>
+                              <dd className="text-sm whitespace-pre-wrap break-words mt-1" dir="auto">{value || '—'}</dd>
+                            </div>
+                            {value && <button type="button" onClick={() => copyField(value, label)}
+                              aria-label={`نسخ ${label}`} className="shrink-0 px-2 min-h-[44px] rounded-lg text-xs text-[#6366F1] hover:bg-[var(--bg)]">نسخ</button>}
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
